@@ -171,17 +171,41 @@ legend('K','','','J','','','');
 ieNewGraphWin([],'wide');
 tiledlayout(1,2);
 nexttile;
-plot(obsK6(:,1),obsK6(:,3)./obsK6(:,2)); hold on;
-plot(obsK6(:,1),obsK6(:,4)./obsK6(:,2)); hold on;
-plot(obsK6(:,1),obsK6(:,5)./obsK6(:,2)); hold on;
+plot(waveK6,obsK6(:,3)./obsK6(:,2)); hold on;
+plot(waveK6,obsK6(:,4)./obsK6(:,2)); hold on;
+plot(waveK6,obsK6(:,5)./obsK6(:,2)); hold on;
 xlabel('Wavelength index');
 ylabel('Primary intensity');
 grid on;
 
 nexttile;
-plot(obsJ9(:,1),obsJ9(:,3)./obsJ9(:,2)); hold on;
-plot(obsJ9(:,1),obsJ9(:,4)./obsJ9(:,2)); hold on;
-plot(obsJ9(:,1),obsJ9(:,5)./obsJ9(:,2)); hold on;
+plot(waveJ9,obsJ9(:,3)./obsJ9(:,2)); hold on;
+plot(waveJ9,obsJ9(:,4)./obsJ9(:,2)); hold on;
+plot(waveJ9,obsJ9(:,5)./obsJ9(:,2)); hold on;
 xlabel('Wavelength index');
 ylabel('Primary intensity');
 grid on;
+
+%% Save the data out for use by other scripts
+B = obsJ9(:,3)./obsJ9(:,2);
+G = obsJ9(:,4)./obsJ9(:,2);
+R = obsJ9(:,5)./obsJ9(:,2);
+wave = waveJ9;
+save('maxwellCMF_obsJ','wave','R','G','B');
+
+B = obsK6(:,3)./obsK6(:,2);
+G = obsK6(:,4)./obsK6(:,2);
+R = obsK6(:,5)./obsK6(:,2);
+wave = waveK6;
+save('maxwellCMF_obsK','wave','R','G','B');
+
+ieNewGraphWin([],'wide');
+tiledlayout(1,2);
+nexttile;
+obsJ = load("maxwellCMF_obsJ.mat");
+plot(obsJ.wave,obsJ.R(:),'r',obsJ.wave,obsJ.G(:),'g',obsJ.wave,obsJ.B(:),'b');
+nexttile;
+obsK = load("maxwellCMF_obsK.mat");
+plot(obsK.wave,obsK.R(:),'r',obsK.wave,obsK.G(:),'g',obsK.wave,obsK.B(:),'b');
+
+%%
