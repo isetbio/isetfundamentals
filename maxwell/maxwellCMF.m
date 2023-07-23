@@ -1,10 +1,9 @@
 %% Simulations and calculations related to Maxwell, 1860 color matching
 %
 % The Maxwell 1860 paper, reviewed by Judd and Zaidi, uses an
-% interesting method to achieve color matching.
-%
-% RELATION BETWEEN NORMAL TRICHROMATIC VISION AND DICHROMATIC VISION
-% REPRESENTING A REDUCED FORM OF NORMAL VISION (Judd in the NBS book)
+% interesting method to derive the color matching functions for two
+% observers.  These were the first such measurements, and the paper
+% describes the concepts and methods wonderfully.
 %
 % ON THE THEORY OF COMPOUNT COLORS (Maxwell)
 %
@@ -15,9 +14,8 @@
 % NOTE: The K and J CMFs with the light box are in the 1860 paper.
 % The spinning tops analysis in the 1855/1857 paper.
 %
-%
 %% Maxwell's design in the 1860 paper
-
+%
 % He fixed a white and then performed a match to the white using
 % mixtures of narrowband lights.  The lights were obtained by slits in
 % a prismatic image, derived from an interesting box he built.
@@ -25,57 +23,24 @@
 % Three narrowband lights were chosen as the fixed primaries.  He
 % matched these to the white, repeatedly.
 %
-% Then he would replace one of the primaries with a different
-% narrowband test light, and match these three lights to the white.
-% Assuming additivity, he computed a relationship between the
-% narrowband test light and the three primaries.  Thus, we had a match
-% from many narrowband lights and his three primaries.  Qasim seems to
-% know the actual wavelengths of the primaries (I couldn't figure out
-% how he knew). Judd may have figured it out.
+% Then he would replace one of the primaries with a different narrowband
+% test light, and match the new three lights to the white. Assuming
+% additivity, he computed a relationship between each of the narrowband
+% test lights and the three primaries.  Thus, had had a match from about 17
+% narrowband lights and the three primaries.  
+% 
+% Judd seems to know the actual wavelengths of the primaries (I couldn't
+% figure out how he knew). 
 %
-% These are shown in a table VI for observer K. and Table IX for
+% The CMFs are shown in a table VI for observer K. and Table IX for
 % observer J (maxwell himself, we think).
 %
-% two sets had two lights that were the same. Since they both matched
-% the same white light, he could set up an equality between the two
-% lights. This would result in
-%
-%   Wavelength, test intensity, three primar intensities
+% The same paper also shows the intensities of the matching lights to
+% white. In a separate script, we analyze these data
 %
 
-%% Maxwell's determination of the wavelengths from the indices
+%% See juddMaxwellWave to get the wavelengths from the Maxwell data in nm
 
-maxWave = [
-    20 2450
-    24 2328
-    28 2240
-    32 2154
-    36 2078
-    40 2013
-    44 1951
-    48 1879
-    52 1846
-    56 1797
-    60 1755];
-
-ieNewGraphWin;
-plot(maxWave(:,1),maxWave(:,2),'-x');
-xlabel('idx'); ylabel('Maxwell wave');
-
-
-%% Judd wavelength
-
-% Judd says that the three primaries (24, 44, 68) are the wavelengths
-% 456.9, 528.1 and 630.2. Notice that a longer index is a shorter
-% wavelength according to Maxwell.  So I arranged the idx and
-% primaries in the same order. But I don't yet trust these estimates.
-ieNewGraphWin;
-idx = [24 44 68];
-primaries = [630.2 528.1 456.9];
-plot(idx,primaries,'-o');
-xlabel('Index'); ylabel('Wavelength (nm)');
-
-% This is from Judd's Table I
 juddWave = [
     20 663.2
     24 630.2
@@ -89,15 +54,10 @@ juddWave = [
     56 486.4
     60 475.1
     64 465.9
+    68 456.9
     72 449.4
     76 441.2
     80 434.2];
-
-ieNewGraphWin;
-plot(juddWave(:,1),juddWave(:,2),'-x');
-xlabel('idx'); ylabel('Maxwell wave');
-
-
 
 %% CMFs From the 1860 paper
 
@@ -127,7 +87,7 @@ waveK6 = interp1(juddWave(:,1),juddWave(:,2),obsK6(:,1));
 
 obsK6(:,1) = waveK6(:);
 
-% Obs J
+%% Obs J
 obsJ9 = [
    20.0000   44.3000   18.1000   -2.5000    2.3000
    24.0000    1.0000    1.0000         0         0
@@ -148,6 +108,7 @@ obsJ9 = [
 
 waveJ9 = interp1(juddWave(:,1),juddWave(:,2),obsJ9(:,1));
 
+%%
 ieNewGraphWin;
 lw = 2;
 plot(waveK6,obsK6(:,3)./obsK6(:,2),'r','LineWidth',lw); hold on;
@@ -164,7 +125,6 @@ grid on;
 % Show where the possible primaries are
 yline(1,'LineWidth',2);
 legend('K','','','J','','','');
-
 
 %% Individual
 
@@ -199,13 +159,4 @@ R = obsK6(:,5)./obsK6(:,2);
 wave = waveK6;
 save('maxwellCMF_obsK','wave','R','G','B');
 
-ieNewGraphWin([],'wide');
-tiledlayout(1,2);
-nexttile;
-obsJ = load("maxwellCMF_obsJ.mat");
-plot(obsJ.wave,obsJ.R(:),'r',obsJ.wave,obsJ.G(:),'g',obsJ.wave,obsJ.B(:),'b');
-nexttile;
-obsK = load("maxwellCMF_obsK.mat");
-plot(obsK.wave,obsK.R(:),'r',obsK.wave,obsK.G(:),'g',obsK.wave,obsK.B(:),'b');
-
-%%
+%% END
