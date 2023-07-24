@@ -6,6 +6,21 @@
 %   JuddWave (nm) = Maxwell/3.694
 %
 %
+% Here is Judd's reasoning
+%{
+ "The wavelengths are expressed in millionths of a Paris inch." On the
+ assumption tha t a Paris inc h is 25·4mm. This implies that a certain red
+ part of the spectrum has a wavelength of 0 ·002425 ><. 25·4 0·06160mm 6
+ 1,600nm . An inquiry directed to the National Bureau of Standard ~ Office
+ of Weights and Measures disclosed that one Paris inch is not 25·4 but
+ 27·07mm, and this value would place this red part of the spectrum at
+ 65,545 nm. It seems likely that when Maxwell stated that the wavelengths
+ are expressed in millionths of a Paris inch, he meant tha tthe unit was
+ one Paris inch 10^8· This assumption has been used to find the wavelengths
+ listed in Table I in nm. It will be noted that by this assumption, the
+ colour names given to the various parts of the spectrum by Maxwell accord
+ well with the names currently given to them. (p. 349)"
+%}
 %% Maxwell's determination of the wavelengths from the indices
 
 % Table II
