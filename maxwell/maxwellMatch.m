@@ -75,7 +75,10 @@ table4Matches = [
     76     0     0     0     0     0     0     0     0     0     0     0     0     44    0     
     80     0     0     0     0     0     0     0     0     0     0     0     0     0     63.7    
 ];
-table4Matches(:,1) = juddWave(:,2)-15;   % Set to wavelength
+
+%% From 10nm to 15nm fits are fine.  20nm is too much.  5 too little.
+juddAdjust = 12;
+table4Matches(:,1) = juddWave(:,2)-juddAdjust;   % Set to wavelength
 table4Matches = flipud(table4Matches);
 
 wave    = table4Matches(:,1);
@@ -101,30 +104,88 @@ for ii = 1:numel(lambda)
     y(:,ii) = ieTikhonov(matches',O,'smoothness',lambda(ii));
 end
 
-%%
+%% How good are the smooth'd fits?
+
+%{
 ieNewGraphWin;
 plot(wave,y);
-xlabel('Wavelength'); ylabel('Arbitrary');
-grid on;
+xlabel('Wavelength'); ylabel('Arbitrary'); grid on;
 
 % Columns increasing in smoothness parameter.  All solutions should be 1.
 tmp = matches'*y;
+%}
 
 %% Is the solution within a linear transformation of the SS or CIE?
 
 stockman = ieReadSpectra('stockmanenergy',wave);
 
-n = 2;
+% The first few are all OK.  
+n = 1;
 stock2maxwell = stockman \ y(:,n);
 estMaxwell = stockman*stock2maxwell;
 maxwell = y(:,n);
 ieNewGraphWin; plot(wave,maxwell,'k-',wave,estMaxwell,'ko');
-xlabel('Wavelength estimate (nm, Judd - 15nm)');
+xlabel(sprintf('Wavelength estimate (nm, Judd - %d nm)',juddAdjust));
 ylabel('Arbitrary');
 title('Stockman and Maxwell')
 grid on;
+legend('Maxwell','Stockman')
+
+%%  Let's see if we can find the null space.
+
+% The idea is to set up an equation to solve for one vector in the null
+% space.  Then we will add that vector to the match matrix and solve again,
+% hopefully to find a new, independent vector in the null space.
+%
+
+A = matches';
+N = null(A);
+
+% These are already pretty smooth.  But we could smooth them more if we
+% liked.
+ieNewGraphWin;
+plot(wave,N); grid on;
+xlabel(sprintf('Wavelength estimate (nm, Judd - %d nm)',juddAdjust));
+ylabel('Arbitrary');
+title('Null space vectors');
+
+%% Now let's see how well we do fitting all three
+
+M = [ieScale(maxwell(:),1), ieScale(N(:,1),1), ieScale(N(:,2),1)];
+lTransform = M \ stockman;
+estStockman = M * lTransform;
+
+%{
+plot(wave,M); grid on;
+xlabel(sprintf('Wavelength estimate (nm, Judd - %d nm)',juddAdjust));
+ylabel('Arbitrary');
+xaxisLine;
+%}
+
+ieNewGraphWin;
+plot(wave,estStockman);
+grid on;
+hold on;
+plot(wave,stockman(:,1),'ro',wave,stockman(:,2),'go',wave,stockman(:,3),'bo');
+xlabel(sprintf('Wavelength estimate (nm, Judd - %d nm)',juddAdjust));
+ylabel('Arbitrary');
+title('Maxwell mapped to Stockman')
+legend('Maxwell','Stockman')
 
 %%
+%{
+%% Fit to the Maxwell from the Stockman
 
+lTransform = stockman \ M;
+
+estMaxwell3 = stockman *lTransform;
+
+plot(wave,estMaxwell3);
+grid on;
+xlabel('Wavelength'); ylabel('Arbitrary');
+hold on;
+plot(wave,M,'ro');
+xlabel('Wavelength'); ylabel('Arbitrary');
+%}
 
 
