@@ -1,7 +1,6 @@
-%% These are the matches to white reported in Maxwell 1860
+%% These are the trichromatic matches to white reported in Maxwell 1860
 %
-% The idea is to enter them for the two subjects, and then analyze their
-% dimensionality and null space.
+%
 %
 % More explanation here about why that is interesting later.
 %
@@ -27,6 +26,7 @@ juddWave = [
 
 %% Table IV Observer K the mean of four sets of observations
 
+%{
 % All of these spectral vectors (columns) match the standard white. The
 % values are the average of four matches by OBS K. 
 % 
@@ -52,6 +52,7 @@ table4Matches = [
     76     0     0     0     0     0     0     0     0     0     0     0     0     44    0     
     80     0     0     0     0     0     0     0     0     0     0     0     0     0     63.7    
 ];
+%}
 
 % Adjusted from the table, setting the 46 value to 44.  That way, we
 % include the primaries match to the white.  If it is 46, well, that would
@@ -74,23 +75,56 @@ table4Matches = [
     76     0     0     0     0     0     0     0     0     0     0     0     0     44    0     
     80     0     0     0     0     0     0     0     0     0     0     0     0     0     63.7    
 ];
+table4Matches(:,1) = juddWave(:,2)-15;   % Set to wavelength
+table4Matches = flipud(table4Matches);
 
+wave    = table4Matches(:,1);
 matches = table4Matches(:,2:end);
-[U,S,V] = svd(matches);
-% U*S*V'
-ieNewGraphWin;
-semilogy(diag(S)); grid on;
 
 %% Find the best fit to all ones
-%
-% ones = y*matches
-% y = ones*pinv(matches)
 %
 % This is under-determined.  There are 16 wavelengths and only 14 matches.
 % So we need to reduce the dimensionality of the solution to obtain an
 % estimate of y, and then interpolate it back up.
 %
-O = ones(size(matches,1),1);
-y = O*pinv(matches);
+% The structure of the matrix equation we want is
+%   
+%     1sColumn = Matches^t x
+%
+% 
+
+% The first question is whether the solution
+O = ones(size(matches',1),1);
+lambda = logspace(-2,3,6);
+y = zeros(numel(wave),numel(lambda));
+for ii = 1:numel(lambda)
+    y(:,ii) = ieTikhonov(matches',O,'smoothness',lambda(ii));
+end
+
+%%
+ieNewGraphWin;
+plot(wave,y);
+xlabel('Wavelength'); ylabel('Arbitrary');
+grid on;
+
+% Columns increasing in smoothness parameter.  All solutions should be 1.
+tmp = matches'*y;
+
+%% Is the solution within a linear transformation of the SS or CIE?
+
+stockman = ieReadSpectra('stockmanenergy',wave);
+
+n = 2;
+stock2maxwell = stockman \ y(:,n);
+estMaxwell = stockman*stock2maxwell;
+maxwell = y(:,n);
+ieNewGraphWin; plot(wave,maxwell,'k-',wave,estMaxwell,'ko');
+xlabel('Wavelength estimate (nm, Judd - 15nm)');
+ylabel('Arbitrary');
+title('Stockman and Maxwell')
+grid on;
+
+%%
+
 
 
