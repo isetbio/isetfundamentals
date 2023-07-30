@@ -149,6 +149,8 @@ xlabel(sprintf('Wavelength estimate (nm, Judd - %d nm)',juddAdjust));
 ylabel('Arbitrary');
 title('Null space vectors');
 
+
+
 %% Now let's see how well we do fitting all three
 
 M = [ieScale(maxwell(:),1), ieScale(N(:,1),1), ieScale(N(:,2),1)];
@@ -163,14 +165,36 @@ xaxisLine;
 %}
 
 ieNewGraphWin;
-plot(wave,estStockman);
-grid on;
-hold on;
+plot(wave,estStockman); grid on; hold on;
 plot(wave,stockman(:,1),'ro',wave,stockman(:,2),'go',wave,stockman(:,3),'bo');
 xlabel(sprintf('Wavelength estimate (nm, Judd - %d nm)',juddAdjust));
 ylabel('Arbitrary');
 title('Maxwell mapped to Stockman')
 legend('Maxwell','Stockman')
+
+
+%% Experiment with smoothing
+
+% A smooth solution might be to make a low frequency approximation to the
+% null space vectors. But, it does not fit quite as well because the green
+% is too narrow.
+
+%{
+g = fspecial('gaussian',[1,16],0.5);
+smoothedN(:,2) = conv(N(:,2),g,'same');
+
+M = [ieScale(maxwell(:),1), ieScale(smoothedN(:,1),1), ieScale(smoothedN(:,2),1)];
+lTransform = M \ stockman;
+estStockman = M * lTransform;
+
+ieNewGraphWin;
+plot(wave,estStockman); grid on; hold on;
+plot(wave,stockman(:,1),'ro',wave,stockman(:,2),'go',wave,stockman(:,3),'bo');
+xlabel(sprintf('Wavelength estimate (nm, Judd - %d nm)',juddAdjust));
+ylabel('Arbitrary');
+title('Smoothed Maxwell mapped to Stockman')
+legend('Maxwell','Stockman')
+%}
 
 %%
 %{

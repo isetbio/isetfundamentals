@@ -14,9 +14,8 @@ obsJ = load("maxwellCMF_obsJ.mat");
 obsK = load('maxwellCMF_obsK');
 
 %% Read Observer K CMF and read XYZ corresponding wavelengths
-juddAdjust = 12;
-
-waveK = obsK.wave-juddAdjust;
+juddAdjust = 10;
+waveK = obsK.wave - juddAdjust;
 XYZK = ieReadSpectra('XYZEnergy',waveK);
 RGB = [obsK.R(:),obsK.G(:),obsK.B(:)];
 
@@ -45,7 +44,7 @@ plot(waveK,XYZK,'LineStyle','--');
 % legend('XYZ','','','Maxwell ObsK fit');
 
 %% Now for Observer J.
-waveJ = obsJ.wave-juddAdjust;
+waveJ = obsJ.wave - juddAdjust;
 XYZJ = ieReadSpectra('XYZEnergy',waveJ);
 RGB = [obsJ.R(:),obsJ.G(:),obsJ.B(:)];
 L = pinv(RGB)*XYZJ;
@@ -58,7 +57,7 @@ xlabel('Wavelength (nm)')
 legend('XYZ','Maxwell ObsJ fit');
 
 %%  Now the StockmanEnergy functions - observer K
-wave = obsK.wave;
+wave = obsK.wave - juddAdjust;
 SS = ieReadSpectra('StockmanEnergy',wave);
 RGB = [obsK.R(:),obsK.G(:),obsK.B(:)];
 
@@ -74,7 +73,7 @@ xlabel('Wavelength (nm)')
 legend('SS','Maxwell ObsJ fit');
 
 %% Observer J
-wave = obsJ.wave;
+wave = obsJ.wave - juddAdjust;
 SS = ieReadSpectra('StockmanEnergy',wave);
 RGB = [obsJ.R(:),obsJ.G(:),obsJ.B(:)];
 
