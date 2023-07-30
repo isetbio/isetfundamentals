@@ -14,8 +14,9 @@ obsJ = load("maxwellCMF_obsJ.mat");
 obsK = load('maxwellCMF_obsK');
 
 %% Read Observer K CMF and read XYZ corresponding wavelengths
+juddAdjust = 12;
 
-waveK = obsK.wave;
+waveK = obsK.wave-juddAdjust;
 XYZK = ieReadSpectra('XYZEnergy',waveK);
 RGB = [obsK.R(:),obsK.G(:),obsK.B(:)];
 
@@ -44,7 +45,7 @@ plot(waveK,XYZK,'LineStyle','--');
 % legend('XYZ','','','Maxwell ObsK fit');
 
 %% Now for Observer J.
-waveJ = obsJ.wave;
+waveJ = obsJ.wave-juddAdjust;
 XYZJ = ieReadSpectra('XYZEnergy',waveJ);
 RGB = [obsJ.R(:),obsJ.G(:),obsJ.B(:)];
 L = pinv(RGB)*XYZJ;
@@ -113,5 +114,5 @@ plot(waveJ,XYZ_estJ(:,3),'s','Color','b','MarkerFaceColor','b','MarkerSize',12);
 
 xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',22);
 ylabel('Tristimulus Value','FontName','Helvetica','FontSize',22);
-legend({'CIE 1931 XYZ', 'Stockman-Sharpe fit to XYZ', 'Maxwell 1860 Obs K fit to XYZ', 'Maxwell 1860 Obs K fit to XYZ'},'FontName','Helvetica','FontSize',18);
+legend({'CIE 1931 XYZ', 'Stockman-Sharpe expressed in XYZ', 'Maxwell 1860 Obs K expressed in XYZ', 'Maxwell 1860 Obs J expressed in XYZ'},'FontName','Helvetica','FontSize',18);
 title('Color Matching Over 150 Years','FontName','Helvetica','FontSize',30);
