@@ -560,7 +560,7 @@ wdwAveCMFs = [ ...
    24.12   1.464
    14.90   0.311
     9.098  0.000
-                 ];
+];
 
 obsAverage.wave = wdwAve(:,1)*1e3;
 %obsAverage.CMF = wdwAve(:,3:4);
