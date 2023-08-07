@@ -333,27 +333,6 @@ wdwF = [ ...
     0.6500    0.9100    1.0000         0    8.1280    8.1280         0
     ];
 
-ii = 6;
-obs{ii}.wave = wdwF(:,1)*1e3;
-obs{ii}.CMF = wdwF(:,6:7);
-obs{ii}.logVlambda = wdwF(:,2);
-
-hdl = ieNewGraphWin();
-hdl.Position = [0.0070    0.5819    0.3891    0.3381];
-
-tiledlayout(1,2);
-nexttile;
-plot(obs{ii}.wave,obs{ii}.logVlambda);
-xlabel('Wavelength (nm)')
-ylabel('Log V_\lambda')
-grid on;
-
-nexttile;
-plot(obs{ii}.wave,obs{ii}.CMF);
-xlabel('Wavelength (nm)')
-ylabel('Relative (primaries 650 and 480)');
-grid on;
-
 %% OBS G
 
 %
@@ -389,6 +368,42 @@ wdwG = [ ...
 0.65	0.93	1	0
 ];
 %}
+
+% Store away data in more easily referenced format for other 
+% analyses.
+observers = {'F'};
+for oo = 1:length(observers)
+    switch (observers{oo})
+        case 'F'
+            ii = 6;
+            obs{ii}.wave = wdwF(:,1)*1e3;
+            obs{ii}.CMF = wdwF(:,6:7);
+            obs{ii}.logVlambda = wdwF(:,2);
+            obs{ii}.Vlambda = wdwF(:,5);
+            obs{ii}.rg = wdwF(:,3:4);
+            obs{ii}.VrOverVg = 1.18;
+        otherwise
+            error('Need to ender switch entry for specified observer');
+    end
+end
+
+hdl = ieNewGraphWin();
+hdl.Position = [0.0070    0.5819    0.3891    0.3381];
+
+tiledlayout(1,2);
+nexttile;
+plot(obs{ii}.wave,obs{ii}.logVlambda);
+xlabel('Wavelength (nm)')
+ylabel('Log V_\lambda')
+grid on;
+
+nexttile;
+plot(obs{ii}.wave,obs{ii}.CMF);
+xlabel('Wavelength (nm)')
+ylabel('Relative (primaries 650 and 480)');
+grid on;
+
+
 
 %% Overlay the individuals
 ieNewGraphWin;
@@ -431,8 +446,9 @@ wdwAve = [
 obsAverage.wave = wdwAve(:,1)*1e3;
 obsAverage.CMF = wdwAve(:,6:7);
 obsAverage.logVlambda = wdwAve(:,2);
-obsAverage.Vlambda = wdwAve(:,3);
-obsAverage.rg = wdwAve(:,4:5);
+obsAverage.Vlambda = wdwAve(:,5);
+obsAverage.rg = wdwAve(:,3:4);
+obsAverage.VrOverVg = 1.02;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
