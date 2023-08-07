@@ -25,9 +25,11 @@ L = XYZ\cmf;
 estCMF = XYZ*L;
 
 ieNewGraphWin;
-plot(obs{1}.wave,estCMF,'r--');
-hold on;
 plot(obs{1}.wave,cmf,'k-');
+hold on;
+plot(obs{1}.wave,estCMF,'r--');
 xlabel('Wavelength (nm)');
 ylabel('Primary intensity');
+title('Observer Average Tritan Fit By CIE')
+legend({'Tritan CMFs', 'Fit With XYZ'});
 grid on;

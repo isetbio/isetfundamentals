@@ -533,8 +533,38 @@ wdwAve = [...
     0.6500    0.9590    1.0000         0
     ];
 
+% DHB: I think the last two columns are the CMFs
+wdwAveCMFs = [ ...
+    0.335  0.624
+    0.355  1.183
+    0.261  1.822
+    0.088  2.447
+   -0.075  2.835
+   -0.189  3.931
+   -0.243  6.942
+    0.000  9.506
+    0.572 11.990
+    2.005 20.22
+    5.435 34.84
+   11.64  54.13
+   18.48  64.88
+   25.61  68.58
+   32.14  66.94
+   38.38  60.70
+   42.64  53.30
+   47.36  41.77
+   50.61  29.74
+   50.53  19.13
+   46.43  10.73
+   36.88   4.619
+   24.12   1.464
+   14.90   0.311
+    9.098  0.000
+                 ];
+
 obsAverage.wave = wdwAve(:,1)*1e3;
-obsAverage.CMF = wdwAve(:,3:4);
+%obsAverage.CMF = wdwAve(:,3:4);
+obsAverage.CMF = wdwAveCMFs(:,1:2);
 obsAverage.logVlambda = wdwAve(:,2);
 
 hdl = ieNewGraphWin();
