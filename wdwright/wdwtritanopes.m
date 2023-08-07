@@ -40,7 +40,6 @@ obs = cell(6,1);
 % There is also an obsAverage at the end from Table II
 
 %% OBS A
-
 wdwA = [
     0.4100    0.3090    0.2960    0.7040    2.0370    0.4090    1.6280
     0.4200    0.6180    0.1800    0.8200    4.1500    0.4830    3.9890
@@ -91,7 +90,6 @@ ylabel('Relative (primaries 650 and 480)');
 grid on; xaxisLine;
 
 %% OBS B
-
 wdwB = [
     0.4100    0.1310    0.3330    0.6670    1.3520    0.4870    0.8640
     0.4200    0.2490    0.2000    0.8000    1.7740    0.3910    1.3830
@@ -142,7 +140,6 @@ ylabel('Relative (primaries 650 and 480)');
 grid on; xaxisLine;
 
 %% OBS C
-
 %
 % Something wrong with Vlambda in this one.
 % The error is in the Optical Society table.
@@ -251,11 +248,9 @@ grid on; xaxisLine;
 
 
 %% OBS E
-
 %
 % Another 9 here that may not belong
 % This must be checked in the paper.
-
 wdwE = [ ...
    0.4100   -0.1280    0.2200    0.7800    0.7450    0.1660    0.5790
     0.4200    0.0960    0.1600    0.8400    1.2470    0.2030    1.0440
@@ -310,7 +305,6 @@ grid on;
 %
 % Another 9 here that may not belong
 % This must be checked in the paper.
-
 wdwF = [ ...
     0.4100   -0.4350    0.3000    0.7000    0.3670    0.1230    0.2440
     0.4200   -0.1440    0.1700    0.8300    0.7180    0.1400    0.5790
@@ -396,8 +390,6 @@ wdwG = [ ...
 ];
 %}
 
-
-
 %% Overlay the individuals
 ieNewGraphWin;
 for ii=1:numel(obs)
@@ -409,7 +401,6 @@ ylabel('Log V_\lambda')
 grid on;
 
 %% Average
-
 wdwAve = [
     0.4100   -0.0180    0.2960    0.7040    0.9590    0.3350    0.6240
     0.4200    0.1870    0.1900    0.8100    1.5380    0.3550    1.1830
@@ -440,6 +431,8 @@ wdwAve = [
 obsAverage.wave = wdwAve(:,1)*1e3;
 obsAverage.CMF = wdwAve(:,6:7);
 obsAverage.logVlambda = wdwAve(:,2);
+obsAverage.Vlambda = wdwAve(:,3);
+obsAverage.rg = wdwAve(:,4:5);
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
@@ -460,7 +453,6 @@ grid on;
 %%  I keep this as false until I want to overwrite the data file.
 %
 % This way, executing the script will not over-write the file.
-
 saveFlag = false;
 if saveFlag
     fname = fullfile(iefundamentalsRootPath,'wdwright','wdwTritanopes.mat');

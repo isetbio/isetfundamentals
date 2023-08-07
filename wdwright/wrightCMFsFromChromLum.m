@@ -1,4 +1,6 @@
-% Fit Wright tritan CMFs with XYZ, Stockman-Sharpe
+% Wright's CMFs come from measurements of photopic luminance
+% and match chromaticities.  In addition, the relative contributions
+% of R and G primaries to luminance are given
 
 %% Initializing
 ieInit;
@@ -9,7 +11,7 @@ theWrightData = load(fname,'obs','obsAverage');
 
 % Get Stockman-Sharpe and XYZ at the requisite wavelengths
 wave = theWrightData.obsAverage.wave;
-stockman = ieReadSpectra('stockmanEnergy',wave);
+luminance = theWrightData
 XYZ = ieReadSpectra('XYZEnergy',wave);
 
 %% Fit the average
