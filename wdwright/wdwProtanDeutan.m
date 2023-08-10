@@ -13,6 +13,8 @@
 %
 % The scan is not flat enough to use grabit well.  I need to redo.
 %
+% I also need to get in the V lambda for these.
+%
 
 %%  Data are stored here
 chdir(fullfile(iefundamentalsRootPath,'wdwright'));
@@ -27,10 +29,12 @@ load('DeutanBlue.mat','DeutanBlue');
 
 ProtanBlue(end,end) = -0.0031;  % Bad point in the file
 
+%{
 idx = (ProtanRed(:,1) > 599);
 ProtanRed(idx,2) = 1;
 idx = (DeutanRed(:,1) > 599);
 DeutanRed(idx,2) = 1;
+%}
 
 %% Fix a few imperfections
 pRed  = interp1(ProtanRed(:,1),ProtanRed(:,2),wave,'pchip','extrap');
