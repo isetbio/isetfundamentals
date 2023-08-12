@@ -20,7 +20,61 @@
 chdir(fullfile(iefundamentalsRootPath,'wdwright'));
 wave = 400:700;
 
+%% Matches Figure 200
+load('ProtanCMFBluex5.mat');
+protanBlue = interp1(ProtanCMFBluex5(:,1),ProtanCMFBluex5(:,2),wave,'pchip','extrap');
+load('ProtanCMFRed.mat');
+protanRed = interp1(ProtanCMFRed(:,1),ProtanCMFRed(:,2),wave,'pchip','extrap');
+ieNewGraphWin;
+plot(wave,protanBlue,'b-',wave,protanRed,'r-');
+grid on;
+title("Matches Figure 200")
+
+protan = [protanRed(:), protanBlue(:)];
+
+
+%% Matches Figure 208
+load('DeutanCMFBluex5.mat');
+deutanBlue = interp1(DeutanCMFBluex5(:,1),DeutanCMFBluex5(:,2),wave,'pchip','extrap');
+load('DeutanCMFRed.mat');
+deutanRed = interp1(DeutanCMFRed(:,1),DeutanCMFRed(:,2),wave,'pchip','extrap');
+ieNewGraphWin;
+plot(wave,deutanBlue,'b-',wave,deutanRed,'r-');
+grid on;
+title("Matches Figure 208")
+
+deutan = [deutanRed(:), deutanBlue(:)];
+
+%% Now compare with Stockman
+
+stockman = ieReadSpectra('stockmanEnergy',wave);
+
+%% deutan = stockman*L
+ieNewGraphWin([],'wide');
+tiledlayout(1,2);
+
+% protan = stockman*L
+Lprotan = stockman\protan;
+estProtan = stockman*Lprotan;
+nexttile;
+plot(wave,estProtan,'k-',wave,protan,'k.')
+title('Stockman to Protan (Fig 200)');
+xlabel('Wavelength (nm)');
+ylabel('CMF'); grid on;
+
+nexttile;
+Ldeutan = stockman\deutan;
+estDeutan = stockman*Ldeutan;
+plot(wave,estDeutan,'k-',wave,deutan,'k.')
+title('Stockman to Deutan (Fig 208)');
+xlabel('Wavelength (nm)');
+ylabel('CMF'); grid on;
+
 %% Protan
+
+% These are 'spectral coefficients'.  Let's ignore.
+%
+%{
 load('ProtanRed.mat','ProtanRed');
 load('ProtanBlue.mat','ProtanBlue');
 
