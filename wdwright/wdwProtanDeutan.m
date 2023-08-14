@@ -18,6 +18,9 @@
 
 %%  Data are stored here
 chdir(fullfile(iefundamentalsRootPath,'wdwright'));
+
+% We save at this resolution.  We do not have enough tritan data for all
+% this, but that's OK.
 wave = 400:700;
 
 %% Matches Figure 200
@@ -25,6 +28,7 @@ load('ProtanCMFBluex5.mat');
 protanBlue = interp1(ProtanCMFBluex5(:,1),ProtanCMFBluex5(:,2),wave,'pchip','extrap');
 load('ProtanCMFRed.mat');
 protanRed = interp1(ProtanCMFRed(:,1),ProtanCMFRed(:,2),wave,'pchip','extrap');
+
 ieNewGraphWin;
 plot(wave,protanBlue,'b-',wave,protanRed,'r-');
 grid on;
@@ -70,81 +74,27 @@ title('Stockman to Deutan (Fig 208)');
 xlabel('Wavelength (nm)');
 ylabel('CMF'); grid on;
 
-%% Protan
+%% Does not normally run.
 
-% These are 'spectral coefficients'.  Let's ignore.
-%
-%{
-load('ProtanRed.mat','ProtanRed');
-load('ProtanBlue.mat','ProtanBlue');
+% The blue curve in the book seems off. 
+deutanC = deutan;
+deutanC(:,2) = protan(:,2);
 
-load('DeutanRed.mat','DeutanRed');
-load('DeutanBlue.mat','DeutanBlue');
+saveFlag = false;
+if saveFlag
+    ieSaveSpectralFile(wave,deutan,'WDW data from book figures 198-208','wdwDeuteranopes.mat');
+    ieSaveSpectralFile(wave,deutanC,'WDW data corrected for blue','wdwDeuteranopesC.mat');
+    ieSaveSpectralFile(wave,protan,'WDW data from book figures 198-208','wdwProtanopes.mat');    
+end
 
-ProtanBlue(end,end) = -0.0031;  % Bad point in the file
+%% Check that we got
+if saveFlag
+    DC = ieReadSpectra('wdwDeuteranopesC.mat',wave);
+    D = ieReadSpectra('wdwDeuteranopes.mat',wave);
+    P = ieReadSpectra('wdwProtanopes.mat',wave);
 
-%{
-idx = (ProtanRed(:,1) > 599);
-ProtanRed(idx,2) = 1;
-idx = (DeutanRed(:,1) > 599);
-DeutanRed(idx,2) = 1;
-%}
-
-%% Fix a few imperfections
-pRed  = interp1(ProtanRed(:,1),ProtanRed(:,2),wave,'pchip','extrap');
-pBlue = interp1(ProtanBlue(:,1),ProtanBlue(:,2),wave,'pchip','extrap');
-
-dRed  = interp1(DeutanRed(:,1),DeutanRed(:,2),wave,'pchip','extrap');
-dBlue = interp1(DeutanBlue(:,1),DeutanBlue(:,2),wave,'pchip','extrap');
-
-pBlue(1:10) = dBlue(1:10);
-pBlue(end-20:end) = dBlue(end-20:end);
+    ieNewGraphWin;
+    plot(wave,DC,'--',wave,D,':',wave,P,'-.');
+end
 
 %%
-ieNewGraphWin;
-plot(wave,pRed,'r-',wave,pBlue,'b-');
-xaxisLine; grid on;
-title('Protan spectral coefficients (Fig 207)');
-
-%% Deutan
-
-
-
-ieNewGraphWin;
-plot(wave,dRed,'ro',wave,dBlue,'bo');
-xaxisLine; grid on;
-title('Deutan spectral coefficients (Fig 207)');
-
-%% Now plot the whole thing, as in the book
-
-ieNewGraphWin;
-plot(wave,pRed,'r.',wave,pBlue,'r.');
-hold on;
-plot(wave,dRed,'g.',wave,dBlue,'g.');
-xaxisLine; grid on; xaxisLine(gca,1);
-
-title('Protan and Deutan spectral coefficients (Fig 207)');
-xlabel('Wavelength (nm)');
-ylabel('Spectral coefficient');
-grid on;
-legend({'Protan R','Protan B','Deutan R','Deutan B'},'Location','best');
-
-%% Individual curves
-
-ieNewGraphWin([],'wide');
-tiledlayout(1,2);
-nexttile;
-plot(wave,pRed,'r.',wave,dRed,'g.');
-legend({'Protan','Deutan'},'Location','northwest');
-xlabel('Wavelength (nm)');
-ylabel('Spectral coefficient');
-grid on;
-
-nexttile;
-plot(wave,pBlue,'r.',wave,dBlue,'g.');
-legend({'Protan','Deutan'});
-xlabel('Wavelength (nm)');
-ylabel('Spectral coefficient');
-grid on;
-
-%}
