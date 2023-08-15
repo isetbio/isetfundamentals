@@ -31,8 +31,6 @@ plot(wave,stockman);
 grid on;
 xlabel('Wavelength (nm)');
 
-
-
 %% Plot the curves together
 
 % Everything is now within a linear transform
