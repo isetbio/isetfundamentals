@@ -49,10 +49,11 @@ tiledlayout(3,1);
 
 % L cone
 [U,S,V] = svd([deutanC,tritan],'econ');
-x = V(4,:)';
+x = V(:,4)
 nexttile;
-Lest = ieScale(tritan*x(1:2),1);
+Lest = ieScale(deutanC*x(1:2),1);
 plot(wave,Lest,'r-',wave,stockman(:,1),'r:','LineWidth',2);
+
 grid on;
 xlabel('Wavelength (nm)');
 title('Tritan and DeutanC')
@@ -60,10 +61,12 @@ legend('Estimate','Stockman');
 
 % M cone
 [U,S,V] = svd([protan,tritan],'econ');
-x = V(4,:)';
+x = V(:,4)
 nexttile;
 Mest = ieScale(protan*x(1:2),1);
 plot(wave, Mest,'g-',wave,stockman(:,2),'g:','LineWidth',2);
+Mest = ieScale(tritan*x(3:4),1);
+%plot(wave, Mest,'g-',wave,stockman(:,2),'g:','LineWidth',2);
 grid on;
 xlabel('Wavelength (nm)');
 title('Tritan and Protan')
@@ -71,8 +74,8 @@ legend('Estimate','Stockman');
 
 % S cone
 [U,S,V] = svd([deutanC,protan],'econ');
-x = V(4,:)';
-Sest = ieScale(deutanC*x(1:2),1);
+x = V(:,4)
+Sest = ieScale(-deutanC*x(1:2),1);
 nexttile;
 plot(wave,Sest,'b-',wave,stockman(:,3),'b:','LineWidth',2);
 grid on;
