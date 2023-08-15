@@ -125,5 +125,36 @@ for i=1:3
         legend(['Estimate ' labels_est{i}],'location','best');
     end
 end
+%{
+% L cone
+[U,S,V] = svd([null(deutanC') ,null(tritan')]','econ');
+% x = V(4,:)';
+nexttile;
+% Lest = ieScale(tritan*x(1:2),1);
+Lest = ieScale(abs(V(:,end)))
+plot(wave,Lest,'r-',wave,stockman(:,1),'r:','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');
+title('Tritan and DeutanC')
+legend('Estimate','Stockman');
+
+% M cone
+[U,S,V] = svd([null(protan'),null(tritan')]','econ');
+% x = V(4,:)';
+nexttile;
+% Mest = ieScale(protan*x(1:2),1);
+Mest = ieScale(abs(V(:,end)))
+plot(wave, Mest,'g-',wave,stockman(:,2),'g:','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');
+title('Tritan and Protan')
+legend('Estimate','Stockman');
+
+% S cone
+[U,S,V] = svd([null(deutanC'),null(protan')]','econ');
+%x = V(4,:)';
+%Sest = ieScale(deutanC*x(1:2),1);
+Sest = ieScale(abs(V(:,end)))
+%}
 
 
