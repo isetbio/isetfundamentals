@@ -7,12 +7,12 @@
 %
 
 
-%%
+%% Read in the WDW data
 wave = 400:5:650;
 
-deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
+deutan  = ieReadSpectra('wdwDeuteranopes.mat',wave);
 deutanC = ieReadSpectra('wdwDeuteranopesC.mat',wave);
-protan = ieReadSpectra('wdwProtanopes.mat',wave);
+protan  = ieReadSpectra('wdwProtanopes.mat',wave);
 
 load('wdwTritanopes','obsAverage');
 tritan = interp1(obsAverage.wave,obsAverage.CMF,wave,'pchip','extrap');
@@ -24,6 +24,15 @@ deutanC = ieScale(deutanC,1);
 
 % thisDeutan = deutan;
 thisDeutan = deutanC;
+
+%% Read in the Wyszecki and Stiles data
+
+protan  = ieReadSpectra('wsProtan.mat',wave);
+deutan  = ieReadSpectra('wsDeutan.mat',wave);
+tritan  = ieReadSpectra('wsTritan.mat',wave);
+thisDeutan = deutan;
+
+%%s
 
 stockman = ieReadSpectra('stockmanEnergy',wave);
 
