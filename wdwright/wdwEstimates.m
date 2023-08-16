@@ -6,10 +6,12 @@
 %   wdwEstimates_thomas - for another solution method
 %
 
+%%
+wave = 400:5:650;
+stockman = ieReadSpectra('stockmanEnergy',wave);
 
 %% Read in the WDW data
-wave = 400:5:650;
-
+% {
 deutan  = ieReadSpectra('wdwDeuteranopes.mat',wave);
 deutanC = ieReadSpectra('wdwDeuteranopesC.mat',wave);
 protan  = ieReadSpectra('wdwProtanopes.mat',wave);
@@ -24,17 +26,22 @@ deutanC = ieScale(deutanC,1);
 
 % thisDeutan = deutan;
 thisDeutan = deutanC;
+%}
+%% Wyszecki and Stiles data
 
-%% Read in the Wyszecki and Stiles data
+% Needs checking and work.
+%{
 
 protan  = ieReadSpectra('wsProtan.mat',wave);
 deutan  = ieReadSpectra('wsDeutan.mat',wave);
 tritan  = ieReadSpectra('wsTritan.mat',wave);
+deutanC  = deutan;
+deutanC(:,1) = protan(:,1);
+
 thisDeutan = deutan;
 
-%%s
+%}
 
-stockman = ieReadSpectra('stockmanEnergy',wave);
 
 %%
 LdeutanC = stockman\deutanC;
@@ -76,9 +83,11 @@ x = V(:,4);
 s = diag(S); fprintf('L cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Lest = ieScale(abs(thisDeutan*x(1:2)),1);
-plot(wave,Lest,'r:',wave,stockman(:,1),'r-','LineWidth',2);
+Lave = Lest/2;
+plot(wave,Lest,'r:',wave,stockman(:,1),'kx','LineWidth',2);
 Lest = ieScale(abs(tritan*x(3:4)),1);
-hold on; plot(wave,Lest,'r--','LineWidth',2);
+Lave = Lave + Lest/2;
+hold on; plot(wave,Lest,'r--','LineWidth',2); % wave,Lave,'kx',
 grid on;
 xlabel('Wavelength (nm)');
 title('Tritan and DeutanC')
@@ -90,9 +99,11 @@ x = V(:,4);
 s = diag(S); fprintf('M cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Mest = ieScale(abs(protan*x(1:2)),1);
-plot(wave, Mest,'g:',wave,stockman(:,2),'g-','LineWidth',2);
+plot(wave, Mest,'g:',wave,stockman(:,2),'kx','LineWidth',2);
+Mave = Mest/2;
 Mest = ieScale(abs(tritan*x(3:4)),1);
-hold on; plot(wave, Mest,'g--','LineWidth',2);
+Mave = Mave + Mest/2;
+hold on; plot(wave, Mest,'g--','LineWidth',2); % wave,Mave,'kx',
 grid on;
 xlabel('Wavelength (nm)');
 title('Tritan and Protan')
@@ -104,10 +115,14 @@ x = V(:,4);
 s = diag(S); fprintf('S cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Sest = ieScale(abs(thisDeutan*x(1:2)),1);
-plot(wave,Sest,'b:',wave,stockman(:,3),'b-','LineWidth',2);
+Save = Sest/2;
+plot(wave,Sest,'b:',wave,stockman(:,3),'kx','LineWidth',2);
 Sest = ieScale(abs(protan*x(3:4)),1);
-hold on; plot(wave,Sest,'b--','LineWidth',2);
+Save = Save + Sest/2;
+hold on; plot(wave,Sest,'b--','LineWidth',2); % wave,Save,'kx',
 grid on;
 xlabel('Wavelength (nm)');
 title('DeutanC and Protan')
 legend('Estimate1','Stockman','Estimate2');
+
+%%
