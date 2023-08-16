@@ -1,8 +1,10 @@
 %% Estimate fundamentals from WDW data
 clear;
 wave = 400:5:650;
-
-deutan = ieReadSpectra('wdwDeuteranopesC.mat',wave);
+ 
+deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
+%%
+% *BOLD TEXT* 
 %deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
 protan = ieReadSpectra('wdwProtanopes.mat',wave);
 load('wdwTritanopes','obsAverage');
@@ -47,20 +49,29 @@ legend('deutan','','protan','','tritan','');
 Lest = {}
 labels_est = {'1','2','nullnull'} %legend label for each estimate 
 
+% Add noise
+noise =0
+tritanN = tritan+noise*rand(size(tritan))
+deutanN = deutan+noise*rand(size(tritan))
+
 ieNewGraphWin([],'upperleftbig');
 tiledlayout(3,3);
 % Normalize: Make the sign of the largest element positive.
 normalize = @(A) A*sign(A(find(max(abs(A))==abs(A),1,'first')))
 % L cone - compare three estimators
 %%% Method 1: null[CM1 CM2] - gives two estimates
-[U,S,V] = svd([deutan,tritan],'econ');
+[U,S,V]=svds([deutanN,tritanN],1);
+matrix=U*S*V';
+matrix =[deutanN tritanN]
+[U,S,V] = svd(matrix,'econ');
 x = V(:,4);
-Lest{1} = ieScale(normalize(deutan*x(1:2)),1);
-Lest{2} = ieScale(normalize(tritan*x(3:4)),1);
+Lest{1} = ieScale(normalize(matrix(:,1:2)*x(1:2)),1);
+Lest{2} = ieScale(normalize(matrix(:,3:4)*x(3:4)),1);
 %%% Method 2: null([null(CM1') null(CM2')]') - gives one estimates
-[U,S,V] = svd([null(deutan') , null(tritan')]','econ');
+[U,S,V] = svd([null(deutanN') , null(tritanN')]','econ');
 Lest{3} = ieScale(normalize(V(:,end)));
 
+Lest{3}
 for i=1:3
     nexttile; hold on
     plot(wave,Lest{i},'r',wave,stockman(:,1),'k','LineWidth',2);
