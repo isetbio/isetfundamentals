@@ -2,8 +2,8 @@
 % and match chromaticities.  In addition, the relative contributions
 % of R and G primaries to luminance are given
 %
-% Some comments from the Wright article to remember: 
-% 
+% Some comments from the Wright article to remember:
+%
 % "no color receptor is required at the short-wave end of the spectrum
 % to explain tritanopic color vision, apart from a renewed activity of
 % the red receptors below 0.43μ which, as will be seen below, is
@@ -19,229 +19,229 @@ fname = fullfile(iefundamentalsRootPath,'wdwright','wdwTritanopes.mat');
 theWrightData = load(fname,'obs','obsAverage');
 
 % Extract fields
-observer = 'avg';
-switch (observer)
-    case 'avg'
-        wave = theWrightData.obsAverage.wave;
-        RG = theWrightData.obsAverage.CMF;
-        rg = theWrightData.obsAverage.rg;
-        Vlambda = theWrightData.obsAverage.Vlambda;
+%
+% 'Avg' must be last in this list so that the indexing of observers comes
+% out right.
+observers = {'ObsA' 'ObsB' 'ObsC' 'ObsD' 'ObsE' 'ObsF' 'Avg'};
+for oo = 1:length(observers)
+    observer = observers{oo};
+    fprintf('\n*** Observer %s*** \n',observer);
+    switch (observer)
+        case 'Avg'
+            wave = theWrightData.obsAverage.wave;
+            RGCMF = theWrightData.obsAverage.CMF;
+            rgWDW = theWrightData.obsAverage.rg;
+            Vlambda = theWrightData.obsAverage.Vlambda;
 
-        % Adjusted for the correct value from the table.  I should fix
-        % the mat file.
-        % VrOverVg = theWrightData.obsAverage.VrOverVg;
-        VrOverVg = 1.278;   
-    case 'F'
-        ii = 6;
-        wave = theWrightData.obs{ii}.wave;
-        RG = theWrightData.obs{ii}.CMF;
-        rg = theWrightData.obs{ii}.rg;
-        Vlambda = theWrightData.obs{ii}.Vlambda;
-        VrOverVg = theWrightData.obs{ii}.VrOverVg;   % Observer specific
-    otherwise
-        error('Need to add case for requested observer');
+            % Adjusted for the correct value from the table.  I should fix
+            % the mat file.
+            % VrOverVg = theWrightData.obsAverage.VrOverVg;
+            VrOverVg = 1.278;
+        case {'ObsA' 'ObsB' 'ObsC' 'ObsD' 'ObsE' 'ObsF'}
+            ii = oo;
+            wave = theWrightData.obs{ii}.wave;
+            RGCMF = theWrightData.obs{ii}.CMF;
+            rgWDW = theWrightData.obs{ii}.rg;
+            Vlambda = theWrightData.obs{ii}.Vlambda;
+            VrOverVg = theWrightData.obs{ii}.VrOverVg;   % Observer specific
+        otherwise
+            error('Need to add case for requested observer');
+    end
+
+    %% Wright primary wavelengths
+    %
+    % These are the primaries for the tritanope matches
+    wlRPrimary = 650;
+    wlGPrimary = 480;
+
+    %% WDW normalization
+    %
+    % For the WDW normalization, the chromaticities would be scaled to be
+    % equal at the normalizing wavelength of 582.5. This pretty much appears
+    % to be true in the tables.
+    %
+    % Stockman and Sharpe (1998) write:
+    %     "WDW coordinates are a form of chromaticity coordinates devised by W.
+    %     D. Wright. They are calculated by first normalizing r(l) and g(l) to
+    %     be equal at 582.5 nm, and then normalizing g(l) and b(l) to be equal
+    %     at 494.0 nm. This double normalization produces chromaticity data
+    %     that are independent of variations in prereceptoral filtering. For
+    %     tritanope data, only the first normalization applies."
+    %
+    % This also makes it sound like the normalization would be applied to the
+    % chromaticities and not to the CMFs. Applying to chromaticities is
+    % less ambigous, since for the tritanopes at least you scale either
+    % r or b to 0.5 at 582.5 and then set the other via (e.g.) r = 1 - b.
+    % And the tabulated CMFs are not equal at 582.5 nm.
+    %
+    % This all makes sense, except to decide Wright didn't
+    % actually mean it when he wrote in the text:
+    %    "The radiations 0.65μ and 0.48μ were chosen as the matching stimuli
+    %    and their units were adjusted to be equal in the match on a
+    %    monochromatic yellow at wavelength 0.5825μ."
+    wlWDWNormalize = 582.5;
+
+    % This calculation shows the tabulated CMFs do not have R == G at the
+    % normalizing wavelength.
+    %
+    % Indeed, we think these CMFs are with respect to the primaries in photometric
+    % equality, so that VR + VG = Vlambda.  In general we can't have both
+    % this be true and have the R and G CMFs normalized to be equal at
+    % a particular wavelength.
+    interpMethod = 'linear';
+    RCMFAtNormWl = interp1(wave,RGCMF(:,1),wlWDWNormalize,interpMethod);
+    GCMFAtNormWl = interp1(wave,RGCMF(:,2),wlWDWNormalize,interpMethod);
+    fprintf('Tabulated R and G at %0.2f nm; R = %0.3f; G = %0.3f\n',wlWDWNormalize,RCMFAtNormWl,GCMFAtNormWl);
+    RToGAtNormWlNominal = RCMFAtNormWl/GCMFAtNormWl;
+
+    % We think the Vr/Vg value provided by Wright is the ratio of primary radiance
+    % with which each contributes to luminance.  These could be used to scale
+    % the tabulated CMFs to what they would have been with radiometrically
+    % equated primaries, but we are not doing that.
+    wlRIndex = find(wave == wlRPrimary);
+    wlGIndex = find(wave == wlGPrimary);
+    VrOverVgCheck = RGCMF(wlRIndex,1)/RGCMF(wlGIndex,2);
+    fprintf('\nVr/Vg = %0.3f, checked as %0.3f\n',VrOverVg,VrOverVgCheck);
+
+    %% Vlambda
+    %
+    % Check that Vlambda is as we think from what's given in the paper,
+    % in the sense that it is obtained as Vlambda = R + G.
+    %
+    % This agrees with Wright's tabulated values to about 0.05% for
+    % the average observer.
+    derivedVlambda = RGCMF(:,1) + RGCMF(:,2);
+    fprintf('Max abs percent devation of tabluated vLambda from tabulated R + G: %0.3f%%\n',100*max(abs(Vlambda(:)-derivedVlambda(:))./Vlambda(:)));
+
+    %% Chromaticity normalizations
+    %
+    % Check that r + g == 1
+    %
+    % True to high precision
+    rgCheck = rgWDW(:,1) + rgWDW(:,2);
+    fprintf('\nMax abs deviation of tabulated r+g from 1: %0.2g\n',max(abs(rgCheck-1)));
+
+    % From Wright's paper, we learn that the r and g CMFs should be WDW
+    % normalized to have the same value at the normalizing wavelength of 582.5.
+    %
+    % We check this.  Seems to be good to about 1%.
+    rWDWAtNormWl = interp1(wave,rgWDW(:,1),wlWDWNormalize,interpMethod);
+    gWDWAtNormWl = interp1(wave,rgWDW(:,2),wlWDWNormalize,interpMethod);
+    fprintf('\nTabulated r and g at %0.2f nm: r = %0.3f; g = %0.3f\n',wlWDWNormalize,rWDWAtNormWl,gWDWAtNormWl);
+    fprintf('Difference in r from expected value of 0.5 in percent: %0.2f%%\n',100*abs((rWDWAtNormWl-0.5)/0.5));
+    fprintf('Difference in g from expected value of 0.5 in percent: %0.2f%%\n',100*abs((gWDWAtNormWl-0.5)/0.5));
+
+    % Consistency of CMFs and chromaticity/luminance
+    %
+    % Derive chromaticities from tabulated CMFs and apply WDW scaling.
+    % This is in the ballpark of the tabulated r and g values, but
+    % not identical. The differences mean that we can't exactly
+    % derive the CMFs from the chromatiticies and luminances.
+    %
+    % We don't know which quantities were primary and which were derived
+    % in Wright's tables.
+    rRawFromCMF = RGCMF(:,1)./(RGCMF(:,1) + RGCMF(:,2));
+    gRawFromCMF = RGCMF(:,2)./(RGCMF(:,1) + RGCMF(:,2));
+    rWDWFromCMF = rRawFromCMF*0.5/interp1(wave,rRawFromCMF,wlWDWNormalize,interpMethod);
+    gWDWFromCMF = 1-rWDWFromCMF;
+
+    % Derive R and G from Vlambda and chromaticities.
+    % These have the right shape, but are not scaled
+    % to each other the way Wright scaled them.
+    %
+    % This is because we started with WDW normalized
+    % chromaticities.
+    derivedRCMF_Raw = rgWDW(:,1).*Vlambda;
+    derivedGCMF_Raw = rgWDW(:,2).*Vlambda;
+
+    % Scale the two back to be as close to the tabulated values
+    % as possible
+    derivedRCMF = derivedRCMF_Raw*(derivedRCMF_Raw\RGCMF(:,1));
+    derivedGCMF = derivedGCMF_Raw*(derivedGCMF_Raw\RGCMF(:,2));
+
+    % Plot to check that it works as set up.
+    figure;
+    set(gcf,'Position',[500 500 1600 1200]);
+    subplot(2,3,1); hold on
+    plot(wave,Vlambda,'r-','LineWidth',5);
+    plot(wave,derivedVlambda,'b-','LineWidth',3);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
+    ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
+    title([observer ' Derived and Tabulated Luminance'],'FontName','Helvetica','FontSize',18);
+    legend({'Tabulated', 'Derived as R + G'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    grid on;
+
+    subplot(2,3,4); hold on
+    maxVal = max([Vlambda(:) ; derivedVlambda(:)]);
+    plot(Vlambda,derivedVlambda,'ro','MarkerFaceColor','r','MarkerSize',12);
+    plot(Vlambda,derivedRCMF + derivedGCMF,'bo','MarkerFaceColor','b','MarkerSize',8);
+    plot([0 maxVal],[0 maxVal],'k-','LineWidth',1);
+    xlim([0 maxVal]); ylim([0 maxVal]);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Tabulated vLambda','FontName','Helvetica','FontSize',18);
+    ylabel('Derived vLambda','FontName','Helvetica','FontSize',18);
+    title([observer ' Derived vs Tabulated Luminance'],'FontName','Helvetica','FontSize',18);
+    axis('square');
+    legend({'Tabulated R + G','Scaled Derived R + G'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    grid on;
+
+    subplot(2,3,2); hold on;
+    plot(wave,RGCMF(:,1),'r-','LineWidth',5);
+    plot(wave,derivedRCMF,'b-','LineWidth',3);
+    plot(wave,RGCMF(:,2),'r-','LineWidth',5);
+    plot(wave,derivedGCMF,'b-','LineWidth',3);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
+    ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
+    title([observer ' Derived and Tabulated CMFs'],'FontName','Helvetica','FontSize',18);
+    legend({'Tabulated CMFs', 'Scaled Derived CMFs'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    grid on;
+
+    subplot(2,3,5); hold on
+    maxVal = max([RGCMF(:,1); RGCMF(:,2); derivedRCMF(:) ; derivedGCMF(:)]);
+    plot(RGCMF(:,1),derivedRCMF,'ro','MarkerFaceColor','r','MarkerSize',12);
+    plot([0 maxVal],[0 maxVal],'k-','LineWidth',1);
+    xlim([0 maxVal]); ylim([0 maxVal]);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Tabulated CMF','FontName','Helvetica','FontSize',18);
+    ylabel('Scaled Derived CMF','FontName','Helvetica','FontSize',18);
+    axis('square');
+    title([observer ' Derived vs Tabulated CMFs']);
+    grid on;
+
+    subplot(2,3,3); hold on;
+    plot(wave,rgWDW(:,1),'r-','LineWidth',5);
+    plot(wave,derivedRCMF_Raw./(derivedRCMF_Raw + derivedGCMF_Raw),'b-','LineWidth',3);
+    plot(wave,rWDWFromCMF,'g-','LineWidth',1);
+    plot(wave,rgWDW(:,2),'r-','LineWidth',5);
+    plot(wave,derivedGCMF_Raw./(derivedRCMF_Raw + derivedGCMF_Raw),'b-','LineWidth',3);
+    plot(wave,gWDWFromCMF,'g-','LineWidth',1);
+    plot([wlWDWNormalize wlWDWNormalize],[0 1]);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
+    ylabel([observer '  rg Chromaticity'],'FontName','Helvetica','FontSize',18);
+    ylim([-0.3 1.3]);
+    title([observer ' WDW rg'],'FontName','Helvetica','FontSize',18);
+    legend({'Tabulated', 'From Derived CMF', 'From Tabulated CMFs'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    grid on;
+
+    subplot(2,3,6); hold on
+    minVal = -0.3;
+    maxVal = 1.3;
+    plot(rgWDW(:,1),rWDWFromCMF,'ro','MarkerFaceColor','r','MarkerSize',12);
+    plot(rgWDW(:,1),derivedRCMF_Raw./(derivedRCMF_Raw + derivedGCMF_Raw),'go','MarkerFaceColor','g','MarkerSize',6);
+    plot([minVal maxVal],[minVal maxVal],'k-','LineWidth',1);
+    xlim([minVal maxVal]); ylim([minVal maxVal]);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Tabulated Chromaticity','FontName','Helvetica','FontSize',18);
+    ylabel('Table Derived Chromaticity','FontName','Helvetica','FontSize',18);
+    axis('square');
+    title([observer ' Derived vs Tabulated Chromaciticities']);
+    legend({'Tabulated CMFs', 'Unscaled Derived CMF',},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+
+    grid on;
+
+    % Save figure
+    saveas(gcf,['Wright_' observer '_Check'],'tiff')
 end
-
-%{
-% These values are not quite right.  So we really don't understand 
-% the rg to RG relationship.  Wright describes the rg values this way
-%
-% "the dichromatic coefficients rλ and gλ which give the proportions
-% of the matching stimuli required to match the colors through the
-% spectrum (these coefficients correspond to the chromaticity
-% coordinates of the spectral colors in normal trichromatic vision)"
-
-%
-idx580 = find(wave == 580);
-idx480 = find(wave == 480);
-idx650 = find(wave == 650);
-
-% But they do not match.
-correct = eye(2,2); % diag([RG(idx650,1),RG(idx480,2)]);
-sumRG = sum(RG*correct,2);
-derivedrg = [RG(:,1)./sumRG, RG(:,2)./sumRG] * correct;
-plot(derivedrg(:),rg(:),'.');
-identityLine; grid on;
-
-% Also, notice that the chromaticity curve is a waste of time
-ieNewGraphWin;
-plot(rg(:,1),1-rg(:,2),'o');
-identityLine; grid on;
-
-% Here is a weird thing.  Wright says 
-% 
-% "The radiations 0.65μ and 0.48μ
-% were chosen as the matching stimuli and their units were adjusted to
-% be equal in the match on a monochromatic yellow at wavelength
-% 0.5825μ." 
-% 
-% But the intensities of the R and G primaries at 580 nm for the mean
-% subject are not equal.  For the mean they are 47.36 anmd 41.77,
-% which is 1.1338 ratio.  This is not precisely the Vr/Vg ratio,
-% either, which is 1.278.  There is a similar deviation in almost all
-% of the tables.
-%}
-%{
-RG(idx580,1)./RG(idx580,2)
-VrOverVg
-
-% This curve matches Figure 10 pretty well.  Notice the slightly
-% negative values.
-ieNewGraphWin;
-plot(wave,Vlambda,'k-',wave,RG(:,1),'k--',wave,RG(:,2),'k:');
-grid on;
-legend({'V_{\lambda}','V_R','V_G'});
-%}
-%{
-%
-% Perhaps there is a difference between 580 and 582?
-%
-%}
-%% Wright wavelength assumptions
-
-wlR = 650;  % These are the primaries for the tritanope matches
-wlG = 480;
-
-% The primaries were treated as intensity equal at this wavelength. We
-% fear this was done inconsistently.  Not sure yet.
-normWlNominal = 582.5;   
-
-% This is a check on values provided by Wright.
-wlRIndex = find(wave == wlR);
-wlGIndex = find(wave == wlG);
-VrOverVgCheck = RG(wlRIndex,1)/RG(wlGIndex,2);
-fprintf('\nVr/Vg = %0.3f, checked as %0.3f\n',VrOverVg,VrOverVgCheck);
-
-% The current understanding of Wright's parameters
-%
-% Vr is the luminance of the red primary, and Vg of the green.
-%
-% Their chromaticities are 
-%
-%   r = Vr/(Vr + Vg)
-%   g = Vg/(Vr + Vg)
-%
-% We also believe that Wright uses additivity
-%
-%   Vlambda = Vr + Vg
-%
-% We think that Wright related the chromaticities to the intensities
-% in the CMFs this way.  But this may not be all.
-%
-%   R = r * Vlambda
-%   G = g * Vlambda
-%
-
-% Check that Vlambda is as we think from what's given in the paper.
-% This agrees with Wright's tabulated values.
-derivedVlambda = RG(:,1) + RG(:,2);
-
-% Derive Vr and Vg from Vlambda and chromaticities.
-% These have the right shape, but are not scaled
-% to each other the way Wright scaled them.  So they
-% are in different units than he used.
-derivedRRaw = rg(:,1).*Vlambda;
-derivedGRaw = rg(:,2).*Vlambda;
-
-% Check that r + g == 1
-rgCheck = rg(:,1) + rg(:,2);
-fprintf('\nMax abs deviation of r+g from 1: %0.2g\n',max(abs(rgCheck-1)));
-
-%%
-% From Wright's paper, we learn that the R and G CMFs should be scaled
-% to have the same value at the normalizing wavelength of 582.5, and also
-% sum to luminance.  We can choose scaling that satisfies these properties
-% exactly at one wavelength.  The code below sets up the 2 by 2 system of
-% linear equations to do this, and this works as desired.
-interpMethod = 'cubic';
-dervivedRRawNormWlNominal = interp1(wave,derivedRRaw,normWlNominal,interpMethod);
-dervivedGRawNormWlNominal = interp1(wave,derivedGRaw,normWlNominal,interpMethod);
-rhs = [dervivedRRawNormWlNominal + dervivedGRawNormWlNominal ; 0];
-M = [dervivedRRawNormWlNominal dervivedGRawNormWlNominal ; dervivedRRawNormWlNominal -dervivedGRawNormWlNominal];
-factors = M\rhs;
-derivedRNominal = factors(1)*derivedRRaw;
-derivedGNominal = factors(2)*derivedGRaw;
-derivedVlambdaCheckNominal = derivedRNominal + derivedGNominal;
-
-% Check that derivedR == derivedG at specified normWl,
-% and compare with Wright's tabulated rg and RG
-% values. 
-% 
-% This reveals that our method does produce the desired
-% normalization, and that Wright's tables do not have
-% this property at the wavelength he gives.
-rNormWlNominal = interp1(wave,rg(:,1),normWlNominal,interpMethod);
-gNormWlNominal = interp1(wave,rg(:,2),normWlNominal,interpMethod);
-RNormWlNominal = interp1(wave,RG(:,1),normWlNominal,interpMethod);
-GNormWlNominal = interp1(wave,RG(:,2),normWlNominal,interpMethod);
-derivedRNormWlNominal = interp1(wave,derivedRNominal,normWlNominal,interpMethod);
-derivedGNormWlNominal = interp1(wave,derivedGNominal,normWlNominal,interpMethod);
-fprintf('\nTabulated r at %0.1f: %0.3f; g at %0.1f: %0.3f\n',normWlNominal,rNormWlNominal,normWlNominal,gNormWlNominal);
-fprintf('Tabulated R at %0.1f: %0.3f; G at %0.1f: %0.3f\n',normWlNominal,RNormWlNominal,normWlNominal,GNormWlNominal);
-fprintf('Derived R at %0.1f: %0.3f; G at %0.1f: %0.3f\n',normWlNominal,derivedRNormWlNominal,normWlNominal,derivedGNormWlNominal);
-
-% Give that Wright's tables don't yield equal rg values at the
-% specified normalizing wavelength, we can instead find the
-% wavelength where this holds.  
-normWlCandidates = linspace(580,590,1000);
-rInterp = interp1(wave,rg(:,1),normWlCandidates);
-gInterp = interp1(wave,rg(:,2),normWlCandidates);
-[~,index] = min(abs(rInterp-gInterp));
-normWl = normWlCandidates(index);
-
-% Then repeat derivation 
-dervivedRRawNormWl = interp1(wave,derivedRRaw,normWl,interpMethod);
-dervivedGRawNormWl = interp1(wave,derivedGRaw,normWl,interpMethod);
-rhs = [dervivedRRawNormWl + dervivedGRawNormWl ; 0];
-M = [dervivedRRawNormWl dervivedGRawNormWl ; dervivedRRawNormWl -dervivedGRawNormWl];
-factors = M\rhs;
-derivedR = factors(1)*derivedRRaw;
-derivedG = factors(2)*derivedGRaw;
-derivedVlambdaCheck = derivedR + derivedG;
-
-rNormWl = interp1(wave,rg(:,1),normWl,interpMethod);
-gNormWl = interp1(wave,rg(:,2),normWl,interpMethod);
-RNormWl = interp1(wave,RG(:,1),normWl,interpMethod);
-GNormWl = interp1(wave,RG(:,2),normWl,interpMethod);
-derivedRNormWl = interp1(wave,derivedR,normWl,interpMethod);
-derivedGNormWl = interp1(wave,derivedG,normWl,interpMethod);
-fprintf('\nTabulated r at %0.1f: %0.3f; g at %0.1f: %0.3f\n',normWl,rNormWl,normWl,gNormWl);
-fprintf('Tabulated R at %0.1f: %0.3f; G at %0.1f: %0.3f\n',normWl,RNormWl,normWl,GNormWl);
-fprintf('Derived R at %0.1f: %0.3f; G at %0.1f: %0.3f\n',normWl,derivedRNormWl,normWl,derivedGNormWl);
-
-% Plot to check that it works as set up.
-ieNewGraphWin; 
-subplot(1,3,1); hold on
-plot(wave,Vlambda,'r-','LineWidth',5);
-plot(wave,derivedVlambda,'b-','LineWidth',3);
-plot(wave,derivedVlambdaCheck,'y:','LineWidth',2);
-set(gca,'FontName','Helvetica','FontSize',16);
-xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
-ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
-title('Derived and Tabulated Wright Lums','FontName','Helvetica','FontSize',18);
-legend({'Tabulated CMFs', 'Derived Lum 1', 'Derived Lum 2'},'FontName','Helvetica','FontSize',14);
-grid on;
-
-subplot(1,3,2); hold on;
-plot(wave,RG(:,1),'r-','LineWidth',5);
-plot(wave,derivedR,'b-','LineWidth',3);
-plot(wave,RG(:,2),'r-','LineWidth',5);
-plot(wave,derivedG,'b-','LineWidth',3);
-set(gca,'FontName','Helvetica','FontSize',16);
-xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
-ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
-title('Derived and Tabulated Wright CMFs','FontName','Helvetica','FontSize',18);
-legend({'Tabulated CMFs', 'Derived CMFs'},'FontName','Helvetica','FontSize',14);
-grid on;
-
-subplot(1,3,3); hold on;
-plot(wave,rg(:,1),'r-','LineWidth',5);
-plot(wave,derivedR./(derivedR + derivedG),'b-','LineWidth',3);
-plot(wave,rg(:,2),'r-','LineWidth',5);
-plot(wave,derivedG./(derivedR + derivedG),'b-','LineWidth',3);
-set(gca,'FontName','Helvetica','FontSize',16);
-xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
-ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
-title('Derived and Tabulated Wright rg','FontName','Helvetica','FontSize',18);
-legend({'Tabulated rg', 'Derived rg'},'FontName','Helvetica','FontSize',14);
-grid on;
