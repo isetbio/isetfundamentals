@@ -451,7 +451,7 @@ obsAverage.CMF = wdwAve(:,6:7);
 obsAverage.logVlambda = wdwAve(:,2);
 obsAverage.Vlambda = wdwAve(:,5);
 obsAverage.rg = wdwAve(:,3:4);
-obsAverage.VrOverVg = 1.02;
+obsAverage.VrOverVg = 1.278;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];

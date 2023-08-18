@@ -1,13 +1,28 @@
-% Wright's CMFs come from measurements of photopic luminance
-% and match chromaticities.  In addition, the relative contributions
-% of R and G primaries to luminance are given
+% Wright 1952 data audit
 %
+% We think Wright's 1952 data are tabulated Vlambda, r and g WDW chromaticities,
+% and R and G CMFs in luminance units.  This belief is in part based on
+% checks performed here.
+%
+% One thing we observe, unless our understanding of the data is way off,
+% is that the degree to which the tabulated CMF data is consistent with
+% the r, g, and Vlambda data varies across observers.  In some cases, it
+% is essentially perfect, while in others it is quite a bit off.
+% Wright's CMFs come from measurements of photopic luminance
+% and match chromaticities.
+%
+% Observer C shows particularly bad agreement.  This observer has the 
+% highest Vr/Vg ratio.
+%
+% Text in the article says that the CMFs were derived from the
+% chromaticities and luminance.
+
 % Some comments from the Wright article to remember:
 %
-% "no color receptor is required at the short-wave end of the spectrum
-% to explain tritanopic color vision, apart from a renewed activity of
-% the red receptors below 0.43μ which, as will be seen below, is
-% indicated by the color matching data."
+%    "... no color receptor is required at the short-wave end of the spectrum
+%     to explain tritanopic color vision, apart from a renewed activity of
+%     the red receptors below 0.43μ which, as will be seen below, is
+%     indicated by the color matching data."
 
 %% Initializing
 ieInit;
@@ -100,8 +115,7 @@ for oo = 1:length(observers)
     % equated primaries, but we are not doing that.
     wlRIndex = find(wave == wlRPrimary);
     wlGIndex = find(wave == wlGPrimary);
-    VrOverVgCheck = RGCMF(wlRIndex,1)/RGCMF(wlGIndex,2);
-    fprintf('\nVr/Vg = %0.3f, checked as %0.3f\n',VrOverVg,VrOverVgCheck);
+    fprintf('\nVr/Vg = %0.3f\n',VrOverVg);
 
     %% Vlambda
     %
@@ -170,6 +184,7 @@ for oo = 1:length(observers)
     ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
     title([observer ' Derived and Tabulated Luminance'],'FontName','Helvetica','FontSize',18);
     legend({'Tabulated', 'Derived as R + G'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    text(550,5,sprintf('Vr/Vg = %0.2f',VrOverVg),'FontName','Helvetica','FontSize',14);
     grid on;
 
     subplot(2,3,4); hold on
