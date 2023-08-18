@@ -371,9 +371,49 @@ wdwG = [ ...
 
 % Store away data in more easily referenced format for other 
 % analyses.
-observers = {'F'};
+observers = {'A' 'B' 'C' 'D' 'E' 'F'};
 for oo = 1:length(observers)
     switch (observers{oo})
+        case 'A'
+            ii = 1;
+            obs{ii}.wave = wdwF(:,1)*1e3;
+            obs{ii}.CMF = wdwF(:,6:7);
+            obs{ii}.logVlambda = wdwF(:,2);
+            obs{ii}.Vlambda = wdwF(:,5);
+            obs{ii}.rg = wdwF(:,3:4);
+            obs{ii}.VrOverVg = 0.598;
+        case 'B'
+            ii = 2;
+            obs{ii}.wave = wdwF(:,1)*1e3;
+            obs{ii}.CMF = wdwF(:,6:7);
+            obs{ii}.logVlambda = wdwF(:,2);
+            obs{ii}.Vlambda = wdwF(:,5);
+            obs{ii}.rg = wdwF(:,3:4);
+            obs{ii}.VrOverVg = 1.13;
+        case 'C'
+            ii = 3;
+            obs{ii}.wave = wdwF(:,1)*1e3;
+            obs{ii}.CMF = wdwF(:,6:7);
+            obs{ii}.logVlambda = wdwF(:,2);
+            obs{ii}.Vlambda = wdwF(:,5);
+            obs{ii}.rg = wdwF(:,3:4);
+            obs{ii}.VrOverVg = 3.10;
+        case 'D'
+            ii = 4;
+            obs{ii}.wave = wdwF(:,1)*1e3;
+            obs{ii}.CMF = wdwF(:,6:7);
+            obs{ii}.logVlambda = wdwF(:,2);
+            obs{ii}.Vlambda = wdwF(:,5);
+            obs{ii}.rg = wdwF(:,3:4);
+            obs{ii}.VrOverVg = 0.8810;
+        case 'E'
+            ii = 5;
+            obs{ii}.wave = wdwF(:,1)*1e3;
+            obs{ii}.CMF = wdwF(:,6:7);
+            obs{ii}.logVlambda = wdwF(:,2);
+            obs{ii}.Vlambda = wdwF(:,5);
+            obs{ii}.rg = wdwF(:,3:4);
+            obs{ii}.VrOverVg = 1.02;
         case 'F'
             ii = 6;
             obs{ii}.wave = wdwF(:,1)*1e3;
