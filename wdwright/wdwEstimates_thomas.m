@@ -51,7 +51,9 @@ tiledlayout(3,3);
 normalize = @(A) A*sign(A(find(max(abs(A))==abs(A),1,'first')))
 % L cone - compare three estimators
 %%% Method 1: null[CM1 CM2] - gives two estimates
-[U,S,V] = svd([deutan,tritan],'econ');
+estimator1=estimatorIntersect(deuter,tritan)
+estimator2=estimatorLowrank()
+estimator3=estimatorIntersect()
 x = V(:,4);
 Lest{1} = ieScale(normalize(deutan*x(1:2)),1);
 Lest{2} = ieScale(normalize(tritan*x(3:4)),1);
