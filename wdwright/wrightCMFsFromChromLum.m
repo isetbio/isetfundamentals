@@ -340,7 +340,7 @@ for oo = 1:length(observers)
     grid on;
 
     % Save figure
-    saveas(gcf,['Wright_' observer '_Check'],'tiff')
+    saveas(gcf,fullfile(iefundamentalsRootPath,'wdwright',['Wright_Tritan_' observer '_Check']),'tiff');
 end
 
 function [R,G] = WDWChromVlambdaToCMFFun(W1,wls,rWDW,Vlambda)
