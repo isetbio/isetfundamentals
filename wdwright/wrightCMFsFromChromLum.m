@@ -10,7 +10,16 @@
 % chromaticities and luminance.
 %
 % Key is that you need to know the normalization constant to derive the
-% CMFs from the WDW chromaticities and Vlambda.
+% CMFs from the WDW chromaticities and Vlambda.  Wright provides these in
+% his table, but it is less clear that Pitt was so kind.
+%
+% It makes sense that you need to know W1.  It is a degree of freedom used
+% to make the WDW chromaticities insensitive to pre-retinal filtering, and
+% if you don't know it you have lost important informaiton. Knowing Vlambda
+% for an equal energy spectrum is not sufficient to bring it back.
+%
+% You might be able to bring it back if you knew the matches to some
+% mixtures, which may be how Pitt's data were converted to CMFs.
 %
 % Some comments from the Wright article to remember:
 %
