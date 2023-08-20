@@ -11,7 +11,7 @@
 % Wright's CMFs come from measurements of photopic luminance
 % and match chromaticities.
 %
-% Observer C shows particularly bad agreement.  This observer has the 
+% Observer C shows particularly bad agreement.  This observer has the
 % highest Vr/Vg ratio.
 %
 % Text in the article says that the CMFs were derived from the
@@ -34,31 +34,28 @@ fname = fullfile(iefundamentalsRootPath,'wdwright','wdwTritanopes.mat');
 theWrightData = load(fname,'obs','obsAverage');
 
 % Extract fields
-%
-% 'Avg' must be last in this list so that the indexing of observers comes
-% out right.
 observers = {'ObsA' 'ObsB' 'ObsC' 'ObsD' 'ObsE' 'ObsF' 'Avg'};
+observerIndices = [ 1 2 3 4 5 6 NaN];
+%observers = {'ObsC' 'ObsD'};
+%observerIndices = [3 4];
 for oo = 1:length(observers)
     observer = observers{oo};
     fprintf('\n*** Observer %s*** \n',observer);
     switch (observer)
         case 'Avg'
             wave = theWrightData.obsAverage.wave;
-            RGCMF = theWrightData.obsAverage.CMF;
-            rgWDW = theWrightData.obsAverage.rg;
-            Vlambda = theWrightData.obsAverage.Vlambda;
+            RG_Tabulated = theWrightData.obsAverage.CMF;
+            rgWDW_Tabulated = theWrightData.obsAverage.rg;
+            Vlambda_Tabulated = theWrightData.obsAverage.Vlambda;
+            VrOverVg_Tabulated(oo) = theWrightData.obsAverage.VrOverVg;
 
-            % Adjusted for the correct value from the table.  I should fix
-            % the mat file.
-            % VrOverVg = theWrightData.obsAverage.VrOverVg;
-            VrOverVg = 1.278;
         case {'ObsA' 'ObsB' 'ObsC' 'ObsD' 'ObsE' 'ObsF'}
-            ii = oo;
+            ii = observerIndices(oo);
             wave = theWrightData.obs{ii}.wave;
-            RGCMF = theWrightData.obs{ii}.CMF;
-            rgWDW = theWrightData.obs{ii}.rg;
-            Vlambda = theWrightData.obs{ii}.Vlambda;
-            VrOverVg = theWrightData.obs{ii}.VrOverVg;   % Observer specific
+            RG_Tabulated = theWrightData.obs{ii}.CMF;
+            rgWDW_Tabulated = theWrightData.obs{ii}.rg;
+            Vlambda_Tabulated = theWrightData.obs{ii}.Vlambda;
+            VrOverVg_Tabulated(oo) = theWrightData.obs{ii}.VrOverVg;   % Observer specific
         otherwise
             error('Need to add case for requested observer');
     end
@@ -66,8 +63,10 @@ for oo = 1:length(observers)
     %% Wright primary wavelengths
     %
     % These are the primaries for the tritanope matches
-    wlRPrimary = 650;
-    wlGPrimary = 480;
+    RPrimaryWl = 650;
+    GPrimaryWl = 480;
+    RPrimaryWlIndex = find(wave == RPrimaryWl);
+    GPrimaryWlIndex = find(wave == GPrimaryWl);
 
     %% WDW normalization
     %
@@ -94,7 +93,7 @@ for oo = 1:length(observers)
     %    "The radiations 0.65μ and 0.48μ were chosen as the matching stimuli
     %    and their units were adjusted to be equal in the match on a
     %    monochromatic yellow at wavelength 0.5825μ."
-    wlWDWNormalize = 582.5;
+    wdwNormWl = 582.5;
 
     % This calculation shows the tabulated CMFs do not have R == G at the
     % normalizing wavelength.
@@ -104,18 +103,16 @@ for oo = 1:length(observers)
     % this be true and have the R and G CMFs normalized to be equal at
     % a particular wavelength.
     interpMethod = 'linear';
-    RCMFAtNormWl = interp1(wave,RGCMF(:,1),wlWDWNormalize,interpMethod);
-    GCMFAtNormWl = interp1(wave,RGCMF(:,2),wlWDWNormalize,interpMethod);
-    fprintf('Tabulated R and G at %0.2f nm; R = %0.3f; G = %0.3f\n',wlWDWNormalize,RCMFAtNormWl,GCMFAtNormWl);
-    RToGAtNormWlNominal = RCMFAtNormWl/GCMFAtNormWl;
+    RAtNormWl_Tabulated = interp1(wave,RG_Tabulated(:,1),wdwNormWl,interpMethod);
+    GAtNormWl_Tabulated = interp1(wave,RG_Tabulated(:,2),wdwNormWl,interpMethod);
+    fprintf('Tabulated R and G at %0.2f nm; R = %0.3f; G = %0.3f\n',wdwNormWl,RAtNormWl_Tabulated,GAtNormWl_Tabulated);
+    RToGAtNormWl_Tabulated(oo) = RAtNormWl_Tabulated/GAtNormWl_Tabulated;
 
     % We think the Vr/Vg value provided by Wright is the ratio of primary radiance
     % with which each contributes to luminance.  These could be used to scale
     % the tabulated CMFs to what they would have been with radiometrically
     % equated primaries, but we are not doing that.
-    wlRIndex = find(wave == wlRPrimary);
-    wlGIndex = find(wave == wlGPrimary);
-    fprintf('\nVr/Vg = %0.3f\n',VrOverVg);
+    fprintf('\nVr/Vg = %0.3f\n',VrOverVg_Tabulated);
 
     %% Vlambda
     %
@@ -124,139 +121,247 @@ for oo = 1:length(observers)
     %
     % This agrees with Wright's tabulated values to about 0.05% for
     % the average observer.
-    derivedVlambda = RGCMF(:,1) + RGCMF(:,2);
-    fprintf('Max abs percent devation of tabluated vLambda from tabulated R + G: %0.3f%%\n',100*max(abs(Vlambda(:)-derivedVlambda(:))./Vlambda(:)));
+    VlambdaFromRplusG_Tabulated = RG_Tabulated(:,1) + RG_Tabulated(:,2);
+    fprintf('Max abs percent devation of tabluated vLambda from tabulated R + G: %0.3f%%\n',100*max(abs(Vlambda_Tabulated(:)-VlambdaFromRplusG_Tabulated(:))./Vlambda_Tabulated(:)));
 
     %% Chromaticity normalizations
     %
     % Check that r + g == 1
     %
     % True to high precision
-    rgCheck = rgWDW(:,1) + rgWDW(:,2);
-    fprintf('\nMax abs deviation of tabulated r+g from 1: %0.2g\n',max(abs(rgCheck-1)));
+    rgWDWSumCheck_Tabulated = rgWDW_Tabulated(:,1) + rgWDW_Tabulated(:,2);
+    fprintf('\nMax abs deviation of tabulated r+g from 1: %0.2g\n',max(abs(rgWDWSumCheck_Tabulated-1)));
 
     % From Wright's paper, we learn that the r and g CMFs should be WDW
     % normalized to have the same value at the normalizing wavelength of 582.5.
     %
     % We check this.  Seems to be good to about 1%.
-    rWDWAtNormWl = interp1(wave,rgWDW(:,1),wlWDWNormalize,interpMethod);
-    gWDWAtNormWl = interp1(wave,rgWDW(:,2),wlWDWNormalize,interpMethod);
-    fprintf('\nTabulated r and g at %0.2f nm: r = %0.3f; g = %0.3f\n',wlWDWNormalize,rWDWAtNormWl,gWDWAtNormWl);
+    rWDWAtNormWl = interp1(wave,rgWDW_Tabulated(:,1),wdwNormWl,interpMethod);
+    gWDWAtNormWl = interp1(wave,rgWDW_Tabulated(:,2),wdwNormWl,interpMethod);
+    fprintf('\nTabulated r and g at %0.2f nm: r = %0.3f; g = %0.3f\n',wdwNormWl,rWDWAtNormWl,gWDWAtNormWl);
     fprintf('Difference in r from expected value of 0.5 in percent: %0.2f%%\n',100*abs((rWDWAtNormWl-0.5)/0.5));
     fprintf('Difference in g from expected value of 0.5 in percent: %0.2f%%\n',100*abs((gWDWAtNormWl-0.5)/0.5));
 
-    % Consistency of CMFs and chromaticity/luminance
+    % Derive chromaticities from tabulated CMFs after applying WDW scaling.
+    % These should be consistent with tabulated WDW chromaticities, and
+    % as the plot will show, they are.
     %
-    % Derive chromaticities from tabulated CMFs and apply WDW scaling.
-    % This is in the ballpark of the tabulated r and g values, but
-    % not identical. The differences mean that we can't exactly
-    % derive the CMFs from the chromatiticies and luminances.
-    %
-    % We don't know which quantities were primary and which were derived
-    % in Wright's tables.
-    rRawFromCMF = RGCMF(:,1)./(RGCMF(:,1) + RGCMF(:,2));
-    gRawFromCMF = RGCMF(:,2)./(RGCMF(:,1) + RGCMF(:,2));
-    rWDWFromCMF = rRawFromCMF*0.5/interp1(wave,rRawFromCMF,wlWDWNormalize,interpMethod);
-    gWDWFromCMF = 1-rWDWFromCMF;
+    % Scale the R CMF from the table to be equal to the G CMF from the
+    % table at the normalizing wavelength, and then compute chromaticities.
+    RWDW_Tabulated = RG_Tabulated(:,1)/RToGAtNormWl_Tabulated(oo);
+    GWDW_Tabulated = RG_Tabulated(:,2);
+    rWDW_FromTabulatedCMF  = RWDW_Tabulated./(RWDW_Tabulated + GWDW_Tabulated);
+    gWDW_FromTabulatedCMF  = GWDW_Tabulated./(RWDW_Tabulated + GWDW_Tabulated);
 
-    % Derive R and G from Vlambda and chromaticities.
-    % These have the right shape, but are not scaled
-    % to each other the way Wright scaled them.
-    %
-    % This is because we started with WDW normalized
-    % chromaticities.
-    derivedRCMF_Raw = rgWDW(:,1).*Vlambda;
-    derivedGCMF_Raw = rgWDW(:,2).*Vlambda;
+    % Find R and G from rWDW, gWDW, and Vlambda
+    standardMethod = true;
+    if standardMethod
+        R_Derived = rgWDW_Tabulated(:,1).*Vlambda_Tabulated;
+        G_Derived = rgWDW_Tabulated(:,2).*Vlambda_Tabulated;
+    else
+        % Use nonlinear parameter search to find W1 (normalizing constant) from
+        % r_WDW and Vlambda.  This also allows us to compute R and G CMF that
+        % sum to luminance and that are consistent with the tabulated r_WDW,
+        % g_WDW chromaticities.
+        %
+        % See comments in the minimization cost function at the end of this
+        % file for the logic of what is being minimized.
+        options = optimset('fmincon');
+        options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','MaxIter',500,'MaxFunEvals',1000000);
+        W1_1(oo)  = fmincon(@(x)WDWChromVlambdaToCMFFun(x,wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated),0.5,[],[],[],[],1e-2,1e2,[],options);
+        [f1,derivedRCMF1,derivedGCMF1] = WDWChromVlambdaToCMFFun(W1_1(oo),wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated);
+        W1_2(oo)  = fmincon(@(x)WDWChromVlambdaToCMFFun(x,wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated),2,[],[],[],[],1e-2,1e2,[],options);
+        [f2,derivedRCMF2,derivedGCMF2] = WDWChromVlambdaToCMFFun(W1_2(oo),wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated);
+        if (f1 < f2)
+            W1(oo) = W1_1(oo);
+            R_Derived = derivedRCMF1;
+            G_Derived = derivedGCMF1;
+        else
+            W1(oo) = W1_2(oo);
+            R_Derived = derivedRCMF2;
+            G_Derived = derivedGCMF2;
+        end
+    end
+    VlambdaFromRplusG_Derived = R_Derived + G_Derived;
+
+    % Generate WDW scaled CMFs for computation of check r_WDW and g_WDW.
+    RAtNormWl_Derived = interp1(wave,R_Derived,wdwNormWl,interpMethod);
+    GAtNormWl_Derived = interp1(wave,G_Derived,wdwNormWl,interpMethod);
+    fprintf('Derived R and G at %0.2f nm; R = %0.3f; G = %0.3f\n', ...
+        wdwNormWl,RAtNormWl_Derived,GAtNormWl_Derived);
+    RToGAtNormWl_Derived(oo) = RAtNormWl_Derived/GAtNormWl_Derived;
+    RWDW_Derived = R_Derived/RToGAtNormWl_Derived(oo);
+    GWDW_Derived = G_Derived;
+    rWDW_FromDerivedCMF  = RWDW_Derived./(RWDW_Derived + GWDW_Derived);
+    gWDW_FromDerivedCMF  = GWDW_Derived./(RWDW_Derived + GWDW_Derived);
 
     % Scale the two back to be as close to the tabulated values
     % as possible
-    derivedRCMF = derivedRCMF_Raw*(derivedRCMF_Raw\RGCMF(:,1));
-    derivedGCMF = derivedGCMF_Raw*(derivedGCMF_Raw\RGCMF(:,2));
+    R_DerivedScaledToTablulated = R_Derived*(R_Derived\RG_Tabulated(:,1));
+    G_DerivedScaledToTablulated = G_Derived*(G_Derived\RG_Tabulated(:,2));
 
-    % Plot to check that it works as set up.
+    % Plot to check that it all works
     figure;
     set(gcf,'Position',[500 500 1600 1200]);
-    subplot(2,3,1); hold on
-    plot(wave,Vlambda,'r-','LineWidth',5);
-    plot(wave,derivedVlambda,'b-','LineWidth',3);
+    subplot(2,4,1); hold on
+    plot(wave,Vlambda_Tabulated,'r-','LineWidth',6);
+    plot(wave,VlambdaFromRplusG_Tabulated,'b-','LineWidth',4);
+    plot(wave,VlambdaFromRplusG_Tabulated,'g-','LineWidth',2);
     set(gca,'FontName','Helvetica','FontSize',16);
     xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
     ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
-    title([observer ' Derived and Tabulated Luminance'],'FontName','Helvetica','FontSize',18);
-    legend({'Tabulated', 'Derived as R + G'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
-    text(550,5,sprintf('Vr/Vg = %0.2f',VrOverVg),'FontName','Helvetica','FontSize',14);
+    title([observer ' Derived and Tabulated Luminance'],'FontName','Helvetica','FontSize',14);
+    legend({'Tabulated', 'Tabulated R + G', 'Derived R + G'},'FontName','Helvetica','FontSize',10,'Location','NorthWest');
+    text(550,5,sprintf('Vr/Vg = %0.2f',VrOverVg_Tabulated),'FontName','Helvetica','FontSize',10);
     grid on;
 
-    subplot(2,3,4); hold on
-    maxVal = max([Vlambda(:) ; derivedVlambda(:)]);
-    plot(Vlambda,derivedVlambda,'ro','MarkerFaceColor','r','MarkerSize',12);
-    plot(Vlambda,derivedRCMF + derivedGCMF,'bo','MarkerFaceColor','b','MarkerSize',8);
+    subplot(2,4,5); hold on
+    maxVal = max([Vlambda_Tabulated(:) ; VlambdaFromRplusG_Tabulated(:)]);
+    plot(Vlambda_Tabulated,VlambdaFromRplusG_Tabulated,'ro','MarkerFaceColor','b','MarkerSize',12);
+    plot(Vlambda_Tabulated,VlambdaFromRplusG_Derived,'bo','MarkerFaceColor','g','MarkerSize',8);
     plot([0 maxVal],[0 maxVal],'k-','LineWidth',1);
     xlim([0 maxVal]); ylim([0 maxVal]);
     set(gca,'FontName','Helvetica','FontSize',16);
     xlabel('Tabulated vLambda','FontName','Helvetica','FontSize',18);
     ylabel('Derived vLambda','FontName','Helvetica','FontSize',18);
-    title([observer ' Derived vs Tabulated Luminance'],'FontName','Helvetica','FontSize',18);
+    title([observer ' Derived vs Tabulated Luminance'],'FontName','Helvetica','FontSize',14);
     axis('square');
-    legend({'Tabulated R + G','Scaled Derived R + G'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    legend({'Tabulated R + G','Derived R + G'},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
     grid on;
 
-    subplot(2,3,2); hold on;
-    plot(wave,RGCMF(:,1),'r-','LineWidth',5);
-    plot(wave,derivedRCMF,'b-','LineWidth',3);
-    plot(wave,RGCMF(:,2),'r-','LineWidth',5);
-    plot(wave,derivedGCMF,'b-','LineWidth',3);
+    subplot(2,4,2); hold on;
+    plot(wave,RG_Tabulated(:,1),'r-','LineWidth',6);
+    plot(wave,R_DerivedScaledToTablulated,'b-','LineWidth',4);
+    plot(wave,R_Derived,'g-','LineWidth',1);
+    plot(wave,RG_Tabulated(:,2),'r-','LineWidth',6);
+    plot(wave,G_DerivedScaledToTablulated,'b-','LineWidth',4);
+    plot(wave,G_Derived,'g-','LineWidth',1);
     set(gca,'FontName','Helvetica','FontSize',16);
     xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
-    ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
-    title([observer ' Derived and Tabulated CMFs'],'FontName','Helvetica','FontSize',18);
-    legend({'Tabulated CMFs', 'Scaled Derived CMFs'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    ylabel('CMF','FontName','Helvetica','FontSize',18);
+    title([observer ' Tabulated and Derived CMFs'],'FontName','Helvetica','FontSize',14);
+    legend({'Tabulated', 'Derived, Scaled', 'Derived'},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
     grid on;
 
-    subplot(2,3,5); hold on
-    maxVal = max([RGCMF(:,1); RGCMF(:,2); derivedRCMF(:) ; derivedGCMF(:)]);
-    plot(RGCMF(:,1),derivedRCMF,'ro','MarkerFaceColor','r','MarkerSize',12);
+    subplot(2,4,6); hold on
+    maxVal = max([RG_Tabulated(:,1); RG_Tabulated(:,2); R_Derived(:) ; G_Derived(:)]);
+    plot(RG_Tabulated(:,1),R_DerivedScaledToTablulated,'ro','MarkerFaceColor','r','MarkerSize',12);
+    plot(RG_Tabulated(:,2),G_DerivedScaledToTablulated,'ro','MarkerFaceColor','g','MarkerSize',12);
     plot([0 maxVal],[0 maxVal],'k-','LineWidth',1);
     xlim([0 maxVal]); ylim([0 maxVal]);
     set(gca,'FontName','Helvetica','FontSize',16);
     xlabel('Tabulated CMF','FontName','Helvetica','FontSize',18);
-    ylabel('Scaled Derived CMF','FontName','Helvetica','FontSize',18);
+    ylabel('Derived CMF','FontName','Helvetica','FontSize',18);
     axis('square');
-    title([observer ' Derived vs Tabulated CMFs']);
+    title([observer ' Derived vs Tabulated CMFs'],'FontName','Helvetica','FontSize',14);
     grid on;
 
-    subplot(2,3,3); hold on;
-    plot(wave,rgWDW(:,1),'r-','LineWidth',5);
-    plot(wave,derivedRCMF_Raw./(derivedRCMF_Raw + derivedGCMF_Raw),'b-','LineWidth',3);
-    plot(wave,rWDWFromCMF,'g-','LineWidth',1);
-    plot(wave,rgWDW(:,2),'r-','LineWidth',5);
-    plot(wave,derivedGCMF_Raw./(derivedRCMF_Raw + derivedGCMF_Raw),'b-','LineWidth',3);
-    plot(wave,gWDWFromCMF,'g-','LineWidth',1);
-    plot([wlWDWNormalize wlWDWNormalize],[0 1]);
+    subplot(2,4,3); hold on;
+    plot(wave,rgWDW_Tabulated(:,1),'r-','LineWidth',6);
+    plot(wave,rWDW_FromTabulatedCMF,'b-','LineWidth',4);
+    plot(wave,rWDW_FromDerivedCMF,'g-','LineWidth',2);
+    plot(wave,rgWDW_Tabulated(:,2),'r-','LineWidth',6);
+    plot(wave,gWDW_FromTabulatedCMF,'b-','LineWidth',4);
+    plot(wave,gWDW_FromDerivedCMF,'g-','LineWidth',2);
+    plot([wdwNormWl wdwNormWl],[0 1]);
     set(gca,'FontName','Helvetica','FontSize',16);
     xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
-    ylabel([observer '  rg Chromaticity'],'FontName','Helvetica','FontSize',18);
+    ylabel(['WDW rg'],'FontName','Helvetica','FontSize',18);
     ylim([-0.3 1.3]);
-    title([observer ' WDW rg'],'FontName','Helvetica','FontSize',18);
-    legend({'Tabulated', 'From Derived CMF', 'From Tabulated CMFs'},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    title([observer ' WDW rg'],'FontName','Helvetica','FontSize',14);
+    legend({'Tabulated', 'From Tabulated CMF', 'From Derived CMF'},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
     grid on;
 
-    subplot(2,3,6); hold on
+    subplot(2,4,7); hold on
     minVal = -0.3;
     maxVal = 1.3;
-    plot(rgWDW(:,1),rWDWFromCMF,'ro','MarkerFaceColor','r','MarkerSize',12);
-    plot(rgWDW(:,1),derivedRCMF_Raw./(derivedRCMF_Raw + derivedGCMF_Raw),'go','MarkerFaceColor','g','MarkerSize',6);
+    plot(rgWDW_Tabulated(:,1),rWDW_FromTabulatedCMF,'bo','MarkerFaceColor','b','MarkerSize',12);
+    plot(rgWDW_Tabulated(:,1),rWDW_FromDerivedCMF,'go','MarkerFaceColor','g','MarkerSize',8);
+    % plot(rgWDW_Tabulated(:,2),gWDW_FromTabulatedCMF,'bo','MarkerFaceColor','b','MarkerSize',12);
+    % plot(rgWDW_Tabulated(:,2),gWDW_FromDerivedCMF,'go','MarkerFaceColor','g','MarkerSize',8);
     plot([minVal maxVal],[minVal maxVal],'k-','LineWidth',1);
     xlim([minVal maxVal]); ylim([minVal maxVal]);
     set(gca,'FontName','Helvetica','FontSize',16);
-    xlabel('Tabulated Chromaticity','FontName','Helvetica','FontSize',18);
-    ylabel('Table Derived Chromaticity','FontName','Helvetica','FontSize',18);
+    xlabel('Tabulated WDW rg','FontName','Helvetica','FontSize',18);
+    ylabel('Derived WDW rg','FontName','Helvetica','FontSize',18);
     axis('square');
-    title([observer ' Derived vs Tabulated Chromaciticities']);
-    legend({'Tabulated CMFs', 'Unscaled Derived CMF',},'FontName','Helvetica','FontSize',14,'Location','NorthWest');
+    title([observer ' WDW rg'],'FontName','Helvetica','FontSize',14);
+    legend({'From Tabulated CMFs', 'From Derived CMF',},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
+    grid on;
 
+    subplot(2,4,4); hold on;
+    WDWCMDScalar(oo) = [RWDW_Derived ; GWDW_Derived]\[RWDW_Tabulated ; GWDW_Tabulated];
+    maxVal = max([RWDW_Tabulated ; RWDW_Derived ; GWDW_Tabulated ; GWDW_Derived ]);
+    plot(wave,RWDW_Tabulated,'r-','LineWidth',6);
+    plot(wave,WDWCMDScalar(oo)*RWDW_Derived,'b-','LineWidth',4);
+    plot(wave,RWDW_Derived,'g-','LineWidth',1);
+    plot(wave,GWDW_Tabulated,'r-','LineWidth',6);
+    plot(wave,WDWCMDScalar(oo)*GWDW_Derived,'b-','LineWidth',4);
+    plot(wave,GWDW_Derived,'g-','LineWidth',1);
+    plot([wdwNormWl wdwNormWl],[0 maxVal]);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
+    ylabel(['WDW RG'],'FontName','Helvetica','FontSize',18);
+    title([observer ' WDW RG'],'FontName','Helvetica','FontSize',14);
+    legend({'Tabulated', 'Derived, Scaled', 'Derived'},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
+    grid on;
+
+    subplot(2,4,8); hold on
+    minVal = -0.3;
+    maxVal = 1.3;
+    x = RWDW_Tabulated./(RWDW_Tabulated+GWDW_Tabulated);
+    y = RWDW_Derived./(RWDW_Derived+GWDW_Derived);
+    plot(x,y,'bo','MarkerFaceColor','b','MarkerSize',12);
+    plot([minVal maxVal],[minVal maxVal],'k-','LineWidth',1);
+    xlim([minVal maxVal]); ylim([minVal maxVal]);
+    set(gca,'FontName','Helvetica','FontSize',16);
+    xlabel('Tabulated WDW r','FontName','Helvetica','FontSize',18);
+    ylabel('Derived WDW r','FontName','Helvetica','FontSize',18);
+    axis('square');
+    title([observer ' WDW rg'],'FontName','Helvetica','FontSize',14);
+    %legend({'From Tabulated CMFs', 'From Derived CMF',},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
     grid on;
 
     % Save figure
     saveas(gcf,['Wright_' observer '_Check'],'tiff')
+end
+
+
+% Given W1, find R and G
+%
+% We want the r, g computed from R, G and W1 to
+% be close to the passed values, R + G = Vlambda,
+% and R == G at the normalizing wavelength.
+%
+% We know:
+%   R_WDW = (R/W1)
+%   G_WDW = G
+%   R + G = Vlamda
+%   r_WDW = R_WDW/(R_WDW + G_WDW) = (R/W1)/(R/W1 + G) = (R/W1)/(R/W1 + Vlambda - R)
+%
+% At each wavelength, solve for R given r_WDW, Vlamda, and W1.  Then
+% compute the fit value for r_WDW and compute error with respect to
+% the passed value.
+function [f,R,G] = WDWChromVlambdaToCMFFun(W1,wls,normWl,r_WDW,Vlambda)
+
+% Solve for R and G at each wavelengt, given W1, r_WDW and Vlambda
+options = optimoptions('fsolve','Display','none');
+for ww = 1:length(wls)
+    R(ww) = fsolve(@(Rdummy)(r_WDW(ww)-(Rdummy/W1)/((Rdummy/W1) + Vlambda(ww) - Rdummy)),Vlambda(ww)/2,options);
+end
+R = R';
+G = Vlambda - R;
+
+% WDW normalize CMF
+interpMethod = 'linear';
+RCMFAtNormWl = interp1(wls,R,normWl,interpMethod);
+GCMFAtNormWl = interp1(wls,G,normWl,interpMethod);
+RToGAtNormWl = RCMFAtNormWl/GCMFAtNormWl;
+R_WDW = R*RToGAtNormWl;
+G_WDW = G;
+
+% Error is how well we fit passed r_WDW
+pred_r_WDW = R_WDW./(R_WDW + G_WDW);
+predErr = pred_r_WDW-r_WDW;
+f = mean(predErr(:).^2);
 end
