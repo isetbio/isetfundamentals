@@ -197,8 +197,20 @@ for oo = 1:length(observers)
 
     % Scale the two back to be as close to the tabulated values
     % as possible
-    R_DerivedScaledToTablulated = R_Derived*(R_Derived\RG_Tabulated(:,1));
-    G_DerivedScaledToTablulated = G_Derived*(G_Derived\RG_Tabulated(:,2));
+    CMFScalarDerivedToTabulated(oo) = [R_Derived ; G_Derived]\[RG_Tabulated(:,1) ; RG_Tabulated(:,2)];
+    R_DerivedScaledToTabulated = R_Derived*CMFScalarDerivedToTabulated(oo);
+    G_DerivedScaledToTabulated = G_Derived*CMFScalarDerivedToTabulated(oo);
+
+    % In the end, we only care about the CMFs up to linear transformation
+    % Find best linear transform from derived to tabulated
+    M_DerivedToTabulated = [R_Derived G_Derived]\[RG_Tabulated(:,1) RG_Tabulated(:,2)];
+    RG_DerivedLinearToTabulated = [R_Derived G_Derived]*M_DerivedToTabulated;
+    R_DerivedLinearToTabulated = RG_DerivedLinearToTabulated(:,1);
+    G_DerivedLinearToTabulated = RG_DerivedLinearToTabulated(:,2);
+
+    % Scale factor to bring our WDW scaled derived CMFs into alignment with 
+    % our WDW scaled tabulated CMFs.
+    WDWCMFScalarDerivedToTabulated(oo) = [RWDW_Derived ; GWDW_Derived]\[RWDW_Tabulated ; GWDW_Tabulated];
 
     % Plot to check that it all works
     figure;
@@ -212,7 +224,7 @@ for oo = 1:length(observers)
     ylabel('Primary Intensity','FontName','Helvetica','FontSize',18);
     title([observer ' Derived and Tabulated Luminance'],'FontName','Helvetica','FontSize',14);
     legend({'Tabulated', 'Tabulated R + G', 'Derived R + G'},'FontName','Helvetica','FontSize',10,'Location','NorthWest');
-    text(550,5,sprintf('Vr/Vg = %0.2f',VrOverVg_Tabulated),'FontName','Helvetica','FontSize',10);
+    text(550,5,sprintf('Vr/Vg = %0.2f',VrOverVg_Tabulated(oo)),'FontName','Helvetica','FontSize',10);
     grid on;
 
     subplot(2,4,5); hold on
@@ -231,22 +243,24 @@ for oo = 1:length(observers)
 
     subplot(2,4,2); hold on;
     plot(wave,RG_Tabulated(:,1),'r-','LineWidth',6);
-    plot(wave,R_DerivedScaledToTablulated,'b-','LineWidth',4);
-    plot(wave,R_Derived,'g-','LineWidth',1);
+    plot(wave,R_DerivedScaledToTabulated,'b-','LineWidth',4);
+    plot(wave,R_DerivedLinearToTabulated,'g-','LineWidth',2);
     plot(wave,RG_Tabulated(:,2),'r-','LineWidth',6);
-    plot(wave,G_DerivedScaledToTablulated,'b-','LineWidth',4);
-    plot(wave,G_Derived,'g-','LineWidth',1);
+    plot(wave,G_DerivedScaledToTabulated,'b-','LineWidth',4);
+    plot(wave,G_DerivedLinearToTabulated,'g-','LineWidth',2);
     set(gca,'FontName','Helvetica','FontSize',16);
     xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',18);
     ylabel('CMF','FontName','Helvetica','FontSize',18);
     title([observer ' Tabulated and Derived CMFs'],'FontName','Helvetica','FontSize',14);
-    legend({'Tabulated', 'Derived, Scaled', 'Derived'},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
+    legend({'Tabulated', 'Derived, Scaled', 'Derived, LinTran'},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
     grid on;
 
     subplot(2,4,6); hold on
     maxVal = max([RG_Tabulated(:,1); RG_Tabulated(:,2); R_Derived(:) ; G_Derived(:)]);
-    plot(RG_Tabulated(:,1),R_DerivedScaledToTablulated,'ro','MarkerFaceColor','r','MarkerSize',12);
-    plot(RG_Tabulated(:,2),G_DerivedScaledToTablulated,'ro','MarkerFaceColor','g','MarkerSize',12);
+    plot(RG_Tabulated(:,1),R_DerivedScaledToTabulated,'bo','MarkerFaceColor','b','MarkerSize',12);
+    plot(RG_Tabulated(:,1),R_DerivedLinearToTabulated,'go','MarkerFaceColor','g','MarkerSize',8);
+    plot(RG_Tabulated(:,2),G_DerivedScaledToTabulated,'bo','MarkerFaceColor','b','MarkerSize',12);
+    plot(RG_Tabulated(:,2),G_DerivedLinearToTabulated,'go','MarkerFaceColor','g','MarkerSize',8);
     plot([0 maxVal],[0 maxVal],'k-','LineWidth',1);
     xlim([0 maxVal]); ylim([0 maxVal]);
     set(gca,'FontName','Helvetica','FontSize',16);
@@ -254,6 +268,7 @@ for oo = 1:length(observers)
     ylabel('Derived CMF','FontName','Helvetica','FontSize',18);
     axis('square');
     title([observer ' Derived vs Tabulated CMFs'],'FontName','Helvetica','FontSize',14);
+    legend({'Derived, Scaled', 'Derived, LinTran'},'FontName','Helvetica','FontSize',8,'Location','NorthWest');
     grid on;
 
     subplot(2,4,3); hold on;
@@ -290,13 +305,12 @@ for oo = 1:length(observers)
     grid on;
 
     subplot(2,4,4); hold on;
-    WDWCMDScalar(oo) = [RWDW_Derived ; GWDW_Derived]\[RWDW_Tabulated ; GWDW_Tabulated];
     maxVal = max([RWDW_Tabulated ; RWDW_Derived ; GWDW_Tabulated ; GWDW_Derived ]);
     plot(wave,RWDW_Tabulated,'r-','LineWidth',6);
-    plot(wave,WDWCMDScalar(oo)*RWDW_Derived,'b-','LineWidth',4);
+    plot(wave,WDWCMFScalarDerivedToTabulated(oo)*RWDW_Derived,'b-','LineWidth',4);
     plot(wave,RWDW_Derived,'g-','LineWidth',1);
     plot(wave,GWDW_Tabulated,'r-','LineWidth',6);
-    plot(wave,WDWCMDScalar(oo)*GWDW_Derived,'b-','LineWidth',4);
+    plot(wave,WDWCMFScalarDerivedToTabulated(oo)*GWDW_Derived,'b-','LineWidth',4);
     plot(wave,GWDW_Derived,'g-','LineWidth',1);
     plot([wdwNormWl wdwNormWl],[0 maxVal]);
     set(gca,'FontName','Helvetica','FontSize',16);
