@@ -1,21 +1,16 @@
-% Wright 1952 data audit
+% Wright 1952 data analysis
 %
 % We think Wright's 1952 data are tabulated Vlambda, r and g WDW chromaticities,
 % and R and G CMFs in luminance units.  This belief is in part based on
-% checks performed here.
+% checks performed here.  We also think VrOverVg in the tables is 
+% the WDW normalization constant W1 (where W1 is as defined by W & S's
+% treatment of the WDW normalization).
 %
 % Text in the article says that the CMFs were derived from the
 % chromaticities and luminance.
 %
-% We can replicate this pretty well except for Observer C.  For observer C,
-% our derived CMFs are close to a linear transform away from the tabulated
-% ones, but a simple scaling of our derived CMFs does not lead to a good
-% fit.  For the other observers, the fit is reasonable with a common
-% scaling of the derived CMFs to fit the tabulated CMFs, and not terrible
-% with no scaling at all.
-%
-% I think I am not understanding something simple about the uniqueness, or
-% not, of the derivation.
+% Key is that you need to know the normalization constant to derive the
+% CMFs from the WDW chromaticities and Vlambda.
 %
 % Some comments from the Wright article to remember:
 %
@@ -82,17 +77,15 @@ for oo = 1:length(observers)
     %     that are independent of variations in prereceptoral filtering. For
     %     tritanope data, only the first normalization applies."
     %
-    % This also makes it sound like the normalization would be applied to the
-    % chromaticities and not to the CMFs. Applying to chromaticities is
-    % less ambigous, since for the tritanopes at least you scale either
-    % r or b to 0.5 at 582.5 and then set the other via (e.g.) r = 1 - b.
-    % And the tabulated CMFs are not equal at 582.5 nm.
+    % We believe the normalization factors applied to the R CMF are the
+    % values 1/VrOverVg, where VrOverVg are tabulated by Wright.
     %
-    % This all makes sense, except to decide Wright didn't
+    % This all makes sense, except you need decide Wright didn't
     % actually mean it when he wrote in the text:
     %    "The radiations 0.65μ and 0.48μ were chosen as the matching stimuli
     %    and their units were adjusted to be equal in the match on a
     %    monochromatic yellow at wavelength 0.5825μ."
+    % If that were the case, R and G would not sum to Vlambda.
     wdwNormWl = 582.5;
 
     % This calculation shows the tabulated CMFs do not have R == G at the
@@ -148,7 +141,8 @@ for oo = 1:length(observers)
     %
     % Scale the R CMF from the table to be equal to the G CMF from the
     % table at the normalizing wavelength, and then compute chromaticities.
-    RWDW_Tabulated = RG_Tabulated(:,1)/RToGAtNormWl_Tabulated(oo);
+    %RWDW_Tabulated = RG_Tabulated(:,1)/RToGAtNormWl_Tabulated(oo);
+    RWDW_Tabulated = RG_Tabulated(:,1)/VrOverVg_Tabulated(oo);
     GWDW_Tabulated = RG_Tabulated(:,2);
     rWDW_FromTabulatedCMF  = RWDW_Tabulated./(RWDW_Tabulated + GWDW_Tabulated);
     gWDW_FromTabulatedCMF  = GWDW_Tabulated./(RWDW_Tabulated + GWDW_Tabulated);
@@ -158,33 +152,29 @@ for oo = 1:length(observers)
     % The search method was in intermediate step.  I will
     % delete once my understanding of all this is a little
     % better, or improve if that is what is needed.
-    standardMethod = true;
-    if standardMethod
-        R_Derived = rgWDW_Tabulated(:,1).*Vlambda_Tabulated;
-        G_Derived = rgWDW_Tabulated(:,2).*Vlambda_Tabulated;
+    knownWDWScaleFactor = true;
+    if knownWDWScaleFactor
+        % If we know that RWDW = R/W1, we can solve for R and G.
+        % We believe for Wright 1952, W1 = VrOverVg_Tabulated.
+        % So we call the routine that does the work and voila.
+        W1 = VrOverVg_Tabulated(oo);
+        [R_Derived,G_Derived] = WDWChromVlambdaToCMFFun(W1,wave,rgWDW_Tabulated(:,1),Vlambda_Tabulated);  
     else
-        % Use nonlinear parameter search to find W1 (normalizing constant) from
-        % r_WDW and Vlambda.  This also allows us to compute R and G CMF that
-        % sum to luminance and that are consistent with the tabulated r_WDW,
-        % g_WDW chromaticities.
-        %
-        % See comments in the minimization cost function at the end of this
-        % file for the logic of what is being minimized.
-        options = optimset('fmincon');
-        options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','MaxIter',500,'MaxFunEvals',1000000);
-        W1_1(oo)  = fmincon(@(x)WDWChromVlambdaToCMFFun(x,wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated),0.5,[],[],[],[],1e-2,1e2,[],options);
-        [f1,derivedRCMF1,derivedGCMF1] = WDWChromVlambdaToCMFFun(W1_1(oo),wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated);
-        W1_2(oo)  = fmincon(@(x)WDWChromVlambdaToCMFFun(x,wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated),2,[],[],[],[],1e-2,1e2,[],options);
-        [f2,derivedRCMF2,derivedGCMF2] = WDWChromVlambdaToCMFFun(W1_2(oo),wave,wdwNormWl,rgWDW_Tabulated(:,1),Vlambda_Tabulated);
-        if (f1 < f2)
-            W1(oo) = W1_1(oo);
-            R_Derived = derivedRCMF1;
-            G_Derived = derivedGCMF1;
-        else
-            W1(oo) = W1_2(oo);
-            R_Derived = derivedRCMF2;
-            G_Derived = derivedGCMF2;
-        end
+        % If we don't know the scale factor relating RWDW and R,
+        % we can't derive R and G uniquely. Different choices
+        % of the scale factor lead to different solutions consistent 
+        % with the tabulated rWDW and Vlambda. 
+        % 
+        % You can verify this ambiguity by setting W1 to different constants
+        % below, running the script, and observing that you get quite different
+        % CMFs for any given observer, while matching the WDW r and g and having
+        % R + G sum to Vlambda.
+        % 
+        % If we don't know the scale factor, we can't do much other than
+        % make one up and hope for the best.  Here we use 1.28, which is
+        % the value Wright 1952 provides for the average tritanope.
+        W1 = 1.28;
+        [R_Derived,G_Derived] = WDWChromVlambdaToCMFFun(W1,wave,rgWDW_Tabulated(:,1),Vlambda_Tabulated); 
     end
     VlambdaFromRplusG_Derived = R_Derived + G_Derived;
 
@@ -344,12 +334,8 @@ for oo = 1:length(observers)
     saveas(gcf,['Wright_' observer '_Check'],'tiff')
 end
 
-
-% Given W1, find R and G
-%
-% We want the r, g computed from R, G and W1 to
-% be close to the passed values, R + G = Vlambda,
-% and R == G at the normalizing wavelength.
+function [R,G] = WDWChromVlambdaToCMFFun(W1,wls,rWDW,Vlambda)
+% Given W1, find R and G from rWDW and Vlambda
 %
 % We know:
 %   R_WDW = (R/W1)
@@ -357,29 +343,15 @@ end
 %   R + G = Vlamda
 %   r_WDW = R_WDW/(R_WDW + G_WDW) = (R/W1)/(R/W1 + G) = (R/W1)/(R/W1 + Vlambda - R)
 %
-% At each wavelength, solve for R given r_WDW, Vlamda, and W1.  Then
-% compute the fit value for r_WDW and compute error with respect to
-% the passed value.
-function [f,R,G] = WDWChromVlambdaToCMFFun(W1,wls,normWl,r_WDW,Vlambda)
+% At each wavelength, solve for R given r_WDW, Vlamda, and W1. 
 
-% Solve for R and G at each wavelengt, given W1, r_WDW and Vlambda
+% Use fsolve to find R and G at each wavelength, given W1, r_WDW and
+% Vlambda at each wavelength.close all
 options = optimoptions('fsolve','Display','none');
 for ww = 1:length(wls)
-    R(ww) = fsolve(@(Rdummy)(r_WDW(ww)-(Rdummy/W1)/((Rdummy/W1) + Vlambda(ww) - Rdummy)),Vlambda(ww)/2,options);
+    R(ww) = fsolve(@(Rdummy)(rWDW(ww)-(Rdummy/W1)/(Rdummy/W1 + Vlambda(ww) - Rdummy)),Vlambda(ww)/2,options);
 end
 R = R';
 G = Vlambda - R;
 
-% WDW normalize CMF
-interpMethod = 'linear';
-RCMFAtNormWl = interp1(wls,R,normWl,interpMethod);
-GCMFAtNormWl = interp1(wls,G,normWl,interpMethod);
-RToGAtNormWl = RCMFAtNormWl/GCMFAtNormWl;
-R_WDW = R*RToGAtNormWl;
-G_WDW = G;
-
-% Error is how well we fit passed r_WDW
-pred_r_WDW = R_WDW./(R_WDW + G_WDW);
-predErr = pred_r_WDW-r_WDW;
-f = mean(predErr(:).^2);
 end
