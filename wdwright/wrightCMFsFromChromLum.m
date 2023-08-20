@@ -4,19 +4,19 @@
 % and R and G CMFs in luminance units.  This belief is in part based on
 % checks performed here.
 %
-% One thing we observe, unless our understanding of the data is way off,
-% is that the degree to which the tabulated CMF data is consistent with
-% the r, g, and Vlambda data varies across observers.  In some cases, it
-% is essentially perfect, while in others it is quite a bit off.
-% Wright's CMFs come from measurements of photopic luminance
-% and match chromaticities.
-%
-% Observer C shows particularly bad agreement.  This observer has the
-% highest Vr/Vg ratio.
-%
 % Text in the article says that the CMFs were derived from the
 % chromaticities and luminance.
-
+%
+% We can replicate this pretty well except for Observer C.  For observer C,
+% our derived CMFs are close to a linear transform away from the tabulated
+% ones, but a simple scaling of our derived CMFs does not lead to a good
+% fit.  For the other observers, the fit is reasonable with a common
+% scaling of the derived CMFs to fit the tabulated CMFs, and not terrible
+% with no scaling at all.
+%
+% I think I am not understanding something simple about the uniqueness, or
+% not, of the derivation.
+%
 % Some comments from the Wright article to remember:
 %
 %    "... no color receptor is required at the short-wave end of the spectrum
@@ -154,6 +154,10 @@ for oo = 1:length(observers)
     gWDW_FromTabulatedCMF  = GWDW_Tabulated./(RWDW_Tabulated + GWDW_Tabulated);
 
     % Find R and G from rWDW, gWDW, and Vlambda
+    %
+    % The search method was in intermediate step.  I will
+    % delete once my understanding of all this is a little
+    % better, or improve if that is what is needed.
     standardMethod = true;
     if standardMethod
         R_Derived = rgWDW_Tabulated(:,1).*Vlambda_Tabulated;
