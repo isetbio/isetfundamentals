@@ -45,10 +45,10 @@ legend({'Protan' 'Deutan'},'Location','SouthEast');
 %% Normalization info
 Vr_Protan = 100;
 Vb_Protan = 7.1;
-VbOverVr_Protan = Vb_Protan/Vr_Protan;
+VbOverVr_Protan = Vb_Protan/(Vr_Protan);
 Vr_Deutan = 100;
 Vb_Deutan = 6.2;
-VbOverVr_Deutan = Vb_Deutan/Vr_Deutan;
+VbOverVr_Deutan = Vb_Deutan/(Vr_Deutan);
 
 % Luminance
 the_VlambdaProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','wdwVlambda_Protan.mat'));
@@ -63,6 +63,7 @@ subplot(1,3,1); hold on;
 plot(the_VlambdaProtanData.Wright_Protan_Vlambda(:,1),the_VlambdaProtanData.Wright_Protan_Vlambda(:,2), ...
     'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,Vlambda_Protan,'r-','LineWidth',2);
+plot(wave,1*ones(size(wave)),'k:','LineWidth',1);
 title('Protan Vlambda');
 xlabel('Wavelength (nm)');
 ylabel('Vlambda');
@@ -71,6 +72,7 @@ subplot(1,3,2); hold on;
 plot(the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,1),the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,2), ...
     'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,Vlambda_Deutan,'r-','LineWidth',2);
+plot(wave,1*ones(size(wave)),'k:','LineWidth',1);
 title('Deutan Vlambda');
 xlabel('Wavelength (nm)');
 ylabel('Vlambda');
@@ -78,6 +80,7 @@ ylabel('Vlambda');
 subplot(1,3,3); hold on;
 plot(wave,Vlambda_Protan,'r-','LineWidth',2);
 plot(wave,Vlambda_Deutan,'g-','LineWidth',2);
+plot(wave,1*ones(size(wave)),'k:','LineWidth',1);
 title('Protan and Deutan Vlambda');
 ylim([0 1.2]);
 xlabel('Wavelength (nm)');
@@ -98,15 +101,16 @@ wdwNormWl = 494;
 % The search method was in intermediate step.  I will
 % delete once my understanding of all this is a little
 % better, or improve if that is what is needed.
+flipNorm = false;
 knownWDWScaleFactor = true;
 if knownWDWScaleFactor
     W1_Protan = 1/VbOverVr_Protan;
-    [R_Protan_Derived,B_Protan_Derived] = WDWChromVlambdaToCMFFun(W1_Protan,wave,rWDW_Protan,Vlambda_Protan);  
+    [R_Protan_Derived,B_Protan_Derived] = WDWChromVlambdaToCMFFun(W1_Protan,wave,rWDW_Protan,Vlambda_Protan,flipNorm);  
 end
 VlambdaFromRplusB_Protan_Derived = R_Protan_Derived + B_Protan_Derived;
 if knownWDWScaleFactor
     W1_Deutan = 1/VbOverVr_Deutan;
-    [R_Deutan_Derived,B_Deutan_Derived] = WDWChromVlambdaToCMFFun(W1_Deutan,wave,rWDW_Deutan,Vlambda_Deutan);  
+    [R_Deutan_Derived,B_Deutan_Derived] = WDWChromVlambdaToCMFFun(W1_Deutan,wave,rWDW_Deutan,Vlambda_Deutan,flipNorm);  
 end
 VlambdaFromRplusB_Deutan_Derived = R_Deutan_Derived + B_Deutan_Derived;
 
@@ -184,7 +188,7 @@ save(fullfile(iefundamentalsRootPath,'wdwright','Wright_ProtanDeutanDerivedCMFs'
 
     
 
-function [R,B] = WDWChromVlambdaToCMFFun(W1,wls,rWDW,Vlambda)
+function [R,B] = WDWChromVlambdaToCMFFun(W1,wls,rWDW,Vlambda,flipNorm)
 % Given W1, find R and B from rWDW and Vlambda.
 %
 % Input W1 is the scalar used to normalize R into line with B for the WDW
@@ -207,14 +211,26 @@ function [R,B] = WDWChromVlambdaToCMFFun(W1,wls,rWDW,Vlambda)
 % Use fsolve to find R and G at each wavelength, given W1, r_WDW and
 % Vlambda at each wavelength.close all
 options = optimoptions('fsolve','Display','none');
-for ww = 1:length(wls)
-    if (~isnan(rWDW(ww)) & ~isnan(Vlambda(ww)))
-        R(ww) = fsolve(@(Rdummy)(rWDW(ww)-(Rdummy/W1)/(Rdummy/W1 + Vlambda(ww) - Rdummy)),Vlambda(ww)/2,options);
-    else
-        R(ww) = NaN;
+if (~flipNorm)
+    for ww = 1:length(wls)
+        if (~isnan(rWDW(ww)) & ~isnan(Vlambda(ww)))
+            R(ww) = fsolve(@(Rdummy)(rWDW(ww)-(Rdummy/W1)/(Rdummy/W1 + Vlambda(ww) - Rdummy)),Vlambda(ww)/2,options);
+        else
+            R(ww) = NaN;
+        end
     end
+    R = R';
+    B = Vlambda - R;
+else
+    for ww = 1:length(wls)
+        if (~isnan(rWDW(ww)) & ~isnan(Vlambda(ww)))
+            B(ww) = fsolve(@(Bdummy)((1-rWDW(ww))-(Bdummy*W1)/(Bdummy*W1 + Vlambda(ww) - Bdummy)),Vlambda(ww)/2,options);
+        else
+            B(ww) = NaN;
+        end
+    end
+    B = B';
+    R = Vlambda - B;
 end
-R = R';
-B = Vlambda - R;
 
 end
