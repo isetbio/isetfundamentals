@@ -2,7 +2,7 @@
 function estimates = estimatorNullNullXY(A,B)
 
     % x =  null(null(B')*A)
-    xx=getLastVfromSVD(null(B')'*A);
+    xx=getlastVfromSVD(null(B')'*A);
     % y =  null(null(A')*B)
     yy=getlastVfromSVD(null(A')'*B);
 
