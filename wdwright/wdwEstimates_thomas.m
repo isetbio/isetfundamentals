@@ -13,7 +13,15 @@ deutan = ieScale(deutan,1);
 tritan  = ieScale(tritan,1);
 
 stockman = ieReadSpectra('stockmanEnergy',wave);
+    0.6929
+    0.0917
+   -0.0243
+   -0.7148
 
+    -0.9913
+   -0.1319
+   -0.0266
+   -0.9996
 %%
 Ldeutan = stockman\deutan;
 estDeutanC = stockman*Ldeutan;

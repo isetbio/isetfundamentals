@@ -14,6 +14,7 @@ function estimates = estimatorNullNullXY(A,B)
     yy=V(:,end);
     % Concatenate x and y in one vector
     x=[xx;yy]
+    
 
     % Generate estimates
     % Normalize: Make the sign of the largest element positive.

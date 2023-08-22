@@ -5,7 +5,8 @@ function estimates = estimatorIntersect(A,B)
     % the null space;
     [U,S,V]=svd([A B]);
     x=V(:,end);
-    
+    disp("X intersect")
+    x=x
     % Generate estimates
     % Normalize: Make the sign of the largest element positive.
     normalize = @(A) A*sign(A(find(max(abs(A))==abs(A),1,'first')));
