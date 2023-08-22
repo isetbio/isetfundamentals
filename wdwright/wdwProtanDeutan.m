@@ -20,7 +20,7 @@
 % 
 %  Both types of dichromats are essentially monochromatic above about 600.
 %
-%  We also the V_lambda curves for these as well (Figure 205).
+%  We also have the V_lambda curves for these as well (Figure 205).
 %
 
 %%  Grabit data are stored here
