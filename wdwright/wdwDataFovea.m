@@ -27,7 +27,7 @@ foveaGreen = interp1(foveaTritanGreen(:,1),foveaTritanGreen(:,2),wave,'pchip','e
 load('foveaTritanRed');
 foveaRed = interp1(foveaTritanRed(:,1),foveaTritanRed(:,2),wave,'pchip','extrap');
 
-fovea = [foveaRed(:),foveaGreen(:)];
+cmfFovea = [foveaRed(:),foveaGreen(:)];
 
 %{
 ieNewGraphWin;
@@ -37,10 +37,7 @@ grid on;
 %}
 
 %%
-saveFlag = false;
 fname = fullfile(iefundamentalsRootPath,'wdwright','cmfFovea.mat');
-if saveFlag
-    ieSaveSpectralFile(wave,fovea,'Figure 217 in Wright book. Data with Willmer.',fname);
-end
+save(fname,'wave','cmfFovea');
 
 %% End

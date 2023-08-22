@@ -480,6 +480,9 @@ grid on;
 %%  I keep this as false until I want to overwrite the data file.
 %
 % This way, executing the script will not over-write the file.
+%
+% wave is stored as part of all the obs structs.
+%
 saveFlag = false;
 if saveFlag
     fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
