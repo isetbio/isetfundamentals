@@ -1,13 +1,25 @@
 %% Data from WDW 1952 Tritanopes
 %
-%  In the Wright 1952 paper, 'The Characteristics of Tritanopia' he
-%  wrote an ad in the paper looking specifically for tritanopes. He
-%  found a number in the London area this way.  He invited them to the
-%  lab, and they made dichromatic color match settings for him.  The
-%  values in this file are copied from the numerical tables he put in
-%  the JOSA paper.
+% This file contains the numerical data from the Wright 1952 paper on
+% tritanopes. The publication includes both individual data and the
+% observer averages.
+%
+% The file organizes the data and then stores them in the file
+%
+%    cmfTritan.mat
+%
+% This file contains additional data (chromaticity matches) which are
+% stored separately for the protans and deutans.  For the moment.  I
+% am considering merging those like this one.
 %
 % Notes
+%  In the Wright 1952 paper, 'The Characteristics of Tritanopia' he
+%  describes placing an ad in the paper looking specifically for
+%  tritanopes. He found a number in the London area this way.  He
+%  invited them to the lab, and they made dichromatic color match
+%  settings for him.  The values in this file are copied from the
+%  numerical tables he put in the JOSA paper.
+%
 %  There are values in the table that are stored as 9.XXX, but taken
 %  at face value make no sense.  I believe this was an old fashioned
 %  way of storing negative logarithms whose true value is 9.XXX - 10.
@@ -24,11 +36,7 @@
 %  The CMFs for the 7th, however, is missing a lot of entries.  I put
 %  junk in there to plot them, but I think we only have 6 CMFs.
 %
-%  The numerical values from this file are stored in a file named
-%
-%     wdwTritanopes.mat
-%
-%  in the wdwright subdirectory.
+
 %
 % See also
 %   The directory with the Maxwell data
@@ -474,6 +482,6 @@ grid on;
 % This way, executing the script will not over-write the file.
 saveFlag = false;
 if saveFlag
-    fname = fullfile(iefundamentalsRootPath,'wdwright','wdwTritanopes.mat');
+    fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
     save(fname,'obs','obsAverage')
 end
