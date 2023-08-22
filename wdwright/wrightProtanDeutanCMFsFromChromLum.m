@@ -14,17 +14,33 @@ the_rWDWDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','wdwChromRe
 rWDW_Protan = interp1(the_rWDWProtanData.wdwProtanChromRed(:,1),the_rWDWProtanData.wdwProtanChromRed(:,2),wave,'spline',NaN);
 rWDW_Deutan = interp1(the_rWDWDeutanData.wdwDeutanChromRed(:,1),the_rWDWDeutanData.wdwDeutanChromRed(:,2),wave,'spline',NaN);
 
+% Plot of rWDW data 
 rWDWFig = figure;
-subplot(1,2,1); hold on;
+set(gcf,'Position',[100 100 1200 600]);
+
+subplot(1,3,1); hold on;
 plot(the_rWDWProtanData.wdwProtanChromRed(:,1),the_rWDWProtanData.wdwProtanChromRed(:,2), ...
-    'ro','MarkerFaceColor','r','MarkerSize',8);
+    'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,rWDW_Protan,'r-','LineWidth',2);
 title('Protan rWDW');
-subplot(1,2,2); hold on;
+xlabel('Wavelength (nm)');
+ylabel('rWDW');
+
+subplot(1,3,2); hold on;
 plot(the_rWDWDeutanData.wdwDeutanChromRed(:,1),the_rWDWDeutanData.wdwDeutanChromRed(:,2), ...
-    'ro','MarkerFaceColor','r','MarkerSize',8);
+    'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,rWDW_Deutan,'r-','LineWidth',2);
 title('Deutan rWDW');
+xlabel('Wavelength (nm)');
+ylabel('rWDW');
+
+subplot(1,3,3); hold on;
+plot(wave,rWDW_Protan,'r-','LineWidth',2);
+plot(wave,rWDW_Deutan,'g-','LineWidth',2);
+title('Protan and Deutan rWDW');
+xlabel('Wavelength (nm)');
+ylabel('rWDW');
+legend({'Protan' 'Deutan'},'Location','SouthEast');
 
 %% Normalization info
 Vr_Protan = 100;
@@ -40,17 +56,33 @@ the_VlambdaDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','wdwVlam
 Vlambda_Protan = interp1(the_VlambdaProtanData.Wright_Protan_Vlambda(:,1),the_VlambdaProtanData.Wright_Protan_Vlambda(:,2),wave,'spline',NaN);
 Vlambda_Deutan = interp1(the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,1),the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,2),wave,'spline',NaN);
 
+% Plot of Vlambda data
 lumFig = figure;
-subplot(1,2,1); hold on;
+set(gcf,'Position',[100 100 1200 600]);
+subplot(1,3,1); hold on;
 plot(the_VlambdaProtanData.Wright_Protan_Vlambda(:,1),the_VlambdaProtanData.Wright_Protan_Vlambda(:,2), ...
-    'ro','MarkerFaceColor','r','MarkerSize',8);
+    'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,Vlambda_Protan,'r-','LineWidth',2);
 title('Protan Vlambda');
-subplot(1,2,2); hold on;
+xlabel('Wavelength (nm)');
+ylabel('Vlambda');
+
+subplot(1,3,2); hold on;
 plot(the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,1),the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,2), ...
-    'ro','MarkerFaceColor','r','MarkerSize',8);
+    'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,Vlambda_Deutan,'r-','LineWidth',2);
 title('Deutan Vlambda');
+xlabel('Wavelength (nm)');
+ylabel('Vlambda');
+
+subplot(1,3,3); hold on;
+plot(wave,Vlambda_Protan,'r-','LineWidth',2);
+plot(wave,Vlambda_Deutan,'g-','LineWidth',2);
+title('Protan and Deutan Vlambda');
+ylim([0 1.2]);
+xlabel('Wavelength (nm)');
+ylabel('Vlambda');
+legend({'Protan' 'Deutan'},'Location','SouthEast');
 
 %% Wright primary wavelengths
 %
@@ -61,7 +93,7 @@ RPrimaryWlIndex = find(wave == RPrimaryWl);
 BPrimaryWlIndex = find(wave == BPrimaryWl);
 wdwNormWl = 494;
 
-% Find R and B from rWDW,and Vlambda
+% Find R and B from rWDW, and Vlambda
 %
 % The search method was in intermediate step.  I will
 % delete once my understanding of all this is a little
@@ -78,7 +110,7 @@ if knownWDWScaleFactor
 end
 VlambdaFromRplusB_Deutan_Derived = R_Deutan_Derived + B_Deutan_Derived;
 
-% Load in tabulated CMFs
+% Load in tabulated CMFs that were digitized from plots.
 theR_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','ProtanCMFRed.mat'));
 R_Protan_Tabulated = interp1(theR_Protan_Data.ProtanCMFRed(:,1),theR_Protan_Data.ProtanCMFRed(:,2),wave,'spline',NaN);
 theB_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','ProtanCMFBluex5.mat'));
@@ -93,13 +125,13 @@ VlambdaFromRplusB_Deutan_Tabulated = R_Deutan_Tabulated + B_Deutan_Tabulated;
 
 % Get Vlambda as sum or R + B and add to plot as a check
 figure(lumFig);
-subplot(1,2,1);
+subplot(1,3,1);
 plot(wave,VlambdaFromRplusB_Protan_Derived,'k-','LineWidth',2);
 plot(wave,VlambdaFromRplusB_Protan_Tabulated,'k:','LineWidth',2);
 ylim([0 1.2]);
 xlabel('Wavelength (nm)');
 ylabel('Luminance');
-subplot(1,2,2);
+subplot(1,3,2);
 plot(wave,VlambdaFromRplusB_Deutan_Derived,'k-','LineWidth',2);
 plot(wave,VlambdaFromRplusB_Deutan_Tabulated,'k:','LineWidth',2);
 ylim([0 1.2]);
