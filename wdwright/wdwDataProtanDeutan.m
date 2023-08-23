@@ -109,12 +109,20 @@ load('wdwVlambda_Trichromat.mat');
 vlambdaTrichromat = interp1(Wright_Trichromat_Vlambda(:,1),Wright_Trichromat_Vlambda(:,2),wave,'pchip','extrap');
 
 %{
-ieNewGraphWin;
-plot(wave,vlambdaTrichromat,'k-',wave,vlambdaDeutan,'g-',wave,vlambdaProtan,'r-');
-grid on;
-xlabel('Wavelength (nm)'); ylabel('Chromaticity');
-legend('Trichromat','Deutan','Protan');
-title('Vlambda');
+ieNewGraphWin([],'wide');
+tiledlayout(1,3);
+nexttile;
+plot(wave,vlambdaProtan,'k-',Wright_Protan_Vlambda(:,1),Wright_Protan_Vlambda(:,2),'ro');
+title('Protan');
+
+nexttile;
+plot(wave,vlambdaDeutan,'k-',Wright_Deutan_Vlambda(:,1),Wright_Deutan_Vlambda(:,2),'go');
+title('Deutan')
+
+nexttile;
+plot(wave,vlambdaTrichromat,'k-',Wright_Trichromat_Vlambda(:,1),Wright_Trichromat_Vlambda(:,2),'ko'); title('Trichromat');
+grid on; xlabel('Wavelength (nm)'); ylabel('Chromaticity');
+
 %}
 
 %% Save the CMFs
