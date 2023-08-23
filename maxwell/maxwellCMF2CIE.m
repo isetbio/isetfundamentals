@@ -1,34 +1,35 @@
-%% Compare maxwell cmf with XYZ and then with StockmanEnergy
+%% Compare Maxwell CMFS with XYZ and Stockman
 %
-% Questions:
-%    If we adjust the lens or macular pigment densities, could we
-% make the fits a little bit better?
-%    Should we focus on Stockman, XYZ, or both?
+% The analysis here shows an excellent agreement between the CMFs
+% reported by Maxwell in Tables VI and IX and the Stockman
+% fundamentals.  This repeats an analysis performed by Judd, but with
+% the XYZ curves.
+%
+% The script maxwellMatch has a new analysis. It computes directly
+% from the matches in Table IV to the CMFs and shows a good match, as
+% well.
+%
+% In both cases, we do a bit better by adjusting the Judd wavelength
+% estimates by about 10 or 12 nm.
 %
 % See also
-%  juddMaxwellWave.m, cfMaxwell.m
+%  maxwellDataCMF, maxwellMatch, maxwellJuddWave.m
 
 %% The Maxwell observers CMFs
 
 obsJ = load("maxwellCMF_obsJ.mat");
 obsK = load('maxwellCMF_obsK');
-
-%% Read Observer K CMF and read XYZ corresponding wavelengths
 juddAdjust = 10;
+
+%% Read Observer K CMF 
+
+% Adjust the wavelengths
 waveK = obsK.wave - juddAdjust;
 XYZK = ieReadSpectra('XYZEnergy',waveK);
 RGB = [obsK.R(:),obsK.G(:),obsK.B(:)];
 
-ieNewGraphWin;
-tiledlayout(2,2);
-%%
-%{
-ieNewGraphWin;
-plot(waveK,XYZK);
-plot(waveK,RGB);
-%}
 
-%% Find the linear transform from the CMF to the XYZ
+% Find the linear transform from the CMF to the XYZ
 %
 % The fit
 %    XYZ ~ RGB*L
@@ -38,12 +39,18 @@ plot(waveK,RGB);
 L = pinv(RGB)*XYZK;
 XYZ_estK = RGB*L;
 
+%% 
+ieNewGraphWin([],'big');
+tiledlayout(2,2);
+
 nexttile;
 plot(waveK,XYZ_estK); hold on;
 plot(waveK,XYZK,'LineStyle','--');
-% legend('XYZ','','','Maxwell ObsK fit');
+xlabel('Wavelength (nm)')
+legend('XYZ','','','Maxwell ObsK fit');
 
 %% Now for Observer J.
+
 waveJ = obsJ.wave - juddAdjust;
 XYZJ = ieReadSpectra('XYZEnergy',waveJ);
 RGB = [obsJ.R(:),obsJ.G(:),obsJ.B(:)];
@@ -57,6 +64,7 @@ xlabel('Wavelength (nm)')
 legend('XYZ','Maxwell ObsJ fit');
 
 %%  Now the StockmanEnergy functions - observer K
+
 wave = obsK.wave - juddAdjust;
 SS = ieReadSpectra('StockmanEnergy',wave);
 RGB = [obsK.R(:),obsK.G(:),obsK.B(:)];
@@ -70,7 +78,7 @@ nexttile;
 plot(wave,SS_est); hold on;
 plot(wave,SS,'LineStyle','--');
 xlabel('Wavelength (nm)')
-legend('SS','Maxwell ObsJ fit');
+legend('Stockman','Maxwell ObsJ fit');
 
 %% Observer J
 wave = obsJ.wave - juddAdjust;
@@ -88,12 +96,13 @@ plot(wave,SS,'LineStyle','--');
 xlabel('Wavelength (nm)')
 legend('SS','Maxwell ObsJ fit');
 
-% Make a slightly different figure for David
+%% Make a slightly different figure styled for David Brainard
+
 SSK = ieReadSpectra('StockmanEnergy',waveK);
 L = pinv(SSK)*XYZK;
 XYZK_SSest = SSK*L;
 
-figure; clf; hold on;
+ieNewGraphWin([],'big'); clf; hold on;
 set(gca,'FontName','Helvetica','FontSize',26);
 plot(waveK,XYZK(:,1),'-','Color','r','LineWidth',4);
 plot(waveK,XYZK_SSest(:,1),':','Color','r','LineWidth',4);
@@ -115,3 +124,6 @@ xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',22);
 ylabel('Tristimulus Value','FontName','Helvetica','FontSize',22);
 legend({'CIE 1931 XYZ', 'Stockman-Sharpe expressed in XYZ', 'Maxwell 1860 Obs K expressed in XYZ', 'Maxwell 1860 Obs J expressed in XYZ'},'FontName','Helvetica','FontSize',18);
 title('Color Matching Over 150 Years','FontName','Helvetica','FontSize',30);
+xaxisLine;
+
+%%
