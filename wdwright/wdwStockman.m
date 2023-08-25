@@ -17,6 +17,7 @@
 %% Protanope CMF
 
 ieNewGraphWin([],'big');
+pColor = [0.7 0.7 0.7];
 tiledlayout(2,2);
 
 % Protan
@@ -25,13 +26,15 @@ load(fname,'wave','cmfProtan');
 stockman = ieReadSpectra('stockmanEnergy',wave);
 
 % protan = stockman*L
+% Fig 200
 Lprotan = stockman\cmfProtan;
 estProtan = stockman*Lprotan;
 nexttile;
-plot(wave,estProtan,'k-',wave,protanCMF,'k.')
-title('Stockman to Protan (Fig 200)');
+plot(wave,estProtan,'k-','Linewidth',3);
+hold on; plot(wave,cmfProtan,'.','Color',pColor,'Linewidth',1);
+title('Protan');
 xlabel('Wavelength (nm)');
-ylabel('CMF'); grid on;
+ylabel('Primary intensity (a.u.)'); grid on;
 
 % Deutan
 fname = fullfile(iefundamentalsRootPath,'wdwright','cmfDeutan.mat');
@@ -41,10 +44,29 @@ stockman = ieReadSpectra('stockmanEnergy',wave);
 nexttile;
 Ldeutan = stockman\cmfDeutan;
 estDeutan = stockman*Ldeutan;
-plot(wave,estDeutan,'k-',wave,cmfDeutan,'k.')
-title('Stockman to Deutan (Fig 208)');
+plot(wave,estDeutan,'k-','Linewidth',3);
+hold on;
+plot(wave,cmfDeutan,'.','Color',pColor,'Linewidth',1)
+title('Deutan (Original)');
 xlabel('Wavelength (nm)');
-ylabel('CMF'); grid on;
+ylabel('Primary intensity (a.u.)'); grid on;
+
+% Tritan
+fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
+load(fname,'obsAverage');
+% cmfTritan = obsAverage.CMF;
+wave = min(obsAverage.wave):max(obsAverage.wave);
+cmfTritan = interp1(obsAverage.wave,obsAverage.CMF,wave);
+stockman = ieReadSpectra('stockmanEnergy',wave);
+
+nexttile;
+Ltritan = stockman\cmfTritan;
+estTritan = stockman*Ltritan;
+plot(wave,estTritan,'k-', 'LineWidth',3);
+hold on; plot(wave,cmfTritan,'.','Color',pColor,'Linewidth',1)
+title('Tritan');
+xlabel('Wavelength (nm)');
+ylabel('Primary intensity (a.u.)'); grid on;
 
 % DeutanC
 fname = fullfile(iefundamentalsRootPath,'wdwright','cmfDeutanC.mat');
@@ -54,25 +76,12 @@ stockman = ieReadSpectra('stockmanEnergy',wave);
 nexttile;
 LdeutanC = stockman\cmfDeutanC;
 estDeutanC = stockman*LdeutanC;
-plot(wave,estDeutanC,'k-',wave,cmfDeutanC,'k.')
-title('Stockman to Deutan (Fig 208)');
+plot(wave,estDeutanC,'k-','Linewidth',3);
+hold on;
+plot(wave,cmfDeutanC,'.','Color',pColor,'Linewidth',1)
+title('Deutan (Corrected)');
 xlabel('Wavelength (nm)');
-ylabel('CMF'); grid on;
-
-% Tritan
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
-load(fname,'obsAverage');
-cmfTritan = obsAverage.CMF;
-wave = obsAverage.wave;
-stockman = ieReadSpectra('stockmanEnergy',wave);
-
-nexttile;
-Ltritan = stockman\cmfTritan;
-estTritan = stockman*Ltritan;
-plot(wave,estTritan,'k-',wave,cmfTritan,'k.')
-title('Stockman to Tritan (Fig 208)');
-xlabel('Wavelength (nm)');
-ylabel('CMF'); grid on;
+ylabel('Primary intensity (a.u.)'); grid on;
 
 %% Fovea
 
