@@ -77,7 +77,7 @@ tiledlayout(1,3);
 
 % L cone
 nexttile;
-Lest = conefundamental(thisDeutan,tritan);
+Lest = conefundamental(thisDeutan,tritan,'method','nullnull');
 Lest = ieScale(Lest,1);
 plot(wave,Lest,'r-',wave,stockman(:,1),'kx','LineWidth',2);
 grid on;
@@ -95,7 +95,7 @@ title('M')
 
 % S cone
 nexttile;
-Sest = conefundamental(thisDeutan,protan);
+Sest = conefundamental(thisDeutan,protan,'method','nullnull');
 Sest = ieScale(Sest,1);
 plot(wave,Sest,'b-',wave,stockman(:,3),'kx','LineWidth',2);
 grid on;
