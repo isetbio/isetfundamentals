@@ -9,8 +9,8 @@ wave = SToWls([400 10 31]);
 %% Load data digitized from Wright's book
 %
 % rWDW
-the_rWDWProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','wdwChromRedProtan.mat'));
-the_rWDWDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','wdwChromRedDeutan.mat'));
+the_rWDWProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwChromRedProtan.mat'));
+the_rWDWDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwChromRedDeutan.mat'));
 rWDW_Protan = interp1(the_rWDWProtanData.wdwProtanChromRed(:,1),the_rWDWProtanData.wdwProtanChromRed(:,2),wave,'spline',NaN);
 rWDW_Deutan = interp1(the_rWDWDeutanData.wdwDeutanChromRed(:,1),the_rWDWDeutanData.wdwDeutanChromRed(:,2),wave,'spline',NaN);
 
@@ -51,8 +51,8 @@ Vb_Deutan = 6.2;
 VbOverVr_Deutan = Vb_Deutan/(Vr_Deutan);
 
 % Luminance
-the_VlambdaProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','wdwVlambda_Protan.mat'));
-the_VlambdaDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','wdwVlambda_Deutan.mat'));
+the_VlambdaProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwVlambda_Protan.mat'));
+the_VlambdaDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwVlambda_Deutan.mat'));
 Vlambda_Protan = interp1(the_VlambdaProtanData.Wright_Protan_Vlambda(:,1),the_VlambdaProtanData.Wright_Protan_Vlambda(:,2),wave,'spline',NaN);
 Vlambda_Deutan = interp1(the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,1),the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,2),wave,'spline',NaN);
 
@@ -115,15 +115,15 @@ end
 VlambdaFromRplusB_Deutan_Derived = R_Deutan_Derived + B_Deutan_Derived;
 
 % Load in tabulated CMFs that were digitized from plots.
-theR_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','ProtanCMFRed.mat'));
+theR_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','ProtanCMFRed.mat'));
 R_Protan_Tabulated = interp1(theR_Protan_Data.ProtanCMFRed(:,1),theR_Protan_Data.ProtanCMFRed(:,2),wave,'spline',NaN);
-theB_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','ProtanCMFBluex5.mat'));
+theB_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','ProtanCMFBluex5.mat'));
 B_Protan_Tabulated = interp1(theB_Protan_Data.ProtanCMFBluex5(:,1),theB_Protan_Data.ProtanCMFBluex5(:,2),wave,'spline',NaN)/5;
 VlambdaFromRplusB_Protan_Tabulated = R_Protan_Tabulated + B_Protan_Tabulated;
 
-theR_Deutan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','DeutanCMFRed.mat'));
+theR_Deutan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','DeutanCMFRed.mat'));
 R_Deutan_Tabulated = interp1(theR_Deutan_Data.DeutanCMFRed(:,1),theR_Deutan_Data.DeutanCMFRed(:,2),wave,'spline',NaN);
-theB_Deutan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','DeutanCMFBluex5.mat'));
+theB_Deutan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','DeutanCMFBluex5.mat'));
 B_Deutan_Tabulated = interp1(theB_Deutan_Data.DeutanCMFBluex5(:,1),theB_Deutan_Data.DeutanCMFBluex5(:,2),wave,'spline',NaN)/5;
 VlambdaFromRplusB_Deutan_Tabulated = R_Deutan_Tabulated + B_Deutan_Tabulated;
 
@@ -181,12 +181,10 @@ xlabel('Wavelength (nm)');
 ylabel('CMF');
 title('Deutan CMFs');
 
-save(fullfile(iefundamentalsRootPath,'wdwright','Wright_ProtanDeutanDerivedCMFs'), ...
+save(fullfile(iefundamentalsRootPath,'wdwright','validation','Wright_ProtanDeutanDerivedCMFs'), ...
     'wave', ...
     'R_Protan_Derived','B_Protan_Derived','R_Deutan_Derived','B_Deutan_Derived', ...
     'R_Protan_Tabulated','B_Protan_Tabulated','R_Deutan_Tabulated','B_Deutan_Tabulated');
-
-    
 
 function [R,B] = WDWChromVlambdaToCMFFun(W1,wls,rWDW,Vlambda,flipNorm)
 % Given W1, find R and B from rWDW and Vlambda.
