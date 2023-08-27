@@ -1,19 +1,29 @@
 %% Simulations and calculations related to Maxwell, 1860 color matching
 %
+% This script writes out the data from the Maxwell 1860 CMFS.  These
+% are in Tables VI and IX. The output mat-files are maxwellCMF_obsK
+% and maxwellCMF_obsJ.
+%
 % The Maxwell 1860 paper, reviewed by Judd and Zaidi, uses an
 % interesting method to derive the color matching functions for two
-% observers.  These were the first such measurements, and the paper
+% observers.  These were the first CMF measurements, and the paper
 % describes the concepts and methods wonderfully.
 %
-% ON THE THEORY OF COMPOUNT COLORS (Maxwell)
+%   ON THE THEORY OF COMPOUNT COLORS (Maxwell)
 %
-% QASIM REVIEW
-%
-% JUDD MAXWELL AND MODERN COLORIMETRY
+%   See also, Qasim Zaideh's REVIEW, and Judd's MAXWELL AND MODERN COLORIMETRY
 %
 % NOTE: The K and J CMFs with the light box are in the 1860 paper.
-% The spinning tops analysis in the 1855/1857 paper.
+% Matches using spinning tops analysis in the 1855/1857 paper.
 %
+% See also
+%   There is another analysis in maxwellMatch that starts with the
+%   data from Table IV, showing multiple matches of three spectral
+%   lights to white.  The curves shown here are derived by Maxwell. In
+%   the maxwellMatch script, we derive these curves directly from
+%   Table IV, using modern methods.
+%
+
 %% Maxwell's design in the 1860 paper
 %
 % He fixed a white and then performed a match to the white using
@@ -29,17 +39,24 @@
 % test lights and the three primaries.  Thus, had had a match from about 17
 % narrowband lights and the three primaries.  
 % 
-% Judd seems to know the actual wavelengths of the primaries (I couldn't
-% figure out how he knew). 
+% Judd calculated the actual wavelengths of the primaries.  These are
+% based on a calculation of the meaning of a 'Paris inch', described
+% in Judd's papers.  In a parallel script, we show what happens if
+% Judd's estimate is off by 10 nm.  Good things.
 %
 % The CMFs are shown in a table VI for observer K. and Table IX for
 % observer J (maxwell himself, we think).
 %
-% The same paper also shows the intensities of the matching lights to
-% white. In a separate script, we analyze these data
+% The same paper also shows the intensities of the matching spectral
+% lights to white. In a separate script, we analyze those data,
+% showing how we come to the same conclusion as Maxwell using modern
+% methods. (maxwellMatch).
 %
 
-%% See juddMaxwellWave to get the wavelengths from the Maxwell data in nm
+%% See maxwellJuddWave to get the wavelengths from the Maxwell data in nm.
+
+% It is a scale factor applied to Maxwell's values. Judd derives the
+% scale factor from the 'Paris inch'.
 
 juddWave = [
     20 663.2
@@ -61,9 +78,16 @@ juddWave = [
 
 %% CMFs From the 1860 paper
 
-% The primaries were 24,  44, 68 which is why they are skipped in the
-% rows, I think.  I put them in as 1s and 0s.
-% Table VI.
+% The primaries were wavelengths 24,44, 68 which is why they are
+% skipped in the rows of the original.  I think.  I put them in as 1s
+% and 0s.
+%
+% The first column here is Maxwell's representation of the wavelength.
+% The second column is the intensity of that wavelength.
+% The third-fifth columns are the intensities of the three primaries
+% at wavelengths 24 (630), 44 (528), and 68 (456).
+
+% This is Observer K in Table VI.
 obsK6 = [
     20.0000   44.3000   18.6000    0.4000    2.8000
    24.0000    1.0000    1.0000         0         0
@@ -87,7 +111,8 @@ waveK6 = interp1(juddWave(:,1),juddWave(:,2),obsK6(:,1));
 
 obsK6(:,1) = waveK6(:);
 
-%% Obs J
+%% Now Obs J in Table IX
+
 obsJ9 = [
    20.0000   44.3000   18.1000   -2.5000    2.3000
    24.0000    1.0000    1.0000         0         0
@@ -108,7 +133,13 @@ obsJ9 = [
 
 waveJ9 = interp1(juddWave(:,1),juddWave(:,2),obsJ9(:,1));
 
-%%
+%% The 2nd column is an overall scale factor
+%
+% Explain that here:
+%
+% Columns 3-5 are the intensities of the primaries, without accounting
+% for the equalizing scale factor.
+
 ieNewGraphWin;
 lw = 2;
 plot(waveK6,obsK6(:,3)./obsK6(:,2),'r','LineWidth',lw); hold on;
@@ -147,16 +178,20 @@ ylabel('Primary intensity');
 grid on;
 
 %% Save the data out for use by other scripts
-B = obsJ9(:,3)./obsJ9(:,2);
-G = obsJ9(:,4)./obsJ9(:,2);
-R = obsJ9(:,5)./obsJ9(:,2);
-wave = waveJ9;
-save('maxwellCMF_obsJ','wave','R','G','B');
 
-B = obsK6(:,3)./obsK6(:,2);
-G = obsK6(:,4)./obsK6(:,2);
-R = obsK6(:,5)./obsK6(:,2);
-wave = waveK6;
-save('maxwellCMF_obsK','wave','R','G','B');
+saveFlag = false;
+if saveFlag
+    B = obsJ9(:,3)./obsJ9(:,2);
+    G = obsJ9(:,4)./obsJ9(:,2);
+    R = obsJ9(:,5)./obsJ9(:,2);
+    wave = waveJ9;
+    save('maxwellCMF_obsJ','wave','R','G','B');
+
+    B = obsK6(:,3)./obsK6(:,2);
+    G = obsK6(:,4)./obsK6(:,2);
+    R = obsK6(:,5)./obsK6(:,2);
+    wave = waveK6;
+    save('maxwellCMF_obsK','wave','R','G','B');
+end
 
 %% END

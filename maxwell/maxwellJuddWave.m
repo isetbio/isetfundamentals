@@ -103,3 +103,5 @@ ieNewGraphWin;
 plot(juddWave(:,2),maxwellWave(:,2)/mean(ratios),'--');
 mean(ratios)
 identityLine;
+
+%%
