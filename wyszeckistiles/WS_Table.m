@@ -2,12 +2,28 @@
 %
 % Table 3(5.14.2)  Color-Matching Functions of Dichromats (page 469).
 %
+% This table is a transform of the WD Wright data on dichromats.  The
+% data we scanned is from Wright's book (protan/deutan), and JOSA
+% paper (tritan). The same set of curves are organized and reprinted
+% in W&S Figures 4(5.14.2), 5(5.14.2), 6(5.14.2).
 %
+% Notice that the blue primary of the CMFs for the protan and deutan
+% differ considerably.  This makes little sense because if these are
+% reduction dichromats they should have the same S-cones and they
+% should agree over the short wavelength part of the spectrum.  But
+% the deutan B primary curve is MUCH narrower than the protan blue
+% primary.  This is true both in the original book and in the
+% reprinted figure in W&S.
+%
+% The data here are regularized by W&S in several ways that make them
+% conform with the XYZ functions.
+%
+
+%% Where we work
+
 chdir(fullfile(iefundamentalsRootPath,'wyszeckistiles'))
 
-%%
-
-%%
+%%  The raw data copied from the table
 WSTable = [
   400.0000    0.0408   -0.0036    0.0407   -0.0145    0.0004    0.0008
   410.0000    0.1250   -0.0108    0.1240   -0.0446    0.0012    0.0019
@@ -41,23 +57,38 @@ WSTable = [
   690.0000    0.0000    0.0006         0    0.0770   -0.0005    0.0803
   700.0000    0.0000    0.0003         0    0.0386   -0.0003    0.0404];
 
-%%
+%% Pull out the different dichromats
 wave   = WSTable(:,1);
 protan = WSTable(:,(2:3));
 deutan = WSTable(:,(4:5));
 tritan = WSTable(:,(6:7));
 
-%%
+%% Compare with XYZ to confirm
+
+% Perfect fit to XYZ
+XYZ = ieReadSpectra('xyzenergy',wave);
+L = XYZ\protan; protanEst = XYZ*L;
+L = XYZ\deutan; deutanEst = XYZ*L;
+L = XYZ\tritan; tritanEst = XYZ*L;
+
+ieNewGraphWin;
+plot(protan(:),protanEst(:),'r.',deutan(:),deutanEst(:),'g.',tritan(:),tritanEst(:),'b.');
+grid on; identityLine; xlabel('Data'); ylabel('Estimate');
+title('XYZ fits to W&S Dichromat adjusted data.')
+
+%%  Plot the CMFS from the Table
+
+% These are not the same as the WDW curves.  And they are worse.
 ieNewGraphWin([],'tall');
 tiledlayout(3,1);
 nexttile;
-plot(wave,p1,'r-',wave,p2,'r--');
+plot(wave,protan(:,1),'r-',wave,protan(:,2),'r--');
 grid on; xlabel('Wavelength (nm)')
 nexttile
-plot(wave,d1,'g-',wave,d2,'g--');
+plot(wave,deutan(:,1),'g-',wave,deutan(:,2),'g--');
 grid on; xlabel('Wavelength (nm)')
 nexttile
-plot(wave,t1,'b-',wave,d2,'b--');
+plot(wave,tritan(:,1),'b-',wave,tritan(:,2),'b--');
 grid on; xlabel('Wavelength (nm)')
 
 %% Write out only some times, and by hand.

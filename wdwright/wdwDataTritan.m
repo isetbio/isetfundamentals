@@ -1,13 +1,25 @@
 %% Data from WDW 1952 Tritanopes
 %
-%  In the Wright 1952 paper, 'The Characteristics of Tritanopia' he
-%  wrote an ad in the paper looking specifically for tritanopes. He
-%  found a number in the London area this way.  He invited them to the
-%  lab, and they made dichromatic color match settings for him.  The
-%  values in this file are copied from the numerical tables he put in
-%  the JOSA paper.
+% This file contains the numerical data from the Wright 1952 paper on
+% tritanopes. The publication includes both individual data and the
+% observer averages.
+%
+% The file organizes the data and then stores them in the file
+%
+%    cmfTritan.mat
+%
+% This file contains additional data (chromaticity matches) which are
+% stored separately for the protans and deutans.  For the moment.  I
+% am considering merging those like this one.
 %
 % Notes
+%  In the Wright 1952 paper, 'The Characteristics of Tritanopia' he
+%  describes placing an ad in the paper looking specifically for
+%  tritanopes. He found a number in the London area this way.  He
+%  invited them to the lab, and they made dichromatic color match
+%  settings for him.  The values in this file are copied from the
+%  numerical tables he put in the JOSA paper.
+%
 %  There are values in the table that are stored as 9.XXX, but taken
 %  at face value make no sense.  I believe this was an old fashioned
 %  way of storing negative logarithms whose true value is 9.XXX - 10.
@@ -24,11 +36,7 @@
 %  The CMFs for the 7th, however, is missing a lot of entries.  I put
 %  junk in there to plot them, but I think we only have 6 CMFs.
 %
-%  The numerical values from this file are stored in a file named
-%
-%     wdwTritanopes.mat
-%
-%  in the wdwright subdirectory.
+
 %
 % See also
 %   The directory with the Maxwell data
@@ -70,8 +78,11 @@ wdwA = [
 
 ii = 1;
 obs{ii}.wave = wdwA(:,1)*1e3;
-obs{ii}.logVlambda = wdwA(:,2);
 obs{ii}.CMF = wdwA(:,6:7);
+obs{ii}.logVlambda = wdwA(:,2);
+obs{ii}.Vlambda = wdwA(:,5);
+obs{ii}.rg = wdwA(:,3:4);
+obs{ii}.VrOverVg = 0.598;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
@@ -120,8 +131,11 @@ wdwB = [
 
 ii = 2;
 obs{ii}.wave = wdwB(:,1)*1e3;
-obs{ii}.logVlambda = wdwB(:,2);
 obs{ii}.CMF = wdwB(:,6:7);
+obs{ii}.logVlambda = wdwB(:,2);
+obs{ii}.Vlambda = wdwB(:,5);
+obs{ii}.rg = wdwB(:,3:4);
+obs{ii}.VrOverVg = 1.13;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
@@ -174,11 +188,13 @@ wdwC = [
     0.6500    1.1600    1.0000         0   14.4500   14.4500         0
     ];
 
-
 ii = 3;
 obs{ii}.wave = wdwC(:,1)*1e3;
-obs{ii}.logVlambda = wdwC(:,2);
 obs{ii}.CMF = wdwC(:,6:7);
+obs{ii}.logVlambda = wdwC(:,2);
+obs{ii}.Vlambda = wdwC(:,5);
+obs{ii}.rg = wdwC(:,3:4);
+obs{ii}.VrOverVg = 3.10;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
@@ -227,8 +243,11 @@ wdwD = [
 
 ii = 4;
 obs{ii}.wave = wdwD(:,1)*1e3;
-obs{ii}.logVlambda = wdwD(:,2);
 obs{ii}.CMF = wdwD(:,6:7);
+obs{ii}.logVlambda = wdwD(:,2);
+obs{ii}.Vlambda = wdwD(:,5);
+obs{ii}.rg = wdwD(:,3:4);
+obs{ii}.VrOverVg = 0.8810;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
@@ -283,6 +302,9 @@ ii = 5;
 obs{ii}.wave = wdwE(:,1)*1e3;
 obs{ii}.CMF = wdwE(:,6:7);
 obs{ii}.logVlambda = wdwE(:,2);
+obs{ii}.Vlambda = wdwE(:,5);
+obs{ii}.rg = wdwE(:,3:4);
+obs{ii}.VrOverVg = 1.02;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
@@ -301,7 +323,6 @@ ylabel('Relative (primaries 650 and 480)');
 grid on;
 
 %% OBS F
-
 %
 % Another 9 here that may not belong
 % This must be checked in the paper.
@@ -333,8 +354,32 @@ wdwF = [ ...
     0.6500    0.9100    1.0000         0    8.1280    8.1280         0
     ];
 
-%% OBS G
+ii = 6;
+obs{ii}.wave = wdwF(:,1)*1e3;
+obs{ii}.CMF = wdwF(:,6:7);
+obs{ii}.logVlambda = wdwF(:,2);
+obs{ii}.Vlambda = wdwF(:,5);
+obs{ii}.rg = wdwF(:,3:4);
+obs{ii}.VrOverVg = 1.18;
 
+
+hdl = ieNewGraphWin();
+hdl.Position = [0.0070    0.5819    0.3891    0.3381];
+
+tiledlayout(1,2);
+nexttile;
+plot(obs{ii}.wave,obs{ii}.logVlambda);
+xlabel('Wavelength (nm)')
+ylabel('Log V_\lambda')
+grid on;
+
+nexttile;
+plot(obs{ii}.wave,obs{ii}.CMF);
+xlabel('Wavelength (nm)')
+ylabel('Relative (primaries 650 and 480)');
+grid on;
+
+%% OBS G
 %
 % Many missing entries
 % Maybe they are all 0 and 1?
@@ -368,40 +413,6 @@ wdwG = [ ...
 0.65	0.93	1	0
 ];
 %}
-
-% Store away data in more easily referenced format for other 
-% analyses.
-observers = {'F'};
-for oo = 1:length(observers)
-    switch (observers{oo})
-        case 'F'
-            ii = 6;
-            obs{ii}.wave = wdwF(:,1)*1e3;
-            obs{ii}.CMF = wdwF(:,6:7);
-            obs{ii}.logVlambda = wdwF(:,2);
-            obs{ii}.Vlambda = wdwF(:,5);
-            obs{ii}.rg = wdwF(:,3:4);
-            obs{ii}.VrOverVg = 1.18;
-        otherwise
-            error('Need to ender switch entry for specified observer');
-    end
-end
-
-hdl = ieNewGraphWin();
-hdl.Position = [0.0070    0.5819    0.3891    0.3381];
-
-tiledlayout(1,2);
-nexttile;
-plot(obs{ii}.wave,obs{ii}.logVlambda);
-xlabel('Wavelength (nm)')
-ylabel('Log V_\lambda')
-grid on;
-
-nexttile;
-plot(obs{ii}.wave,obs{ii}.CMF);
-xlabel('Wavelength (nm)')
-ylabel('Relative (primaries 650 and 480)');
-grid on;
 
 
 
@@ -448,7 +459,7 @@ obsAverage.CMF = wdwAve(:,6:7);
 obsAverage.logVlambda = wdwAve(:,2);
 obsAverage.Vlambda = wdwAve(:,5);
 obsAverage.rg = wdwAve(:,3:4);
-obsAverage.VrOverVg = 1.02;
+obsAverage.VrOverVg = 1.278;
 
 hdl = ieNewGraphWin();
 hdl.Position = [0.0070    0.5819    0.3891    0.3381];
@@ -469,8 +480,11 @@ grid on;
 %%  I keep this as false until I want to overwrite the data file.
 %
 % This way, executing the script will not over-write the file.
+%
+% wave is stored as part of all the obs structs.
+%
 saveFlag = false;
 if saveFlag
-    fname = fullfile(iefundamentalsRootPath,'wdwright','wdwTritanopes.mat');
+    fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
     save(fname,'obs','obsAverage')
 end

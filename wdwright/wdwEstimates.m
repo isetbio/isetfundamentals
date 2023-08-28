@@ -70,12 +70,42 @@ xlabel('Wavelength (nm)');
 ylabel('CMF'); grid on;
 legend('deutan','','protan','','tritan','');
 
-%% Run the null space calculation
+%%  Estimated using the nullnull method
 
+ieNewGraphWin([],'wide');
+tiledlayout(1,3);
 
+% L cone
+nexttile;
+Lest = conefundamental(thisDeutan,tritan,'method','nullnull');
+Lest = ieScale(Lest,1);
+plot(wave,Lest,'r-',wave,stockman(:,1),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)'); ylabel('Normalized sensitivity');
+title('L')
 
-ieNewGraphWin([],'tall');
-tiledlayout(3,1);
+% M cone
+nexttile;
+Mest = conefundamental(protan,tritan);
+Mest = ieScale(Mest,1);
+plot(wave,Mest,'g-',wave,stockman(:,2),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');ylabel('Normalized sensitivity');
+title('M')
+
+% S cone
+nexttile;
+Sest = conefundamental(thisDeutan,protan,'method','nullnull');
+Sest = ieScale(Sest,1);
+plot(wave,Sest,'b-',wave,stockman(:,3),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');ylabel('Normalized sensitivity');
+title('S')
+
+%% Run the null space calculation by hand using the SVD
+
+ieNewGraphWin([],'wide');
+tiledlayout(1,3);
 
 % L cone
 [U,S,V] = svd([thisDeutan,tritan],'econ');
@@ -125,4 +155,4 @@ xlabel('Wavelength (nm)');
 title('DeutanC and Protan')
 legend('Estimate1','Stockman','Estimate2');
 
-%%
+%% END

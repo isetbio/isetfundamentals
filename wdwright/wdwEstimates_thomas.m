@@ -1,10 +1,15 @@
 %% Estimate fundamentals from WDW data
 clear;
 wave = 400:5:650;
+<<<<<<< HEAD
  
 deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
 %%
 % *BOLD TEXT* 
+=======
+
+deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
+>>>>>>> f63bc48ed4b2e28123e16399a6f29a7d3a63181e
 %deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
 protan = ieReadSpectra('wdwProtanopes.mat',wave);
 load('wdwTritanopes','obsAverage');
@@ -15,7 +20,7 @@ deutan = ieScale(deutan,1);
 tritan  = ieScale(tritan,1);
 
 stockman = ieReadSpectra('stockmanEnergy',wave);
-
+ 
 %%
 Ldeutan = stockman\deutan;
 estDeutanC = stockman*Ldeutan;
@@ -45,7 +50,7 @@ legend('deutan','','protan','','tritan','');
 
 %% Run the null space calculation
 Lest = {}
-labels_est = {'1','2','nullnull'} %legend label for each estimate 
+labels_est = {'1','2','nullnull','nullnullXY'} %legend label for each estimate 
 
 % Add noise
 noise =0
@@ -53,10 +58,11 @@ tritanN = tritan+noise*rand(size(tritan))
 deutanN = deutan+noise*rand(size(tritan))
 
 ieNewGraphWin([],'upperleftbig');
-tiledlayout(3,3);
+tiledlayout(3,4);
 % Normalize: Make the sign of the largest element positive.
 normalize = @(A) A*sign(A(find(max(abs(A))==abs(A),1,'first')))
 % L cone - compare three estimators
+<<<<<<< HEAD
 %%% Method 1: null[CM1 CM2] - gives two estimates
 [U,S,V]=svds([deutanN,tritanN],1);
 matrix=U*S*V';
@@ -71,8 +77,23 @@ Lest{3} = ieScale(normalize(V(:,end)));
 
 Lest{3}
 for i=1:3
+=======
+estimator1=estimatorIntersect(deutan,tritan)
+Lest{1,1} = ieScale(estimator1);
+
+estimator2=estimatorLowrank(deutan,tritan)
+Lest{2,1} = ieScale(estimator2);
+
+estimator3=estimatorNullNull(deutan,tritan)
+Lest{3,1} = ieScale(estimator3);
+
+estimator4=estimatorNullNullXY(deutan,tritan);
+Lest{4,1} = ieScale(estimator4);
+
+for i=1:4
+>>>>>>> f63bc48ed4b2e28123e16399a6f29a7d3a63181e
     nexttile; hold on
-    plot(wave,Lest{i},'r',wave,stockman(:,1),'k','LineWidth',2);
+    plot(wave,Lest{i,1},'r',wave,stockman(:,1),'k','LineWidth',2);
     grid on;
     xlabel('Wavelength (nm)');
     title('Tritan and Deutan')
@@ -86,18 +107,18 @@ end
 
 
 % M cone - compare three estimators
-%%% Method 1: null[CM1 CM2] - gives two estimates
-[U,S,V] = svd([protan,tritan],'econ');
-x = V(:,4);
-Lest{1} = ieScale(normalize(protan*x(1:2)),1);
-Lest{2} = ieScale(normalize(tritan*x(3:4)),1);
-%%% Method 2: null([null(CM1') null(CM2')]') - gives one estimates
-[U,S,V] = svd([null(protan') , null(tritan')]','econ');
-Lest{3} = ieScale(normalize(V(:,end)));
+estimator1=estimatorIntersect(protan,tritan)
+estimator2=estimatorLowrank(protan,tritan)
+estimator3=estimatorNullNull(protan,tritan)
+Lest{1,2} = ieScale(estimator1);
+Lest{2,2} = ieScale(estimator2);
+Lest{3,2} = ieScale(estimator3);
 
-for i=1:3
+estimator4=estimatorNullNullXY(protan,tritan);
+Lest{4,2} = ieScale(estimator4);
+for i=1:4
     nexttile; hold on
-    plot(wave,Lest{i},'g',wave,stockman(:,2),'k','LineWidth',2);
+    plot(wave,Lest{i,2},'g',wave,stockman(:,2),'k','LineWidth',2);
     grid on;
     xlabel('Wavelength (nm)');
     title('Protan and Tritan')
@@ -112,24 +133,27 @@ end
 
 
 % S cone - compare three estimators
-%%% Method 1: null[CM1 CM2] - gives two estimates
-[U,S,V] = svd([deutan,protan],'econ');
-x = V(:,4);
-Lest{1} = ieScale(normalize(deutan*x(1:2)),1);
-Lest{2} = ieScale(normalize(protan*x(3:4)),1);
-%%% Method 2: null([null(CM1') null(CM2')]') - gives one estimates
-[U,S,V] = svd([null(deutan') , null(protan')]','econ');
-Lest{3} = ieScale(normalize(V(:,end)));
 
-for i=1:3
+estimator1=estimatorIntersect(deutan,protan)
+estimator2=estimatorLowrank(deutan,protan)
+estimator3=estimatorNullNull(deutan,protan)
+Lest{1,3} = ieScale(estimator1);
+Lest{2,3} = ieScale(estimator2);
+Lest{3,3} = ieScale(estimator3);
+
+estimator4=estimatorNullNullXY(deutan,protan);
+Lest{4,3} = ieScale(estimator4);
+
+for i=1:4
     nexttile; hold on
-    plot(wave,Lest{i},'b',wave,stockman(:,3),'k','LineWidth',2);
+    plot(wave,Lest{i,3},'b',wave,stockman(:,3),'k','LineWidth',2);
+    if(i==3) ,plot(wave,0.5*sum(Lest{4,3},2)), end
     grid on;
     xlabel('Wavelength (nm)');
     title('Deutan and Protan')
     % Add stockman label only on first column
     if(i==1)
-        legend(['Estimate ' labels_est{i}],'Stockman','location','best');
+        legend(['Estimate ' labels_est{i}],'Estimate 2','Stockman','location','best');
     else
         legend(['Estimate ' labels_est{i}],'location','best');
     end
@@ -167,3 +191,6 @@ Sest = ieScale(abs(V(:,end)))
 %}
 
 
+
+%% 
+plot()
