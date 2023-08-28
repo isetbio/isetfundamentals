@@ -1,10 +1,13 @@
 %% s_cfDerivation
 %
-% This is conceptually like wdwEstimates.
+% This is conceptually like wdwEstimates.  It is simpler for the
+% Wright, and it adds the Judd summary as a starting point.
 %
-% Using the conefundamentals function.
+% Using the conefundamentals function makes it easier to understand.
+%
 % Trying with both the Wright data and with the Judd summary of the
-% Wright data.
+% Wright data.  The corrected Wright data does well.  The Judd WWK
+% does not do well.
 %
 % See also
 %
@@ -22,7 +25,7 @@ cmfTritan = interp1(obsAverage.wave,obsAverage.CMF,thisW);
 
 stockman = ieReadSpectra('stockmanEnergy.mat',thisW);
 
-%%
+%% The WD Wright starting point with the corrected Deutan does well
 ieNewGraphWin([],'wide'); 
 nexttile
 Scone = conefundamental(cmfProtan,cmfDeutan,'method','nullnull');
@@ -39,7 +42,10 @@ Lcone = conefundamental(cmfDeutan,cmfTritan,'method','nullnull');
 plot(thisW,Lcone,'r-',thisW,stockman(:,1),'k.','Linewidth',2);
 xlabel('Wavelength (nm)'); grid on;
 
+title('WDW Data')
+
 %% Now try with the Judd WWK summary of the WD Wright
+% Without the corrected Deutan, not great for the L cone fundamental
 
 thisW = 410:650;
 load('JuddWWK.mat','wave','WWK');
@@ -49,7 +55,8 @@ cmfTritan = interp1(wave,WWK(:,[1,2]),thisW);
 
 stockman = ieReadSpectra('stockmanEnergy.mat',thisW);
 
-%%
+%% The Judd starting point does not do well
+
 ieNewGraphWin([],'wide'); 
 nexttile
 Scone = conefundamental(cmfProtan,cmfDeutan,'method','nullnull');
@@ -66,3 +73,4 @@ Lcone = conefundamental(cmfDeutan,cmfTritan,'method','nullnull');
 plot(thisW,Lcone,'r-',thisW,stockman(:,1),'k.','Linewidth',2);
 xlabel('Wavelength (nm)'); grid on;
 
+title('Judd WWK')

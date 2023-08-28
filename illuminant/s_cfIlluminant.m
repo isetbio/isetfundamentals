@@ -19,6 +19,7 @@ cTemp = [3000 7500 5000];
 stockman = ieReadSpectra('stockmanEnergy',wave);
 day1 = blackbody(wave,cTemp(1));
 day2 = blackbody(wave,cTemp(2));
+day3 = blackbody(wave,cTemp(3));
 
 % For now use this as a reflectance vector
 reflectance = blackbody(wave,cTemp(3));
@@ -105,7 +106,7 @@ fprintf('Cone weights 2 (ctemp 2):  %.1f %.1f %.1f\n', bvec);
 fig=figure(10); clf;
 fig.Position= [281 117.6667 908.6667 500.3333];
 
-% Calcualte low rank approximation
+% Calculate low rank approximation
 ranks = [5,4,3]
 for r=1:numel(ranks)
     [U,S,V]=svds(M,ranks(r));
@@ -113,7 +114,6 @@ for r=1:numel(ranks)
 
     % Null space 
     N = null(Mlr);
-
 
     % Plot the low rank approximations of the original cones
     subplot(3,3,r)
@@ -132,7 +132,7 @@ for r=1:numel(ranks)
     plot(wave,B,'r--')
     title(["Rank " num2str(ranks(r))])
 
-    % use virtual cones to measurea third spectrum
+    % use virtual cones to measure a third spectrum
     subplot(3,3,7) ; hold on;
     A=-M(:,1:3)*N(1:3,:);
     B=M(:,4:6)*N(4:6,:);
