@@ -6,20 +6,53 @@ ieInit;
 % Define wavelengths we'll use
 wave = SToWls([400 10 31]);
 
-%% Load data digitized from Wright's book
-%
-% rWDW
-the_rWDWProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwChromRedProtan.mat'));
-the_rWDWDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwChromRedDeutan.mat'));
-rWDW_Protan = interp1(the_rWDWProtanData.wdwProtanChromRed(:,1),the_rWDWProtanData.wdwProtanChromRed(:,2),wave,'spline',NaN);
-rWDW_Deutan = interp1(the_rWDWDeutanData.wdwDeutanChromRed(:,1),the_rWDWDeutanData.wdwDeutanChromRed(:,2),wave,'spline',NaN);
+%% Load data digitized from Pitt 135 and/or Wright's book
+brianData = false;
+if (brianData)
+    the_rWDWProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwChromRedProtan.mat'));
+    the_rWDWDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwChromRedDeutan.mat'));
+    wdwProtanChromr_Raw = the_rWDWProtanData.wdwProtanChromRed;
+    wdwDeutanChromr_Raw = the_rWDWDeutanData.wdwDeutanChromRed;
+    rWDW_Protan = interp1(wdwProtanChromr_Raw(:,1),wdwProtanChromr_Raw(:,2),wave,'spline',NaN);
+    rWDW_Deutan = interp1(wdwDeutanChromr_Raw(:,1),wdwDeutanChromr_Raw(:,2),wave,'spline',NaN);
+
+    the_VlambdaProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwVlambda_Protan.mat'));
+    the_VlambdaDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwVlambda_Deutan.mat'));
+    wdwProtanVlambda_Raw = the_VlambdaProtanData.Wright_Protan_Vlambda;
+    wdwDeutanVlambda_Raw = the_VlambdaDeutanData.Wright_Deutan_Vlambda;
+    Vlambda_Protan = interp1(wdwProtanVlambda_Raw(:,1),wdwProtanVlambda_Raw(:,2),wave,'spline',NaN);
+    Vlambda_Deutan = interp1(wdwDeutanVlambda_Raw(:,1),wdwDeutanVlambda_Raw(:,2),wave,'spline',NaN);
+   
+    whiteData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','Pitt_1935Data.mat'));
+    WhiteSpd = interp1(whiteData.smithGuild_WhiteB(:,1),whiteData.smithGuild_WhiteB(:,2),wave,'spline',NaN); 
+else
+    theData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','Pitt_1935Data.mat'));
+    wdwProtanChromr_Raw = theData.wdwProtanChromr;
+    wdwDeutanChromr_Raw = theData.wdwDeutanChromr;
+    rWDW_Protan = interp1(wdwProtanChromr_Raw(:,1),wdwProtanChromr_Raw(:,2),wave,'spline',NaN);
+    rWDW_Deutan = interp1(theData.wdwDeutanChromr(:,1),theData.wdwDeutanChromr(:,2),wave,'spline',NaN);
+    
+    wdwProtanVlambda_Raw = theData.wdwProtanVlambda;
+    wdwDeutanVlambda_Raw = theData.wdwDeutanVlambda;
+    Vlambda_Protan = interp1(wdwProtanVlambda_Raw(:,1),wdwProtanVlambda_Raw(:,2),wave,'spline',NaN);
+    Vlambda_Deutan = interp1(theData.wdwDeutanVlambda(:,1),theData.wdwDeutanVlambda(:,2),wave,'spline',NaN);
+    
+    WhiteSpd = interp1(theData.smithGuild_WhiteB(:,1),theData.smithGuild_WhiteB(:,2),wave,'spline',NaN); 
+end
+
+% Load in tabulated CMFs that were digitized from plots.
+theR_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','ProtanCMFRed.mat'));
+R_Protan_Tabulated = interp1(theR_Protan_Data.ProtanCMFRed(:,1),theR_Protan_Data.ProtanCMFRed(:,2),wave,'spline',NaN);
+theB_Protan_Data = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','ProtanCMFBluex5.mat'));
+B_Protan_Tabulated = interp1(theB_Protan_Data.ProtanCMFBluex5(:,1),theB_Protan_Data.ProtanCMFBluex5(:,2),wave,'spline',NaN)/5;
+VlambdaFromRplusB_Protan_Tabulated = R_Protan_Tabulated + B_Protan_Tabulated;
 
 % Plot of rWDW data 
 rWDWFig = figure;
 set(gcf,'Position',[100 100 1200 600]);
 
 subplot(1,3,1); hold on;
-plot(the_rWDWProtanData.wdwProtanChromRed(:,1),the_rWDWProtanData.wdwProtanChromRed(:,2), ...
+plot(wdwProtanChromr_Raw(:,1),wdwProtanChromr_Raw(:,2), ...
     'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,rWDW_Protan,'r-','LineWidth',2);
 title('Protan rWDW');
@@ -27,7 +60,7 @@ xlabel('Wavelength (nm)');
 ylabel('rWDW');
 
 subplot(1,3,2); hold on;
-plot(the_rWDWDeutanData.wdwDeutanChromRed(:,1),the_rWDWDeutanData.wdwDeutanChromRed(:,2), ...
+plot(wdwDeutanChromr_Raw(:,1),wdwDeutanChromr_Raw(:,2), ...
     'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,rWDW_Deutan,'r-','LineWidth',2);
 title('Deutan rWDW');
@@ -51,16 +84,12 @@ Vb_Deutan = 6.2;
 VbOverVr_Deutan = Vb_Deutan/(Vr_Deutan);
 
 % Luminance
-the_VlambdaProtanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwVlambda_Protan.mat'));
-the_VlambdaDeutanData = load(fullfile(iefundamentalsRootPath,'wdwright','grabit','wdwVlambda_Deutan.mat'));
-Vlambda_Protan = interp1(the_VlambdaProtanData.Wright_Protan_Vlambda(:,1),the_VlambdaProtanData.Wright_Protan_Vlambda(:,2),wave,'spline',NaN);
-Vlambda_Deutan = interp1(the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,1),the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,2),wave,'spline',NaN);
-
+%
 % Plot of Vlambda data
 lumFig = figure;
 set(gcf,'Position',[100 100 1200 600]);
 subplot(1,3,1); hold on;
-plot(the_VlambdaProtanData.Wright_Protan_Vlambda(:,1),the_VlambdaProtanData.Wright_Protan_Vlambda(:,2), ...
+plot(wdwProtanVlambda_Raw(:,1),wdwProtanVlambda_Raw(:,2), ...
     'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,Vlambda_Protan,'r-','LineWidth',2);
 plot(wave,1*ones(size(wave)),'k:','LineWidth',1);
@@ -69,7 +98,7 @@ xlabel('Wavelength (nm)');
 ylabel('Vlambda');
 
 subplot(1,3,2); hold on;
-plot(the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,1),the_VlambdaDeutanData.Wright_Deutan_Vlambda(:,2), ...
+plot(wdwDeutanVlambda_Raw(:,1),wdwDeutanVlambda_Raw(:,2), ...
     'ro','MarkerFaceColor','r','MarkerSize',4);
 plot(wave,Vlambda_Deutan,'r-','LineWidth',2);
 plot(wave,1*ones(size(wave)),'k:','LineWidth',1);
@@ -181,6 +210,59 @@ xlabel('Wavelength (nm)');
 ylabel('CMF');
 title('Deutan CMFs');
 
+%% Check the white match
+index = ~isnan(R_Protan_Derived) & ~isnan(B_Protan_Derived);
+CMFs_Protan_Derived = [R_Protan_Derived(index)' ; B_Protan_Derived(index)'];
+whiteRB_Protan_Derived = CMFs_Protan_Derived * WhiteSpd(index);
+whiter_Protan_Derived = whiteRB_Protan_Derived(1)/sum(whiteRB_Protan_Derived);
+for ww = 1:length(wave(index))
+    r_Protan(ww) = CMFs_Protan_Derived(1,ww)/sum(CMFs_Protan_Derived(:,ww));
+    diffwl(ww) = wave(ww);
+    diffr(ww) = abs(whiter_Protan_Derived-r_Protan(ww));
+end
+[diffMin,diffIndex] = min(diffr);
+whiteMatchWl_Protan_Derived = diffwl(diffIndex(1));
+fprintf('Protan derived white match wavelength: %d\n',whiteMatchWl_Protan_Derived);
+
+index = ~isnan(R_Deutan_Derived) & ~isnan(B_Deutan_Derived);
+CMFs_Deutan_Derived = [R_Deutan_Derived(index)' ; B_Deutan_Derived(index)'];
+whiteRB_Deutan_Derived = CMFs_Deutan_Derived * WhiteSpd(index);
+whiter_Deutan_Derived = whiteRB_Deutan_Derived(1)/sum(whiteRB_Deutan_Derived);
+for ww = 1:length(wave(index))
+    r_Deutan_Derived(ww) = CMFs_Deutan_Derived(1,ww)/sum(CMFs_Deutan_Derived(:,ww));
+    diffwl(ww) = wave(ww);
+    diffr(ww) = abs(whiter_Deutan_Derived-r_Deutan_Derived(ww));
+end
+[diffMin,diffIndex] = min(diffr);
+whiteMatchWl_Deutan_Derived = diffwl(diffIndex(1));
+fprintf('Deutan derived white match wavelength: %d\n',whiteMatchWl_Deutan_Derived);
+
+index = ~isnan(R_Protan_Tabulated) & ~isnan(B_Protan_Tabulated);
+CMFs_Protan_Tabulated = [R_Protan_Tabulated(index)' ; B_Protan_Tabulated(index)'];
+whiteRB_Protan_Tabulated = CMFs_Protan_Tabulated * WhiteSpd(index);
+whiter_Protan_Tabulated = whiteRB_Protan_Tabulated(1)/sum(whiteRB_Protan_Tabulated);
+for ww = 1:length(wave(index))
+    r_Protan_Tabulated(ww) = CMFs_Protan_Tabulated(1,ww)/sum(CMFs_Protan_Tabulated(:,ww));
+    diffwl(ww) = wave(ww);
+    diffr(ww) = abs(whiter_Protan_Tabulated-r_Protan_Tabulated(ww));
+end
+[diffMin,diffIndex] = min(diffr);
+whiteMatchWl_Protan_Tabulated = diffwl(diffIndex(1));
+fprintf('Protan tabulated white match wavelength: %d\n',whiteMatchWl_Protan_Tabulated);
+
+index = ~isnan(R_Deutan_Tabulated) & ~isnan(B_Deutan_Tabulated);
+CMFs_Deutan_Tabulated = [R_Deutan_Tabulated(index)' ; B_Deutan_Tabulated(index)'];
+whiteRB_Deutan_Tabulated = CMFs_Deutan_Tabulated  * WhiteSpd(index);
+whiter_Deutan_Tabulated = whiteRB_Deutan_Tabulated(1)/sum(whiteRB_Deutan_Tabulated);
+for ww = 1:length(wave(index))
+    r_Deutan_Tabulated(ww) = CMFs_Deutan_Tabulated (1,ww)/sum(CMFs_Deutan_Tabulated(:,ww));
+    diffwl(ww) = wave(ww);
+    diffr(ww) = abs(whiter_Deutan_Tabulated-r_Deutan_Tabulated(ww));
+end
+[diffMin,diffIndex] = min(diffr);
+whiteMatchWl_Deutan_Derived = diffwl(diffIndex(1));
+fprintf('Deutan tabulated white match wavelength: %d\n',whiteMatchWl_Deutan_Derived);
+
 save(fullfile(iefundamentalsRootPath,'wdwright','validation','Wright_ProtanDeutanDerivedCMFs'), ...
     'wave', ...
     'R_Protan_Derived','B_Protan_Derived','R_Deutan_Derived','B_Deutan_Derived', ...
@@ -206,13 +288,22 @@ function [R,B] = WDWChromVlambdaToCMFFun(W1,wls,rWDW,Vlambda,flipNorm)
 % If either rWDW or Vlambda is NaN at a wavelength, NaN is returned for
 % that wavelength.
 
+% Fix Vlambda if it is too small. The call to fsolve gets unhappy if Vlamba
+% is 0;
+VlambdaThresh = 1e-6;
+Vlambda(Vlambda < VlambdaThresh) = VlambdaThresh;
+
 % Use fsolve to find R and G at each wavelength, given W1, r_WDW and
 % Vlambda at each wavelength.close all
 options = optimoptions('fsolve','Display','none');
 if (~flipNorm)
     for ww = 1:length(wls)
         if (~isnan(rWDW(ww)) & ~isnan(Vlambda(ww)))
-            R(ww) = fsolve(@(Rdummy)(rWDW(ww)-(Rdummy/W1)/(Rdummy/W1 + Vlambda(ww) - Rdummy)),Vlambda(ww)/2,options);
+            try
+                R(ww) = fsolve(@(Rdummy)(rWDW(ww)-(Rdummy/W1)/(Rdummy/W1 + Vlambda(ww) - Rdummy)),Vlambda(ww)/2,options);
+            catch
+                disp('Debug me');
+            end
         else
             R(ww) = NaN;
         end
@@ -222,7 +313,11 @@ if (~flipNorm)
 else
     for ww = 1:length(wls)
         if (~isnan(rWDW(ww)) & ~isnan(Vlambda(ww)))
-            B(ww) = fsolve(@(Bdummy)((1-rWDW(ww))-(Bdummy*W1)/(Bdummy*W1 + Vlambda(ww) - Bdummy)),Vlambda(ww)/2,options);
+            try
+                B(ww) = fsolve(@(Bdummy)((1-rWDW(ww))-(Bdummy*W1)/(Bdummy*W1 + Vlambda(ww) - Bdummy)),Vlambda(ww)/2,options);
+            catch
+                disp('Debug me');
+            end
         else
             B(ww) = NaN;
         end
