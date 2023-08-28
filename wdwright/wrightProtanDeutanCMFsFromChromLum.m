@@ -4,7 +4,7 @@
 ieInit;
 
 % Define wavelengths we'll use
-wave = SToWls([400 10 31]);
+wave = SToWls([400 1 301]);
 
 %% Load data digitized from Pitt 135 and/or Wright's book
 brianData = false;
