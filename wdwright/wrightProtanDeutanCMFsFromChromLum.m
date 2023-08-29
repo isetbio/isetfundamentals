@@ -1,7 +1,7 @@
 % Wright protan and deutan CMFs
 
 %% Initializing
-ieInit;
+% ieInit;
 
 % Define wavelengths we'll use
 wave = SToWls([400 1 301]);
