@@ -4,6 +4,9 @@ function estimates = estimatorIntersect(A,B)
 % See also
 %   getlastVfromSVD
 
+assert(size(A,2) == 2);
+assert(size(B,2) == 2);
+
 % Get the last right singular vector V to obtain an estimate of
 % the null space;
 x = getlastVfromSVD([A -B]);
