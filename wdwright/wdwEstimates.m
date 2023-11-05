@@ -1,12 +1,16 @@
 %% Estimate fundamentals from WDW data
 %
-% We use the conefundamental script to calculate the fundamentals from the
-% WDW dichromatic color matching data.
+% Original, and now scratch or maybe even deprecated.  Replaced by
+% s_cfDerivation script.  That one is simpler.  This has various scribbles
+% and notes.  It does more explicit comparisons with Deutan and DeutanC
+% (corrected).
 %
+% Both this script and s_cfDerviation now use the conefundamental function
+% to calculate the fundamentals from the WDW dichromatic color matching
+% data.  The alternative solution method in wdwEstimates_thomas can be
+% replaced by specifying different methods in the conefundamental function.
 %
-% See also
-%   wdwEstimates_thomas - for another solution method
-%
+% TODO:  Noise.
 
 %%
 wave = 400:5:650;

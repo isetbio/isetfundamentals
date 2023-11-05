@@ -1,15 +1,17 @@
 %% Estimate fundamentals from WDW data
+%
+%
+% Deprecated.  See wdwEstimates and s_cfDerivation for notes.
+%
+% This does not run.
+%
+% It tried some experiments with noise, and that was a good thing.
+%
+
 clear;
 wave = 400:5:650;
-<<<<<<< HEAD
- 
-deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
-%%
-% *BOLD TEXT* 
-=======
 
 deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
->>>>>>> f63bc48ed4b2e28123e16399a6f29a7d3a63181e
 %deutan = ieReadSpectra('wdwDeuteranopes.mat',wave);
 protan = ieReadSpectra('wdwProtanopes.mat',wave);
 load('wdwTritanopes','obsAverage');
