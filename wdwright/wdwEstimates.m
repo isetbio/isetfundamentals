@@ -1,5 +1,7 @@
 %% Estimate fundamentals from WDW data
 %
+% We use the conefundamental script to calculate the fundamentals from the
+% WDW dichromatic color matching data.
 %
 %
 % See also

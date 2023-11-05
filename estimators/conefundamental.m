@@ -41,7 +41,11 @@ Lcone = conefundamental(cmfDeutan,cmfTritan,'method','nullnull');
 ieNewGraphWin; plot(thisW,Lcone,'r-',thisW,stockman(:,1),'k.','Linewidth',2);
 xlabel('Wavelength (nm)'); grid on;
 %}
-
+%{
+ % Load up from above
+ estimate = conefundamental(cmfProtan,cmfTritan,'method','lowrank');
+ plot(estimate)
+%}
 %% Parse
 varargin = ieParamFormat(varargin);
 
