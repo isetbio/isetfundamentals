@@ -31,3 +31,44 @@
 % a weighted sum of the channels of A and the weighted sum of the channels
 % in B.
 %
+
+%% Devices
+
+% Device A
+A = [1 0; 0.5 0.3; 0 0];
+for ii=1:2
+    A(:,ii) = A(:,ii)/vectorLength(A(:,ii));
+end
+
+% Device B
+B = [0 0; 1 0; 0 1];
+for ii=1:2
+    B(:,ii) = B(:,ii)/vectorLength(B(:,ii));
+end
+
+%%
+
+% Define the origin (O)
+O = [0, 0, 0];
+wgts = 
+Aspace = A*[]
+P = A';
+
+
+% Extract x, y, and z coordinates of P
+X = P(:, 1);
+Y = P(:, 2);
+Z = P(:, 3);
+
+% Create a quiver plot
+ieNewGraphWin;
+for ii=1:2
+    hold on;
+    quiver3(O(1), O(2), O(3), X(ii), Y(ii), Z(ii),0);
+end
+
+% Customize the plot (optional)
+xlabel('X');
+ylabel('Y');
+zlabel('Z');
+title('3D Arrow Plot');
