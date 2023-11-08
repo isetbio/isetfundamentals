@@ -53,16 +53,24 @@ end
 intersection = estimatorNullNull(A,B);
 lStyle = '-';
 lWidth = 3;
+lWidth2 = 1.5;
+axLim = 1.5;
+delta = -0.005;
+alpha = 0.3;
 
 %% Show the plane
 
 ieNewGraphWin;
 
 [x,y,z] = iePlaneFromVectors(A);
-S  = surf(x,y,z);
+S1  = surf(x,y,z); hold on;
+S2  = surf(x+delta,y+delta,z+delta);
+
 rotate3d on;
-S.FaceAlpha = 0.3; S.FaceColor = 'r'; 
-S.EdgeColor = 'none';
+S1.FaceAlpha = alpha; S1.FaceColor = 'r'; S1.EdgeColor = 'none';
+S2.FaceAlpha = alpha; S2.FaceColor = 'r'; S2.EdgeColor = 'none';
+set(gca,'zlim',[-axLim axLim],'ylim',[-axLim axLim],'xlim',[-axLim axLim])
+
 % lightangle(-45,30);
 % lighting gouraud;
 
@@ -81,7 +89,6 @@ for ii=1:2
     deviceA(ii).LineStyle = lStyle;
 end
 
-set(gca,'zlim',[-axLim axLim],'ylim',[-axLim axLim],'xlim',[-axLim axLim])
 view(-30,20);
 
 %% Show the channels for the second device
@@ -107,10 +114,11 @@ exportgraphics(gca,fname,'Resolution','300');
 %% The possible channels from device B
 
 [x,y,z] = iePlaneFromVectors(B);
-S  = surf(x,y,z);
-S.FaceAlpha = 0.3;
-S.FaceColor = 'b';
-S.EdgeColor = 'none';
+S1  = surf(x,y,z);
+S2  = surf(x+delta,y+delta,z+delta);
+S1.FaceAlpha = alpha; S1.FaceColor = 'b'; S1.EdgeColor = 'none';
+S2.FaceAlpha = alpha; S2.FaceColor = 'b'; S2.EdgeColor = 'none';
+
 
 %% Show the intersection, reachable by both cameras
 
@@ -119,10 +127,11 @@ S.EdgeColor = 'none';
 INT = line([-intersection(1),intersection(1)],[ -intersection(2),intersection(2)], [ -intersection(3), intersection(3)]);
 INT.Color = 'k';
 INT.LineWidth = lWidth;
+INT.LineStyle = '--';
 fname = fullfile(iefundamentalsRootPath,'local','virtualB.jpg');
 
-deviceA(1).LineWidth = 1; deviceA(2).LineWidth = 1;
-deviceB(1).LineWidth = 1; deviceB(2).LineWidth = 1;
+deviceA(1).LineWidth = lWidth2; deviceA(2).LineWidth = lWidth2;
+deviceB(1).LineWidth = lWidth2; deviceB(2).LineWidth = lWidth2;
 exportgraphics(gca,fname,'Resolution','300');
 
 %% Now illustrate with images
@@ -155,7 +164,7 @@ virtualA = A1*wgtsA(1) + A2*wgtsA(2);
 wgtsB = pinv(B)*intersection;
 virtualB = B1*wgtsB(1) + B2*wgtsB(2);
 
-ieNewGraphWin([],'wide');
+ieNewGraphWin([]);
 colormap(gray)
 tiledlayout(2,3);
 nexttile; imagesc(A1); axis image; set(gca,'xtick',[],'ytick',[]); subtitle('A1')
@@ -198,7 +207,6 @@ end
 grid on;
 % [-axLim axLim]
 % [0 axLim]
-axLim = 1.5;
 set(gca,'zlim',[-axLim axLim],'ylim',[-axLim axLim],'xlim',[-axLim axLim])
 xlabel('Channel 1'); ylabel('Channel 2'); zlabel('Channel 3'); 
 rotate3d on;
