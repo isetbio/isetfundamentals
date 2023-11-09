@@ -51,6 +51,8 @@ end
 % B(:,2) = null(A');
 
 intersection = estimatorNullNull(A,B);
+
+O = [0,0,0];
 lStyle = '-';
 lWidth = 3;
 lWidth2 = 1.5;
@@ -107,7 +109,7 @@ axis equal;
 set(gca,'zlim',[-axLim axLim],'ylim',[-axLim axLim],'xlim',[-axLim axLim])
 view(-22,24);
 
-fname = fullfile(iefundamentalsRootPath,'local','virtualA.jpg');
+fname = fullfile(iefundamentalsRootPath,'fig','virtualA.jpg');
 exportgraphics(gca,fname,'Resolution','300');
 
 
@@ -128,7 +130,7 @@ INT = line([-intersection(1),intersection(1)],[ -intersection(2),intersection(2)
 INT.Color = 'k';
 INT.LineWidth = lWidth;
 INT.LineStyle = '--';
-fname = fullfile(iefundamentalsRootPath,'local','virtualB.jpg');
+fname = fullfile(iefundamentalsRootPath,'fig','virtualB.jpg');
 
 deviceA(1).LineWidth = lWidth2; deviceA(2).LineWidth = lWidth2;
 deviceB(1).LineWidth = lWidth2; deviceB(2).LineWidth = lWidth2;
