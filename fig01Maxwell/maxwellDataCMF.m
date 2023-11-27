@@ -1,17 +1,21 @@
 %% Simulations and calculations related to Maxwell, 1860 color matching
 %
-% This script writes out the data from the Maxwell 1860 CMFS.  These
-% are in Tables VI and IX. The output mat-files are maxwellCMF_obsK
-% and maxwellCMF_obsJ.
+% This script writes out the data from the Maxwell 1860 CMFS.  These are in
+% Tables VI and IX along with the adjusted wavelengths. The output
+% mat-files are maxwellCMF_obsK and maxwellCMF_obsJ, which are stored in
+% the data subdirectory of this repository.
 %
-% The Maxwell 1860 paper, reviewed by Judd and Zaidi, uses an
-% interesting method to derive the color matching functions for two
-% observers.  These were the first CMF measurements, and the paper
-% describes the concepts and methods wonderfully.
-%
+% The Maxwell 1860 paper
+% 
 %   ON THE THEORY OF COMPOUNT COLORS (Maxwell)
 %
-%   See also, Qasim Zaideh's REVIEW, and Judd's MAXWELL AND MODERN COLORIMETRY
+% is reviewed by in subsequent papers by Judd and Zaidi,
+% 
+%  Qasim Zaideh's REVIEW, and Judd's MAXWELL AND MODERN COLORIMETRY
+%
+% Maxwell uses an interesting method to derive the color matching functions
+% for two observers.  These were the first CMF measurements, and the paper
+% describes the concepts and methods wonderfully.
 %
 % NOTE: The K and J CMFs with the light box are in the 1860 paper.
 % Matches using spinning tops analysis in the 1855/1857 paper.

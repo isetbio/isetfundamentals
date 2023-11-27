@@ -1,4 +1,4 @@
-%% Calculations with the dichromats and stockman
+%% Figure 03
 %
 % Comparing whether the WDW CMFs are within a linear transform of the
 % Stockman cone fundamentals.
@@ -17,7 +17,7 @@
 %% Protanope CMF
 
 % Protan
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfProtan.mat');
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfProtan.mat');
 load(fname,'wave','cmfProtan');
 stockman = ieReadSpectra('stockmanEnergy',wave);
 
@@ -27,7 +27,7 @@ Lprotan = stockman\cmfProtan;
 estProtan = stockman*Lprotan;
 
 % Deutan
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfDeutan.mat');
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfDeutan.mat');
 load(fname,'wave','cmfDeutan');
 
 % The wave is the same.  So no need to reread.
@@ -55,7 +55,7 @@ xlabel('Wavelength (nm)');
 ylabel('Primary intensity (a.u.)'); grid on;
 
 % Tritan - the wavelength is different
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfTritan.mat');
 load(fname,'obsAverage');
 % cmfTritan = obsAverage.CMF;
 wave = min(obsAverage.wave):max(obsAverage.wave);
@@ -72,7 +72,7 @@ xlabel('Wavelength (nm)');
 ylabel('Primary intensity (a.u.)'); grid on;
 
 % DeutanC - back to original wave
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfDeutanC.mat');
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfDeutanC.mat');
 load(fname,'wave','cmfDeutanC');
 stockman = ieReadSpectra('stockmanEnergy',wave);
 
@@ -86,9 +86,11 @@ title('Deutan (Corrected)');
 xlabel('Wavelength (nm)');
 ylabel('Primary intensity (a.u.)'); grid on;
 
-%% Fovea
+%% Fovea  - Probably should move to a separate file.
 
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfFovea.mat');
+% Fix this.
+%{
+fname = fullfile(iefundamentalsRootPath,'data','cmfFovea.mat');
 load(fname,'wave','cmfFovea');
 stockman = ieReadSpectra('stockmanEnergy',wave);
 
@@ -103,6 +105,7 @@ xlabel('Wavelength (nm)');
 ylabel('CMF'); grid on;
 legend('Est','','WW Data','');
 
+
 %%
 ieNewGraphWin;
 plot(wave,ieScale(cmfFovea,1),'rs-',...
@@ -110,3 +113,4 @@ plot(wave,ieScale(cmfFovea,1),'rs-',...
     obsAverage.wave,ieScale(obsAverage.CMF,1),'bx-');
 grid on; xlabel('Wavelength (nm)');
 legend('foveal tritan','','stockman fit to fovea','','tritan average','')
+%}
