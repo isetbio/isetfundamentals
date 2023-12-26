@@ -91,8 +91,9 @@ xlabel('Wavelength (nm)'); ylabel('Normalized sensitivity');
 title('L')
 
 % M cone
+
 nexttile;
-Mest = conefundamental(protan,tritan);
+Mest = conefundamental(protan,tritan,'method','nullnull');
 Mest = ieScale(Mest,1);
 plot(wave,Mest,'g-',wave,stockman(:,2),'kx','LineWidth',2);
 grid on;
@@ -161,4 +162,53 @@ xlabel('Wavelength (nm)');
 title('DeutanC and Protan')
 legend('Estimate1','Stockman','Estimate2');
 
+
+%% Compare methods
+
+
+ieNewGraphWin([]);
+tiledlayout(3,4);
+
+methods = {'two','sumoftwo', 'nullnull','lowrank'}
+methodtitles = {'Method 1','Mean of two (method 1)','Null-Null Method','Low rank Method'}
+
+% L cone
+for m=1:numel(methods)
+nexttile;
+Lest = conefundamental(thisDeutan,tritan,'method',methods{m});
+Lest = ieScale(Lest,1);
+plot(wave,Lest,'r-',wave,stockman(:,1),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)'); ylabel('Normalized sensitivity');
+title(methodtitles{m})
+end
+
+
+% M cone
+for m=1:numel(methods)
+nexttile;
+Mest = conefundamental(protan,tritan,'method',methods{m});
+Mest = ieScale(Mest,1);
+plot(wave,Mest,'g-',wave,stockman(:,2),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');ylabel('Normalized sensitivity');
+title(methodtitles{m})
+end
+
+
+% S cone
+for m=1:numel(methods)
+nexttile;
+Sest = conefundamental(thisDeutan,protan,'method',methods{m});
+Sest = ieScale(Sest,1);
+plot(wave,Sest,'b-',wave,stockman(:,3),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');ylabel('Normalized sensitivity');
+title(methodtitles{m})
+end
+
+sgtitle("Comparison of different estimators")
+
+
 %% END
+
