@@ -121,14 +121,17 @@ s = diag(S); fprintf('L cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Lest = ieScale(abs(thisDeutan*x(1:2)),1);
 Lave = Lest/2;
-plot(wave,Lest,'r:',wave,stockman(:,1),'kx','LineWidth',2);
+plot(wave,Lest,'r:','LineWidth',2); hold on;
+plot(wave,stockman(:,1),'kx','LineWidth',2);
+
+
 Lest = ieScale(abs(tritan*x(3:4)),1);
 Lave = Lave + Lest/2;
-hold on; plot(wave,Lest,'r--','LineWidth',2); % wave,Lave,'kx',
+% hold on; plot(wave,Lest,'r--','LineWidth',2); % wave,Lave,'kx',
 grid on;
 xlabel('Wavelength (nm)');
 title('Tritan and DeutanC')
-legend('Estimate1','Stockman','Estimate2');
+legend('Estimate','Stockman','Estimate2');
 
 % M cone
 [U,S,V] = svd([protan,tritan],'econ');
@@ -137,14 +140,15 @@ s = diag(S); fprintf('M cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Mest = ieScale(abs(protan*x(1:2)),1);
 plot(wave, Mest,'g:',wave,stockman(:,2),'kx','LineWidth',2);
+
 Mave = Mest/2;
 Mest = ieScale(abs(tritan*x(3:4)),1);
 Mave = Mave + Mest/2;
-hold on; plot(wave, Mest,'g--','LineWidth',2); % wave,Mave,'kx',
+% hold on; plot(wave, Mest,'g--','LineWidth',2); % wave,Mave,'kx',
 grid on;
 xlabel('Wavelength (nm)');
 title('Tritan and Protan')
-legend('Estimate1','Stockman','Estimate2');
+legend('Estimate','Stockman','Estimate2');
 
 % S cone
 [U,S,V] = svd([thisDeutan,protan],'econ');
@@ -156,11 +160,35 @@ Save = Sest/2;
 plot(wave,Sest,'b:',wave,stockman(:,3),'kx','LineWidth',2);
 Sest = ieScale(abs(protan*x(3:4)),1);
 Save = Save + Sest/2;
-hold on; plot(wave,Sest,'b--','LineWidth',2); % wave,Save,'kx',
+% hold on; plot(wave,Sest,'b--','LineWidth',2); % wave,Save,'kx',
 grid on;
 xlabel('Wavelength (nm)');
 title('DeutanC and Protan')
-legend('Estimate1','Stockman','Estimate2');
+legend('Estimate','Stockman','Estimate2');
+
+%% Make the Stockman log10 difference plots
+
+
+ieNewGraphWin([],'wide');
+tiledlayout(1,3);
+
+nexttile
+Lcone = max(Lest,0);  % No negative values
+idx = log10(stockman(:,1)) > -2;  % Only plot down to 1 percent
+plot(wave(idx),log10(Lcone(idx)) - log10(stockman(idx,1)),'ro','LineWidth',2);
+grid on; set(gca,'ylim',[-0.3 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+
+nexttile
+Mcone = max(Mest,0);
+idx = log10(stockman(:,2)) > -2;
+plot(wave(idx),log10(Mcone(idx)) - log10(stockman(idx,2)),'go','LineWidth',2);
+grid on; set(gca,'ylim',[-0.3 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+
+nexttile
+Scone = max(Sest,0);
+idx = log10(stockman(:,3)) > -2;
+plot(wave(idx),log10(Scone(idx)) - log10(stockman(idx,3)),'bo','LineWidth',2);
+grid on; set(gca,'ylim',[-0.3 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
 
 
 %% Compare methods
