@@ -131,11 +131,68 @@ title('S-cone (Protan-Deutan)');
 grid on; set(gca,'ylim',[1e-2 1])
 
 
+
+
+
+
+%% AUtomatically generate both linear and log scale
+
+%[U,S,V] = svd([cmfProtan,cmfDeutan],'econ');
+% x = V(:,4);
+% s = diag(S); fprintf('L cone solution ratio: %f\n',s(1)/s(4));
+
+ieNewGraphWin([],'wide');
+tiledlayout(2,3);
+for scale = {'linear','log'}
+
+    nexttile;
+    x = getlastVfromSVD([cmfDeutan -cmfTritan]);
+    Lest = ieScale(abs(cmfDeutan*x(1:2)),1);
+    plot(thisW,Lest,'r-','LineWidth',2); hold on;
+
+    Lest = ieScale(abs(cmfTritan*x(3:4)),1);
+    plot(thisW,Lest,'r--','LineWidth',2); hold on;
+
+    semilogy(thisW,stockman(:,1),'k.','LineWidth',2);
+    grid on; set(gca,'ylim',[1e-2 1])
+    
+    
+    set(gca,'Yscale',scale)
+
+    nexttile;
+    x = getlastVfromSVD([cmfProtan -cmfTritan]);
+    Mest = ieScale(abs(cmfProtan*x(1:2)),1);
+    plot(thisW,Mest,'g-','LineWidth',2); hold on;
+
+    Mest = ieScale(abs(cmfTritan*x(3:4)),1);
+    plot(thisW,Mest,'g--','LineWidth',2); hold on;
+
+    semilogy(thisW,stockman(:,2),'k.','LineWidth',2);
+    grid on; set(gca,'ylim',[1e-2 1])
+    set(gca,'Yscale',scale)
+
+
+    nexttile;
+    x = getlastVfromSVD([cmfProtan -cmfDeutan]);
+    Sest = ieScale(abs(cmfProtan*x(1:2)),1);
+    plot(thisW,Sest,'b-','LineWidth',2); hold on;
+
+    Sest = ieScale(abs(cmfDeutan*x(3:4)),1); hold on;
+    plot(thisW,Sest,'b--','LineWidth',2); hold on;
+
+    plot(thisW,stockman(:,3),'k.','LineWidth',2);
+    grid on; set(gca,'ylim',[1e-2 1])
+    set(gca,'Yscale',scale)
+
+end
+
 %% semilogy both
 
 %[U,S,V] = svd([cmfProtan,cmfDeutan],'econ');
 % x = V(:,4);
 % s = diag(S); fprintf('L cone solution ratio: %f\n',s(1)/s(4));
+
+
 
 ieNewGraphWin([],'wide');
 x = getlastVfromSVD([cmfDeutan -cmfTritan]);
