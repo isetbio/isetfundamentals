@@ -1,9 +1,8 @@
 %% Estimate fundamentals from WDW data
 %
-% Original, and now scratch or maybe even deprecated.  Replaced by
-% s_cfDerivation script.  That one is simpler.  This has various scribbles
-% and notes.  It does more explicit comparisons with Deutan and DeutanC
-% (corrected).
+% Replaced by s_cfDerivation script.  That one is simpler.  This has
+% various scribbles and notes.  It does more explicit comparisons with
+% Deutan and DeutanC (corrected).
 %
 % Both this script and s_cfDerviation now use the conefundamental function
 % to calculate the fundamentals from the WDW dichromatic color matching
@@ -121,7 +120,7 @@ s = diag(S); fprintf('L cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Lest = ieScale(abs(thisDeutan*x(1:2)),1);
 Lave = Lest/2;
-plot(wave,Lest,'r:','LineWidth',2); hold on;
+plot(wave,Lest,'k:','LineWidth',2); hold on;
 plot(wave,stockman(:,1),'kx','LineWidth',2);
 
 
@@ -130,8 +129,8 @@ Lave = Lave + Lest/2;
 % hold on; plot(wave,Lest,'r--','LineWidth',2); % wave,Lave,'kx',
 grid on;
 xlabel('Wavelength (nm)');
-title('Tritan and DeutanC')
-legend('Estimate','Stockman','Estimate2');
+title('Tritan-DeutanC')
+% legend('Estimate','Stockman','Estimate2');
 
 % M cone
 [U,S,V] = svd([protan,tritan],'econ');
@@ -139,7 +138,7 @@ x = V(:,4);
 s = diag(S); fprintf('M cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Mest = ieScale(abs(protan*x(1:2)),1);
-plot(wave, Mest,'g:',wave,stockman(:,2),'kx','LineWidth',2);
+plot(wave, Mest,'k:',wave,stockman(:,2),'kx','LineWidth',2);
 
 Mave = Mest/2;
 Mest = ieScale(abs(tritan*x(3:4)),1);
@@ -147,8 +146,8 @@ Mave = Mave + Mest/2;
 % hold on; plot(wave, Mest,'g--','LineWidth',2); % wave,Mave,'kx',
 grid on;
 xlabel('Wavelength (nm)');
-title('Tritan and Protan')
-legend('Estimate','Stockman','Estimate2');
+title('Tritan-Protan')
+% legend('Estimate','Stockman','Estimate2');
 
 % S cone
 [U,S,V] = svd([thisDeutan,protan],'econ');
@@ -157,14 +156,14 @@ s = diag(S); fprintf('S cone solution ratio: %f\n',s(1)/s(4));
 nexttile;
 Sest = ieScale(abs(thisDeutan*x(1:2)),1);
 Save = Sest/2;
-plot(wave,Sest,'b:',wave,stockman(:,3),'kx','LineWidth',2);
+plot(wave,Sest,'k:',wave,stockman(:,3),'kx','LineWidth',2);
 Sest = ieScale(abs(protan*x(3:4)),1);
 Save = Save + Sest/2;
 % hold on; plot(wave,Sest,'b--','LineWidth',2); % wave,Save,'kx',
 grid on;
 xlabel('Wavelength (nm)');
-title('DeutanC and Protan')
-legend('Estimate','Stockman','Estimate2');
+title('DeutanC-Protan')
+% legend('Estimate','Stockman','Estimate2');
 
 %% Make the Stockman log10 difference plots
 

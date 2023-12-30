@@ -28,7 +28,7 @@
 %
 
 %%  Grabit data are stored here
-chdir(fullfile(iefundamentalsRootPath,'wdwright','grabit'));
+chdir(fullfile(iefundamentalsRootPath,'data','grabit'));
 
 % We save at this resolution.  We do not have enough tritan data for all
 % this, but that's OK.
@@ -64,17 +64,20 @@ title("Matches Figure 208")
 
 cmfDeutan = [deutanRed(:), deutanBlue(:)];
 
-%% Because BW is very suspicious of the blue primary in the Deutan data
+%% BW is very suspicious of the blue primary in the Deutan data
 
 % The curve does not fit with the Stockman fundamentals (see
 % wdwStockman) but the protan does.  Also it is very different from
-% the protan and it should not be because both have the same S-cones.
+% the protan.  This should not happen because both have the same S-cones
+% according to Reduction Dichromacy.  So we create this fake cmfDeutan in
+% which we copy the cmfProtan(:,2) into it. This has consequences for any
+% of the cone fundamental calculations.
 cmfDeutanC = cmfDeutan;
 cmfDeutanC(:,2) = cmfProtan(:,2);
 
 %{
 ieNewGraphWin;
-plot(wave,cmfDeutanC(:,1),'b-',wave,cmfDeutanC(:,2),'r-');
+plot(wave,cmfDeutanC(:,1),'r-',wave,cmfDeutanC(:,2),'b-');
 grid on;
 title("Corrected CMF for Deutan")
 %}
@@ -83,6 +86,7 @@ title("Corrected CMF for Deutan")
 
 load('wdwChromRedProtan.mat');
 protanChromRed = interp1(wdwProtanChromRed(:,1),wdwProtanChromRed(:,2),wave,'pchip','extrap');
+
 load('wdwChromRedDeutan.mat');
 deutanChromRed = interp1(wdwDeutanChromRed(:,1),wdwDeutanChromRed(:,2),wave,'pchip','extrap');
 
@@ -126,6 +130,9 @@ grid on; xlabel('Wavelength (nm)'); ylabel('Chromaticity');
 %}
 
 %% Save the CMFs
+
+disp('Uncomment below here to save. But at your own peril!')
+%{
 fname = fullfile(iefundamentalsRootPath,'wdwright','cmfProtan.mat');
 save(fname,'wave','cmfProtan','chromaticityProtan','vlambdaProtan');
 
@@ -138,6 +145,7 @@ save(fname,'wave','cmfDeutanC');
 % While we are at it
 fname = fullfile(iefundamentalsRootPath,'wdwright','vlambda.mat');
 save(fname,'wave','chromaticityProtan','vlambdaProtan','vlambdaDeutan','vlambdaTrichromat');
+%}
 
 
 %% End

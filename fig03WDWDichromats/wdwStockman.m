@@ -8,11 +8,10 @@
 % with modern standards.
 %
 % The data are stored at different wavelength samples, so we keep
-% reading in the Stockman in order to match the data sampling.
+% reading in the Stockman in order to match the wavelength sampling.
 %
 % See also
 %   wdwData*
-
 
 %% Protanope CMF
 
@@ -86,31 +85,4 @@ title('Deutan (Corrected)');
 xlabel('Wavelength (nm)');
 ylabel('Primary intensity (a.u.)'); grid on;
 
-%% Fovea  - Probably should move to a separate file.
-
-% Fix this.
-%{
-fname = fullfile(iefundamentalsRootPath,'data','cmfFovea.mat');
-load(fname,'wave','cmfFovea');
-stockman = ieReadSpectra('stockmanEnergy',wave);
-
-% foveatritan = stockman*L
-L = stockman\fovea;
-estFovea = stockman*L;
-
-ieNewGraphWin;
-plot(wave,estFovea,'k-',wave,cmfFovea,'k--')
-title('Stockman to Willmer Wright Fovea (Fig 208)');
-xlabel('Wavelength (nm)');
-ylabel('CMF'); grid on;
-legend('Est','','WW Data','');
-
-
-%%
-ieNewGraphWin;
-plot(wave,ieScale(cmfFovea,1),'rs-',...
-    wave,ieScale(est,1),'k-', ...
-    obsAverage.wave,ieScale(obsAverage.CMF,1),'bx-');
-grid on; xlabel('Wavelength (nm)');
-legend('foveal tritan','','stockman fit to fovea','','tritan average','')
-%}
+%% END

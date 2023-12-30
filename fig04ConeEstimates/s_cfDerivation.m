@@ -14,9 +14,8 @@
 %   wdwEstimates
 
 %% Load the corrected WD Wright data
-
-% We use the corrected Deutan data for this plot.
-
+%
+%  
 thisW = 410:650;
 load('cmfDeutanC.mat','wave','cmfDeutanC');
 cmfDeutan = interp1(wave,cmfDeutanC,thisW');
@@ -30,43 +29,46 @@ cmfTritan = interp1(obsAverage.wave,obsAverage.CMF,thisW);
 % These are the modern cone fundamentals.  We compare with them.
 stockman = ieReadSpectra('stockmanEnergy.mat',thisW);
 
+%% plot first solution.  This is also the better of the two fits
 
-
-%% plot first/best fit
+% The dashed lines are the estimates from the intersection method.
+% The gray 'o's are the CIE cone fundamentals.
 
 ieNewGraphWin([],'wide');
 x = getlastVfromSVD([cmfDeutan -cmfTritan]);
 nexttile;
 Lest = ieScale(abs(cmfDeutan*x(1:2)),1);
-plot(thisW,Lest,'r-','LineWidth',2); hold on;
 
 % Lest = ieScale(abs(cmfTritan*x(3:4)),1);
 % plot(thisW,Lest,'r--','LineWidth',2); hold on;
-
-plot(thisW,stockman(:,1),'k.','LineWidth',2);
-grid on; set(gca,'ylim',[1e-2 1])
+% plot(thisW,stockman(:,1),'k.','LineWidth',2);
+pL = plot(thisW,Lest,'k-',thisW,stockman(:,1),'ko','LineWidth',2);
+grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650])
+pL(1).LineWidth = 5; pL(1).Color = [0 0 0];
+pL(2).Color = [0.7 0.7 0.7];pL(2).MarkerSize = 4;
 
 x = getlastVfromSVD([cmfProtan -cmfTritan]);
 nexttile;
 Mest = ieScale(abs(cmfProtan*x(1:2)),1);
-plot(thisW,Mest,'g-','LineWidth',2); hold on;
+pM = plot(thisW,Mest,'k-',thisW,stockman(:,2),'ko','LineWidth',2);
+grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650])
+pM(1).LineWidth = 5; pM(1).Color = [0 0 0];
+pM(2).Color = [0.7 0.7 0.7]; pM(2).MarkerSize = 4;
 
 % Mest = ieScale(abs(cmfTritan*x(3:4)),1);
 % plot(thisW,Mest,'g--','LineWidth',2); hold on;
-
-plot(thisW,stockman(:,2),'k.','LineWidth',2);
-grid on; set(gca,'ylim',[1e-2 1])
+% plot(thisW,stockman(:,2),'k.','LineWidth',2);
 
 x = getlastVfromSVD([cmfProtan -cmfDeutan]);
 nexttile;
 Sest = ieScale(abs(cmfProtan*x(1:2)),1);
-plot(thisW,Sest,'b-','LineWidth',2); hold on;
+pS = plot(thisW,Sest,'k:',thisW,stockman(:,3),'ko','LineWidth',2);
+grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650]);
+pS(1).LineWidth = 5; pS(1).Color = [0 0 0];
+pS(2).Color = [0.7 0.7 0.7];pS(2).MarkerSize = 4;
 
 % Sest = ieScale(abs(cmfDeutan*x(3:4)),1); hold on;
 % plot(thisW,Sest,'b--','LineWidth',2); hold on;
-
-plot(thisW,stockman(:,3),'k.','LineWidth',2);
-grid on; set(gca,'ylim',[1e-2 1])
 
 %% Make the Stockman log10 difference plots
 
@@ -78,23 +80,26 @@ tiledlayout(1,3);
 nexttile
 Lcone = max(Lest,0);  % No negative values
 idx = log10(stockman(:,1)) > crit;  % Only plot down to 1 percent
-plot(wave(idx),log10(Lcone(idx)) - log10(stockman(idx,1)),'ro','LineWidth',2);
-grid on; set(gca,'ylim',[-0.3 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+p = plot(wave(idx),log10(Lcone(idx)) - log10(stockman(idx,1)),'ko','LineWidth',2);
+grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 650],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
 xaxisLine;
+p.Color = [0.5 0.5 0.5];
 
 nexttile
 Mcone = max(Mest,0);
 idx = log10(stockman(:,2)) > crit;
-plot(wave(idx),log10(Mcone(idx)) - log10(stockman(idx,2)),'go','LineWidth',2);
-grid on; set(gca,'ylim',[-0.3 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+p = plot(wave(idx),log10(Mcone(idx)) - log10(stockman(idx,2)),'ko','LineWidth',2);
+grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 650],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
 xaxisLine;
+p.Color = [0.5 0.5 0.5];
 
 nexttile
 Scone = max(Sest,0);
 idx = log10(stockman(:,3)) > crit;
-plot(wave(idx),log10(Scone(idx)) - log10(stockman(idx,3)),'bo','LineWidth',2);
-grid on; set(gca,'ylim',[-0.3 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+p = plot(wave(idx),log10(Scone(idx)) - log10(stockman(idx,3)),'ko','LineWidth',2);
+grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 650],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
 xaxisLine;
+p.Color = [0.5 0.5 0.5];
 
 %% The WD Wright starting point with the corrected Deutan
 
