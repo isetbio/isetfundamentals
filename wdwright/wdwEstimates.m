@@ -75,6 +75,41 @@ xlabel('Wavelength (nm)');
 ylabel('CMF'); grid on;
 legend('deutan','','protan','','tritan','');
 
+%%  Estimated using the meanoftwo method
+
+ieNewGraphWin([],'wide');
+tiledlayout(1,3);
+
+% L cone
+nexttile;
+Lest = conefundamental(thisDeutan,tritan,'method','meanoftwo');
+Lest = ieScale(Lest,1);
+plot(wave,Lest,'r-',wave,stockman(:,1),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)'); ylabel('Normalized sensitivity');
+title('L')
+
+% M cone
+
+nexttile;
+Mest = conefundamental(protan,tritan,'method','meanoftwo');
+Mest = ieScale(Mest,1);
+plot(wave,Mest,'g-',wave,stockman(:,2),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');ylabel('Normalized sensitivity');
+title('M')
+
+% S cone
+nexttile;
+Sest = conefundamental(thisDeutan,protan,'method','meanoftwo');
+Sest = ieScale(Sest,1);
+plot(wave,Sest,'b-',wave,stockman(:,3),'kx','LineWidth',2);
+grid on;
+xlabel('Wavelength (nm)');ylabel('Normalized sensitivity');
+title('S')
+
+
+
 %%  Estimated using the nullnull method
 
 ieNewGraphWin([],'wide');
@@ -196,7 +231,7 @@ grid on; set(gca,'ylim',[-0.3 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtic
 ieNewGraphWin([]);
 tiledlayout(3,4);
 
-methods = {'two','sumoftwo', 'nullnull','lowrank'}
+methods = {'two','meanoftwo', 'nullnull','lowrank'}
 methodtitles = {'Method 1','Mean of two (method 1)','Null-Null Method','Low rank Method'}
 
 % L cone

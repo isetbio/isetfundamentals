@@ -67,8 +67,8 @@ coneF = [];
 switch method
     case 'nullnull'
         coneF = estimatorNullNull(cmf1,cmf2);
-    case 'sumoftwo'
-        coneF = sum(estimatorIntersect(cmf1,cmf2),2);
+    case 'meanoftwo'
+        coneF = mean(estimatorIntersect(cmf1,cmf2),2);
     case 'two'
         coneF =estimatorIntersect(cmf1,cmf2);
     case 'lowrank'

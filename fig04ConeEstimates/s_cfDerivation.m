@@ -105,7 +105,7 @@ p.Color = [0.5 0.5 0.5];
 
 % Close, but misses the M cones by a fair amount
 
-method = 'nullnull';
+method = 'meanoftwo';
 % method = 'two';
 
 ieNewGraphWin([],'wide'); 
@@ -186,7 +186,7 @@ stockman = ieReadSpectra('stockmanEnergy.mat',thisW);
 
 %% The Judd starting point does not do well
 
-method = 'nullnull';
+method = 'meanoftwo';
 
 ieNewGraphWin([],'wide'); 
 nexttile
