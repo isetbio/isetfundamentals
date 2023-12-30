@@ -72,7 +72,7 @@ pS(2).Color = [0.7 0.7 0.7];pS(2).MarkerSize = 4;
 
 %% Make the Stockman log10 difference plots
 
-crit = log10(0.1);   % Stockman ration from peak (1)
+crit = log10(1/20);   % Stockman ration from peak (1)
 
 ieNewGraphWin([],'wide');
 tiledlayout(1,3);
