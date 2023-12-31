@@ -68,7 +68,8 @@ set(gcf,'Position',[0.0070    0.1292    0.5727    0.7808]);
 [x,y,z] = iePlaneFromVectors(A);
 
 % {
-J = imread('texture2.png');
+fname = fullfile(iefundamentalsRootPath,'fig05VirtualChannel','texture2.png');
+J = imread(fname);
 W1 = warp(x,y,z,J); W1.FaceAlpha = 0.7;
 % S1 = surf(x, y, z, ...
 % 'FaceColor', 'texturemap', ...
@@ -96,10 +97,13 @@ lgt1.Color = [1 1 1];
 %}
 lighting gouraud;
 
-
-% xlabel('\lambda_1'); ylabel('\lambda_2'); zlabel('\lambda_3'); 
+%%
+fontSize = 30;
+xlabel('\lambda_1','FontSize',fontSize); 
+ylabel('\lambda_2','FontSize',fontSize); 
+zlabel('\lambda_3','FontSize',fontSize);
+set(gca,'FontSize',24);
 grid on
-view(-44,10);
 
 %% Show the real channels for the first device
 P = -0.85*A';
@@ -117,7 +121,6 @@ for ii=1:2
 end
 grid on
 
-% view(-30,20);
 %% Show the channels for the second device
 P = B';
 X = P(:, 1); Y = P(:, 2); Z = P(:, 3);
@@ -136,14 +139,17 @@ set(gca,'zlim',[-axLim axLim],'ylim',[-axLim axLim],'xlim',[-axLim axLim])
 % view(-58,18);
 % view(-44,10);
 view(-33,12);
-fname = fullfile(iefundamentalsRootPath,'fig05VirtualChannel','virtualA.jpg');
+
+%{
 exportgraphics(gca,fname,'Resolution','300');
+%}
 
 %% The possible channels from device B
 
 [x,y,z] = iePlaneFromVectors(B);
 
-I = imread('texture1.png');
+fname = fullfile(iefundamentalsRootPath,'fig05VirtualChannel','texture1.png');
+I = imread(fname);
 W = warp(x,y,z,I); W.FaceAlpha = .8;
 %{
 S3  = surf(x,y,z);
@@ -174,7 +180,8 @@ view(-33,12);
 %{
 %%
 exportgraphics(gca,fname,'Resolution','300');
-
+%}
+%{
 
 %% Now illustrate with images
 % scene = sceneCreate('macbeth',32);
