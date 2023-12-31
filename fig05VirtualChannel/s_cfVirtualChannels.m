@@ -38,7 +38,7 @@
 % graphics
 
 % Device A
-A = [1 0; 0 1; 0 0];
+A = [1 .2; 0 1; 0 0];
 for ii=1:2
     A(:,ii) = A(:,ii)/vectorLength(A(:,ii));
 end
@@ -53,46 +53,71 @@ end
 intersection = estimatorNullNull(A,B);
 
 O = [0,0,0];
-lStyle = '-';
-lWidth = 3;
-lWidth2 = 1.5;
-axLim = 1.5;
-delta = -0.005;
-alpha = 0.3;
+lStyle = '-'; lWidth1 = 3; lWidth2 = 3;
+
+axLim = 1.2;
+% delta = -0.005;
+% delta = -0.01;
+alpha = .7;
 
 %% Show the plane
 
 ieNewGraphWin;
+set(gcf,'Position',[0.0070    0.1292    0.5727    0.7808]);
 
 [x,y,z] = iePlaneFromVectors(A);
+
+% {
+J = imread('texture2.png');
+W1 = warp(x,y,z,J); W1.FaceAlpha = 0.7;
+% S1 = surf(x, y, z, ...
+% 'FaceColor', 'texturemap', ...
+% 'CData', J);
+%}
+
+%{
 S1  = surf(x,y,z); hold on;
 S2  = surf(x+delta,y+delta,z+delta);
-
+faceColor1 = [1 1 1]* 0.7;
 rotate3d on;
-S1.FaceAlpha = alpha; S1.FaceColor = 'r'; S1.EdgeColor = 'none';
-S2.FaceAlpha = alpha; S2.FaceColor = 'r'; S2.EdgeColor = 'none';
+S1.FaceAlpha = alpha; S1.FaceColor = faceColor1; S1.EdgeColor = 'none';
+S2.FaceAlpha = alpha; S2.FaceColor = faceColor1; S2.EdgeColor = 'none';
+%}
+
 set(gca,'zlim',[-axLim axLim],'ylim',[-axLim axLim],'xlim',[-axLim axLim])
 
-% lightangle(-45,30);
-% lighting gouraud;
+%{
+lgt1 = light("Style","local","Position",[-1 1 1]*2);
+%}
+% {
+lgt1 = light("Style","Infinite","Position",[-1 1 1]);
+lgt1.Position = [-10 -5 5];
+lgt1.Color = [1 1 1];
+%}
+lighting gouraud;
 
-xlabel('\lambda_1'); ylabel('\lambda_2'); zlabel('\lambda_3'); 
+
+% xlabel('\lambda_1'); ylabel('\lambda_2'); zlabel('\lambda_3'); 
+grid on
+view(-44,10);
 
 %% Show the real channels for the first device
-P = A';
+P = -0.85*A';
 X = P(:, 1); Y = P(:, 2); Z = P(:, 3);
 
+
+% Try using arrow3, that I just put into isetcam/utilities/external
 for ii=1:2
     hold on;
     %     L = quiver3(O(1), O(2), O(3), X(ii), Y(ii), Z(ii));
     deviceA(ii) = line([O(1),X(ii)],[O(2),Y(ii)],[O(3), Z(ii)]);
-    deviceA(ii).LineWidth = lWidth;
-    deviceA(ii).Color = 'r';
+    deviceA(ii).LineWidth = lWidth2;
+    deviceA(ii).Color = [0.7 0.1 0.2];
     deviceA(ii).LineStyle = lStyle;
 end
+grid on
 
-view(-30,20);
-
+% view(-30,20);
 %% Show the channels for the second device
 P = B';
 X = P(:, 1); Y = P(:, 2); Z = P(:, 3);
@@ -100,27 +125,36 @@ X = P(:, 1); Y = P(:, 2); Z = P(:, 3);
 for ii=1:2
     hold on;
     deviceB(ii)= line([O(1),X(ii)],[O(2),Y(ii)],[O(3), Z(ii)]); %#ok<*SAGROW>
-    deviceB(ii).LineWidth = lWidth;
-    deviceB(ii).Color = 'b';
+    deviceB(ii).LineWidth = lWidth2;
+    deviceB(ii).Color = [0 0.3 0.8];
     deviceB(ii).LineStyle = lStyle;
 end
  
 axis equal; 
 set(gca,'zlim',[-axLim axLim],'ylim',[-axLim axLim],'xlim',[-axLim axLim])
-view(-22,24);
 
+% view(-58,18);
+% view(-44,10);
+view(-33,12);
 fname = fullfile(iefundamentalsRootPath,'fig05VirtualChannel','virtualA.jpg');
 exportgraphics(gca,fname,'Resolution','300');
-
 
 %% The possible channels from device B
 
 [x,y,z] = iePlaneFromVectors(B);
-S1  = surf(x,y,z);
-S2  = surf(x+delta,y+delta,z+delta);
-S1.FaceAlpha = alpha; S1.FaceColor = 'b'; S1.EdgeColor = 'none';
-S2.FaceAlpha = alpha; S2.FaceColor = 'b'; S2.EdgeColor = 'none';
 
+I = imread('texture1.png');
+W = warp(x,y,z,I); W.FaceAlpha = .8;
+%{
+S3  = surf(x,y,z);
+S4  = surf(x+delta,y+delta,z+delta);
+faceColor2 = [1 1 1]*0.7;
+
+S3.FaceAlpha = alpha; S3.FaceColor = faceColor2 ; S3.EdgeColor = 'none';
+S4.FaceAlpha = alpha; S4.FaceColor = faceColor2 ; S4.EdgeColor = 'none';
+%}
+% view(-44,10);
+view(-33,12);
 
 %% Show the intersection, reachable by both cameras
 
@@ -128,13 +162,19 @@ S2.FaceAlpha = alpha; S2.FaceColor = 'b'; S2.EdgeColor = 'none';
 % L = line([O(1),intersection(1)],[ O(2),intersection(2)], [ O(3), intersection(3)]);
 INT = line([-intersection(1),intersection(1)],[ -intersection(2),intersection(2)], [ -intersection(3), intersection(3)]);
 INT.Color = 'k';
-INT.LineWidth = lWidth;
+INT.LineWidth = lWidth1;
 INT.LineStyle = '--';
 fname = fullfile(iefundamentalsRootPath,'fig05VirtualChannel','virtualB.jpg');
 
 deviceA(1).LineWidth = lWidth2; deviceA(2).LineWidth = lWidth2;
 deviceB(1).LineWidth = lWidth2; deviceB(2).LineWidth = lWidth2;
+
+view(-33,12);
+
+%{
+%%
 exportgraphics(gca,fname,'Resolution','300');
+
 
 %% Now illustrate with images
 % scene = sceneCreate('macbeth',32);
@@ -151,8 +191,6 @@ B1 = rgbXW*B(:,1); B1 = reshape(B1,row,col);
 B2 = rgbXW*B(:,2); B2 = reshape(B2,row,col);
 
 % montage({A1,A2});
-
-
 
 %% This is the virtual channel image
 
@@ -257,4 +295,5 @@ view(-50,15);
 set(gca,'zlim',[0 axLim],'ylim',[0 axLim],'xlim',[0 axLim])
 %}
 
+%}
 %%
