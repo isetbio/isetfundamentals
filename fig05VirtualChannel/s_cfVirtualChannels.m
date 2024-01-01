@@ -99,7 +99,7 @@ lighting gouraud;
 
 %%
 fontSize = 30;
-xlabel('\lambda_1','FontSize',fontSize); 
+tmp = xlabel('\lambda_1','FontSize',fontSize); 
 ylabel('\lambda_2','FontSize',fontSize); 
 zlabel('\lambda_3','FontSize',fontSize);
 set(gca,'FontSize',24);

@@ -1,4 +1,6 @@
-%% Compare Maxwell CMFS with XYZ and Stockman
+%% maxwellCMF2CIE
+% 
+% Figure 1.  Compare Maxwell CMFS with XYZ and Stockman.
 %
 % The analysis here compares the CMFs reported by Maxwell in Tables VI and
 % IX and the Stockman fundamentals.  This extends the analysis performed by
@@ -33,35 +35,6 @@ obsK = load('maxwellCMF_obsK');
 % spectrum.
 juddAdjust = 10;
 
-%% Make a slightly different figure styled for David Brainard
-
-SSK = ieReadSpectra('StockmanEnergy',waveK);
-L = pinv(SSK)*XYZK;
-XYZK_SSest = SSK*L;
-
-ieNewGraphWin([],'big'); clf; hold on;
-set(gca,'FontName','Helvetica','FontSize',26);
-plot(waveK,XYZK(:,1),'-','Color','r','LineWidth',4);
-plot(waveK,XYZK_SSest(:,1),':','Color','r','LineWidth',4);
-set(gca,'FontName','Helvetica','FontSize',14);
-plot(waveK,XYZ_estK(:,1),'o','Color','r','MarkerFaceColor','r','MarkerSize',12);
-plot(waveJ,XYZ_estJ(:,1),'s','Color','r','MarkerFaceColor','r','MarkerSize',12);
-
-plot(waveK,XYZK(:,2),'-','Color','g','LineWidth',4);
-plot(waveK,XYZK_SSest(:,2),':','Color','g','LineWidth',4);
-plot(waveK,XYZ_estK(:,2),'o','Color','g','MarkerFaceColor','g','MarkerSize',12);
-plot(waveJ,XYZ_estJ(:,2),'s','Color','g','MarkerFaceColor','g','MarkerSize',12);
-
-plot(waveK,XYZK(:,3),'-','Color','b','LineWidth',4);
-plot(waveK,XYZK_SSest(:,3),':','Color','b','LineWidth',4);
-plot(waveK,XYZ_estK(:,3),'o','Color','b','MarkerFaceColor','b','MarkerSize',12);
-plot(waveJ,XYZ_estJ(:,3),'s','Color','b','MarkerFaceColor','b','MarkerSize',12);
-
-xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',22);
-ylabel('Tristimulus Value','FontName','Helvetica','FontSize',22);
-legend({'CIE 1931 XYZ', 'Stockman-Sharpe expressed in XYZ', 'Maxwell 1860 Obs K expressed in XYZ', 'Maxwell 1860 Obs J expressed in XYZ'},'FontName','Helvetica','FontSize',18);
-title('Color Matching Over 150 Years','FontName','Helvetica','FontSize',30);
-xaxisLine;
 
 %% Read Observer K CMF 
 
@@ -137,4 +110,68 @@ plot(wave,SS,'LineStyle','--');
 xlabel('Wavelength (nm)')
 legend('SS','Maxwell ObsJ fit');
 
-%%
+%% Make a slightly different figure styled for a slide
+
+% This has to follow the calculations above, which create some of the
+% variables used here.
+SSK = ieReadSpectra('StockmanEnergy',waveK);
+L = pinv(SSK)*XYZK;
+XYZK_SSest = SSK*L;
+
+ieNewGraphWin([],'big'); clf; hold on;
+set(gca,'FontName','Helvetica','FontSize',26);
+plot(waveK,XYZK(:,1),'-','Color','r','LineWidth',4);
+plot(waveK,XYZK_SSest(:,1),':','Color','r','LineWidth',4);
+set(gca,'FontName','Helvetica','FontSize',14);
+plot(waveK,XYZ_estK(:,1),'o','Color','r','MarkerFaceColor','r','MarkerSize',12);
+plot(waveJ,XYZ_estJ(:,1),'s','Color','r','MarkerFaceColor','r','MarkerSize',12);
+
+plot(waveK,XYZK(:,2),'-','Color','g','LineWidth',4);
+plot(waveK,XYZK_SSest(:,2),':','Color','g','LineWidth',4);
+plot(waveK,XYZ_estK(:,2),'o','Color','g','MarkerFaceColor','g','MarkerSize',12);
+plot(waveJ,XYZ_estJ(:,2),'s','Color','g','MarkerFaceColor','g','MarkerSize',12);
+
+plot(waveK,XYZK(:,3),'-','Color','b','LineWidth',4);
+plot(waveK,XYZK_SSest(:,3),':','Color','b','LineWidth',4);
+plot(waveK,XYZ_estK(:,3),'o','Color','b','MarkerFaceColor','b','MarkerSize',12);
+plot(waveJ,XYZ_estJ(:,3),'s','Color','b','MarkerFaceColor','b','MarkerSize',12);
+
+xlabel('Wavelength (nm)','FontName','Helvetica','FontSize',22);
+ylabel('Tristimulus Value','FontName','Helvetica','FontSize',22);
+legend({'CIE 1931 XYZ', 'Stockman-Sharpe expressed in XYZ', 'Maxwell 1860 Obs K expressed in XYZ', 'Maxwell 1860 Obs J expressed in XYZ'},'FontName','Helvetica','FontSize',18);
+title('Color Matching Over 150 Years','FontName','Helvetica','FontSize',30);
+xaxisLine;
+
+%% Finally, create a form for a monochrome paper figure
+
+marker = [ 0.95 0.8 0.5];   % Gray levels of the subject marker data
+
+ieNewGraphWin([],'big'); clf; hold on;
+set(gca,'FontName','Helvetica','FontSize',26);
+plot(waveK,XYZK(:,1),'-','Color',[1 1 1]*0.5,'LineWidth',4);
+plot(waveK,XYZK_SSest(:,1),':','Color',[1 1 1]*0.0,'LineWidth',4);
+set(gca,'FontName','Helvetica','FontSize',14);
+plot(waveK,XYZ_estK(:,1),'o','Color',[1 1 1]*0,'MarkerFaceColor',[1 1 1]*marker(1),'MarkerSize',12);
+plot(waveJ,XYZ_estJ(:,1),'s','Color',[1 1 1]*0,'MarkerFaceColor',[1 1 1]*marker(1),'MarkerSize',12);
+
+plot(waveK,XYZK(:,2),'-','Color',[1 1 1]*0.5,'LineWidth',4);
+plot(waveK,XYZK_SSest(:,2),':','Color',[1 1 1]*0,'LineWidth',4);
+plot(waveK,XYZ_estK(:,2),'o','Color',[1 1 1]*0,'MarkerFaceColor',[1 1 1]*marker(2),'MarkerSize',12);
+plot(waveJ,XYZ_estJ(:,2),'s','Color',[1 1 1]*0,'MarkerFaceColor',[1 1 1]*marker(2),'MarkerSize',12);
+
+plot(waveK,XYZK(:,3),'-','Color',[1 1 1]*0.5,'LineWidth',4);
+plot(waveK,XYZK_SSest(:,3),':','Color',[1 1 1]*0,'LineWidth',4);
+plot(waveK,XYZ_estK(:,3),'o','Color',[1 1 1]*0,'MarkerFaceColor',[1 1 1]*marker(3),'MarkerSize',12);
+plot(waveJ,XYZ_estJ(:,3),'s','Color',[1 1 1]*0,'MarkerFaceColor',[1 1 1]*marker(3),'MarkerSize',12);
+
+fSizeTicks = 20;
+fSizeLabel = 24;
+fontName = 'Georgia';
+set(gca,'FontSize',fSizeTicks,'FontName',fontName);
+tmp = xlabel('Wavelength (nm)','FontName',fontName,'FontSize',fSizeLabel);
+ylabel('Tristimulus value','FontName',fontName,'FontSize',fSizeLabel);
+% legend({'CIE 1931 XYZ', 'Stockman-Sharpe expressed in XYZ', 'Maxwell 1860 Obs K expressed in XYZ', 'Maxwell 1860 Obs J expressed in XYZ'},'FontName','Helvetica','FontSize',18);
+% title('Color Matching Over 150 Years','FontName','Helvetica','FontSize',30);
+xaxisLine;
+
+%% END

@@ -32,6 +32,7 @@ load(fname,'wave','cmfDeutan');
 % The wave is the same.  So no need to reread.
 % stockman = ieReadSpectra('stockmanEnergy',wave);
 
+%%
 ieNewGraphWin([],'big');
 pColor = [1 1 1]*0;
 tiledlayout(2,2);
@@ -84,5 +85,54 @@ plot(wave,cmfDeutanC,'-','Color',pColor,'Linewidth',2)
 title('Deutan (Corrected)');
 xlabel('Wavelength (nm)');
 ylabel('Primary intensity (a.u.)'); grid on;
+
+%% Alternative
+
+ieNewGraphWin([],'wide');
+pColor = [1 1 1]*0;
+tiledlayout(1,3);
+
+subplot(1,3,1)
+plot(wave(1:2:end),estProtan(1:2:end,:),'ko','Linewidth',1,'MarkerSize',2);
+hold on; plot(wave,cmfProtan,'-','Color',pColor,'Linewidth',2);
+% title('Protan');
+xlabel('Wavelength (nm)');
+ylabel('Primary intensity (a.u.)'); grid on;
+
+
+% Tritan - the wavelength is different
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfTritan.mat');
+load(fname,'obsAverage');
+% cmfTritan = obsAverage.CMF;
+wave = min(obsAverage.wave):max(obsAverage.wave);
+cmfTritan = interp1(obsAverage.wave,obsAverage.CMF,wave);
+stockman = ieReadSpectra('stockmanEnergy',wave);
+
+subplot(1,3,3)
+Ltritan = stockman\cmfTritan;
+estTritan = stockman*Ltritan;
+plot(wave(1:2:end),estTritan(1:2:end,:),'ko', 'LineWidth',1,'MarkerSize',2);
+hold on; plot(wave,cmfTritan,'-','Color',pColor,'Linewidth',2)
+% title('Tritan');
+xlabel('Wavelength (nm)');
+ylabel('Primary intensity (a.u.)'); grid on;
+
+% DeutanC - back to original wave
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfDeutanC.mat');
+load(fname,'wave','cmfDeutanC');
+stockman = ieReadSpectra('stockmanEnergy',wave);
+
+subplot(1,3,2)
+LdeutanC = stockman\cmfDeutanC;
+estDeutanC = stockman*LdeutanC;
+plot(wave(1:2:end),estDeutanC(1:2:end,:),'ko','Linewidth',1,'MarkerSize',2);
+hold on;
+plot(wave,cmfDeutanC,'-','Color',pColor,'Linewidth',2)
+plot(wave,cmfDeutan(:,2),'--','Color',[0.6 0.6 0.6],'Linewidth',2)
+% title('Deutan');
+xlabel('Wavelength (nm)');
+ylabel('Primary intensity (a.u.)'); grid on;
+
+% Add the bad Deutan short wavelength CMF
 
 %% END
