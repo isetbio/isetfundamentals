@@ -13,9 +13,7 @@
 % See also
 %   wdwEstimates
 
-%% Load the corrected WD Wright data
-%
-%  
+%% Load the corrected WD Wright data 
 thisW = 410:650;
 load('cmfDeutanC.mat','wave','cmfDeutanC');
 cmfDeutan = interp1(wave,cmfDeutanC,thisW');
@@ -29,54 +27,62 @@ cmfTritan = interp1(obsAverage.wave,obsAverage.CMF,thisW);
 % These are the modern cone fundamentals.  We compare with them.
 stockman = ieReadSpectra('stockmanEnergy.mat',thisW);
 
-%% plot first solution.  This is also the better of the two fits
-
+%% Estimate and plot 
+%
 % The dashed lines are the estimates from the intersection method.
 % The gray 'o's are the CIE cone fundamentals.
-
 ieNewGraphWin([],'wide');
 x = getlastVfromSVD([cmfDeutan -cmfTritan]);
-nexttile;
-Lest = ieScale(abs(cmfDeutan*x(1:2)),1);
 
+% L cone
+%
+% We use the solution based on the deutan CMFs
+% It is the better of the two fits
+Lest = ieScale(abs(cmfDeutan*x(1:2)),1);
 % Lest = ieScale(abs(cmfTritan*x(3:4)),1);
-% plot(thisW,Lest,'r--','LineWidth',2); hold on;
-% plot(thisW,stockman(:,1),'k.','LineWidth',2);
+
+nexttile;
 pL = plot(thisW,Lest,'k-',thisW,stockman(:,1),'ko','LineWidth',2);
 grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650])
 pL(1).LineWidth = 5; pL(1).Color = [0 0 0];
 pL(2).Color = [0.7 0.7 0.7];pL(2).MarkerSize = 4;
+% plot(thisW,Lest,'r--','LineWidth',2); hold on;
+% plot(thisW,stockman(:,1),'k.','LineWidth',2);
 
+% M cone, we use the solution based on the protan CMFs
 x = getlastVfromSVD([cmfProtan -cmfTritan]);
-nexttile;
 Mest = ieScale(abs(cmfProtan*x(1:2)),1);
+% Mest = ieScale(abs(cmfTritan*x(3:4)),1);
+
+nexttile;
 pM = plot(thisW,Mest,'k-',thisW,stockman(:,2),'ko','LineWidth',2);
 grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650])
 pM(1).LineWidth = 5; pM(1).Color = [0 0 0];
 pM(2).Color = [0.7 0.7 0.7]; pM(2).MarkerSize = 4;
-
-% Mest = ieScale(abs(cmfTritan*x(3:4)),1);
 % plot(thisW,Mest,'g--','LineWidth',2); hold on;
 % plot(thisW,stockman(:,2),'k.','LineWidth',2);
 
+% S cone, from the protan CMFs
 x = getlastVfromSVD([cmfProtan -cmfDeutan]);
-nexttile;
 Sest = ieScale(abs(cmfProtan*x(1:2)),1);
+% Sest = ieScale(abs(cmfDeutan*x(3:4)),1); hold on;
+
+nexttile;
 pS = plot(thisW,Sest,'k:',thisW,stockman(:,3),'ko','LineWidth',2);
 grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650]);
 pS(1).LineWidth = 5; pS(1).Color = [0 0 0];
 pS(2).Color = [0.7 0.7 0.7];pS(2).MarkerSize = 4;
-
-% Sest = ieScale(abs(cmfDeutan*x(3:4)),1); hold on;
 % plot(thisW,Sest,'b--','LineWidth',2); hold on;
 
 %% Make the Stockman log10 difference plots
-
+%
+% Only go down to where sensitivity reaches a criterion
+% fraction of the Stockman fundamental peak, and
+% only consider positive sensitivities.
 crit = log10(1/20);   % Stockman ration from peak (1)
 
 ieNewGraphWin([],'wide');
 tiledlayout(1,3);
-
 nexttile
 Lcone = max(Lest,0);  % No negative values
 idx = log10(stockman(:,1)) > crit;  % Only plot down to 1 percent
@@ -101,12 +107,15 @@ grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 650],'ytick',[-0.3:0.1:0.2],'xtic
 xaxisLine;
 p.Color = [0.5 0.5 0.5];
 
-%% The WD Wright starting point with the corrected Deutan
+%% This section illustrates using the conefundamental function
+%
+% It does essentially the same as the above, but provides more
+% options to solve the problem.
 
-% Close, but misses the M cones by a fair amount
-
+% Specify method to be used by conefundamental function
+% 
+% Method options are 'meanoftwo', 'two', 'nullnull', 'lowrank'
 method = 'meanoftwo';
-% method = 'two';
 
 ieNewGraphWin([],'wide'); 
 nexttile
@@ -130,12 +139,7 @@ xlabel('Wavelength (nm)'); grid on;
 title('S-cone (Protan-Deutan)');
 grid on; set(gca,'ylim',[1e-2 1])
 
-
-
-
-
-
-%% AUtomatically generate both linear and log scale
+%% Automatically generate both linear and log scale
 
 %[U,S,V] = svd([cmfProtan,cmfDeutan],'econ');
 % x = V(:,4);
@@ -228,7 +232,7 @@ semilogy(thisW,Sest,'b--','LineWidth',2); hold on;
 semilogy(thisW,stockman(:,3),'k.','LineWidth',2);
 grid on; set(gca,'ylim',[1e-2 1])
 
-%% This uses the Judd WWK summary of the WD Wright data
+%% This section uses the Judd WWK summary of the WD Wright data,
 %{
 % Not very good, IMHO
 % Very bad for the L cone fundamental
