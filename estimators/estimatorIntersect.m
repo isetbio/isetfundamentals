@@ -8,15 +8,18 @@ function [estimates,x] = estimatorIntersect(A,B)
 %   Applies to the dichromatic color matching functions.  Find the
 %   intersection using the method described in the main text.
 %
+%   Each column of the returned matrix is one of the two estimates
+%   available from the intersection method.
+%
 % Input
-%  A,B are each (wave x 2) matrices
+%  A,B are each (wave x 2) matrices of dichromatic color matching functions
 %
 % Return
 %  estimates - Estimated intersection (wave) vectors
 %  wgts - The four weights, two for the A and two for B
 %
 % See also
-%   getlastVfromSVD, estimatorNullNull
+%   getlastVfromSVD, estimatorNullNull, estimatorLowRank
 
 assert(size(A,2) == 2);
 assert(size(B,2) == 2);
