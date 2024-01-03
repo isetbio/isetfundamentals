@@ -74,7 +74,10 @@ switch method
         coneF = estimatorIntersect(cmf1,cmf2);
     case 'lowrank'
         coneF = estimatorLowrank(cmf1,cmf2);
-           
+    case 'optimize-equality'
+        coneF = estimatorOptEquality(cmf1,cmf2);
+    case 'optimize-nonnegative'
+        coneF = estimatorOptNonnegative(cmf1,cmf2);
     otherwise
 end
 
