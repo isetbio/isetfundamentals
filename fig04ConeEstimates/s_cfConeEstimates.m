@@ -43,7 +43,8 @@ Lest = ieScale(abs(cmfDeutan*x(1:2)),1);
 
 nexttile;
 pL = plot(thisW,Lest,'k-',thisW,stockman(:,1),'ko','LineWidth',2);
-grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650])
+grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 700])
+set(gca,'xtick',400:100:700,'ytick',0:0.5:1);
 pL(1).LineWidth = 5; pL(1).Color = [0 0 0];
 pL(2).Color = [0.7 0.7 0.7];pL(2).MarkerSize = 4;
 % plot(thisW,Lest,'r--','LineWidth',2); hold on;
@@ -56,7 +57,8 @@ Mest = ieScale(abs(cmfProtan*x(1:2)),1);
 
 nexttile;
 pM = plot(thisW,Mest,'k-',thisW,stockman(:,2),'ko','LineWidth',2);
-grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650])
+grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 700])
+set(gca,'xtick',400:100:700,'ytick',0:0.5:1);
 pM(1).LineWidth = 5; pM(1).Color = [0 0 0];
 pM(2).Color = [0.7 0.7 0.7]; pM(2).MarkerSize = 4;
 % plot(thisW,Mest,'g--','LineWidth',2); hold on;
@@ -68,11 +70,14 @@ Sest = ieScale(abs(cmfProtan*x(1:2)),1);
 % Sest = ieScale(abs(cmfDeutan*x(3:4)),1); hold on;
 
 nexttile;
-pS = plot(thisW,Sest,'k:',thisW,stockman(:,3),'ko','LineWidth',2);
-grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 650]);
+pS = plot(thisW,Sest,'k-',thisW,stockman(:,3),'ko','LineWidth',2);
+grid on; set(gca,'ylim',[1e-2 1],'xlim',[400 700])
+set(gca,'xtick',400:100:700,'ytick',0:0.5:1);
 pS(1).LineWidth = 5; pS(1).Color = [0 0 0];
 pS(2).Color = [0.7 0.7 0.7];pS(2).MarkerSize = 4;
 % plot(thisW,Sest,'b--','LineWidth',2); hold on;
+
+fontsize(gcf,24,'points');
 
 %% Make the Stockman log10 difference plots
 %
@@ -87,7 +92,7 @@ nexttile
 Lcone = max(Lest,0);  % No negative values
 idx = log10(stockman(:,1)) > crit;  % Only plot down to 1 percent
 p = plot(wave(idx),log10(Lcone(idx)) - log10(stockman(idx,1)),'ko','LineWidth',2);
-grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 650],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:100:700]);
 xaxisLine;
 p.Color = [0.5 0.5 0.5];
 
@@ -95,7 +100,7 @@ nexttile
 Mcone = max(Mest,0);
 idx = log10(stockman(:,2)) > crit;
 p = plot(wave(idx),log10(Mcone(idx)) - log10(stockman(idx,2)),'ko','LineWidth',2);
-grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 650],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:100:700]);
 xaxisLine;
 p.Color = [0.5 0.5 0.5];
 
@@ -103,10 +108,13 @@ nexttile
 Scone = max(Sest,0);
 idx = log10(stockman(:,3)) > crit;
 p = plot(wave(idx),log10(Scone(idx)) - log10(stockman(idx,3)),'ko','LineWidth',2);
-grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 650],'ytick',[-0.3:0.1:0.2],'xtick',[400:50:700]);
+grid on; set(gca,'ylim',[-0.2 0.2],'xlim',[400 700],'ytick',[-0.3:0.1:0.2],'xtick',[400:100:700]);
 xaxisLine;
 p.Color = [0.5 0.5 0.5];
 
+fontsize(gcf,24,'points');
+
+%{
 %% This section illustrates using the conefundamental function
 %
 % It does essentially the same as the above, but provides more
@@ -267,5 +275,6 @@ Lcone = conefundamental(cmfDeutan,cmfTritan,'method',method);
 plot(thisW,Lcone,'r-',thisW,stockman(:,1),'k.','Linewidth',2);
 xlabel('Wavelength (nm)'); grid on;
 title('L-cone (Deutan-Tritan)');
+%}
 %}
 %%
