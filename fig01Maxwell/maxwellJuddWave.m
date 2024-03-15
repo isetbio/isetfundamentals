@@ -5,7 +5,7 @@
 %
 %   JuddWave (nm) = Maxwell/3.6942
 %
-% As we explain elsewhere, we think that this perfect linear relationship
+% As we explain below, we think this perfect linear relationship
 % is off by about 10 nm. In plotting the figures we use
 %
 %   adjustedWave (nm) = JuddWave - 10;
@@ -13,11 +13,10 @@
 % The small additive term could easily arise given the nature of Maxwell's
 % instrument.
 
-% Initialize
+%% Initialize
 clear; close all;
 
-% Here is Judd's reasoning about Maxwell's wavelengths.  We adjust by only
-% a small amount (10 nm).
+% Here is Judd's reasoning about Maxwell's wavelengths.
 %{
  "The wavelengths are expressed in millionths of a Paris inch." On the
  assumption that a Paris inch is 25·4 mm, this implies that a certain red
@@ -31,6 +30,11 @@ clear; close all;
  listed in Table I in nm. It will be noted that by this assumption, the
  colour names given to the various parts of the spectrum by Maxwell accord
  well with the names currently given to them. (p. 349)"
+%}
+%{
+We adjust by a small amount (10 nm) because the fits are improved.  We
+find it easy to imagine that Maxwell had a difficult time getting the
+offset of his instrument calibrated to within 10 nm,
 %}
 
 %% Maxwell's determination of the wavelengths from the indices
@@ -62,12 +66,12 @@ xlabel('idx'); ylabel('Maxwell wave');
 
 % Judd says that the three primaries (24, 44, 68) are the wavelengths
 % 456.9, 528.1 and 630.2. Notice that a longer index is a shorter
-% wavelength according to Maxwell.  I arranged the idx and primaries in the
-% same order. 
+% wavelength according to Maxwell.  I arranged the idx and primaries
+% in the same order.
 
-% The Judd 1961 paper asserts that Maxwell's indices correspond to these
-% wavelengths.  He also provides the primaries. These are cited in Qasim's
-% paper, too.
+% The Judd 1961 paper asserts that Maxwell's indices correspond to
+% these wavelengths.  He also provides the primaries. These are cited
+% in Qasim's paper, too.
 ieNewGraphWin;
 idx = [24 44 68];
 primaries = [630.2 528.1 456.9];
@@ -98,12 +102,14 @@ plot(juddWave(:,1),juddWave(:,2),'-x');
 xlabel('idx'); ylabel('Maxwell wave');
 
 %% What is the relationship?
+
 ieNewGraphWin;
 plot(maxwellWave(:,2),juddWave(:,2),'k-o');
 grid on;
 xlabel('Maxwell wave'); ylabel('Judd wave');
 
 %% Fit a line and show that the slope is pretty much the whole deal.
+
 [slope, offset] = ieFitLine(maxwellWave(:,2),juddWave(:,2));
 ratios = maxwellWave(:,2)./juddWave(:,2);
 
@@ -113,3 +119,4 @@ mean(ratios)
 identityLine;
 legend('Judd','Scaled Maxwell');
 
+%%
