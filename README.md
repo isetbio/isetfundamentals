@@ -14,6 +14,6 @@ We have an insight about how to estimate the cone fundamentals from the color ma
 # This repository
 The scripts in this repository implement the calculations used for the paper figures. There are also have a series of related calculations we found interesting.  This repository depends on [ISETCam](https://github.com/iset/isetcam/wiki).
 
-For more details, please refer to [this repository's wiki](https://github.com/isetbio/isetfundamentals/wiki).
+For more details, please refer to [the wiki page for isetfundamentals, this repository](https://github.com/isetbio/isetfundamentals/wiki).
 
 Brian, David, Thomas
