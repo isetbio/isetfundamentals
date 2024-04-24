@@ -11,7 +11,7 @@
 %
 % is reviewed by in subsequent papers by Judd and Zaidi,
 % 
-%  Qasim Zaideh's REVIEW, and Judd's MAXWELL AND MODERN COLORIMETRY
+%  Qasim Zaidi's REVIEW, and Judd's MAXWELL AND MODERN COLORIMETRY
 %
 % Maxwell uses an interesting method to derive the color matching functions
 % for two observers.  These were the first CMF measurements, and the paper
@@ -26,7 +26,6 @@
 %   lights to white.  The curves shown here are derived by Maxwell. In
 %   the maxwellMatch script, we derive these curves directly from
 %   Table IV, using modern methods.
-%
 
 %% Maxwell's design in the 1860 paper
 %
@@ -55,13 +54,11 @@
 % lights to white. In a separate script, we analyze those data,
 % showing how we come to the same conclusion as Maxwell using modern
 % methods. (maxwellMatch).
-%
 
 %% See maxwellJuddWave to get the wavelengths from the Maxwell data in nm.
-
-% It is a scale factor applied to Maxwell's values. Judd derives the
-% scale factor from the 'Paris inch'.
-
+%
+% These were estimated by Judd, via a scale factor applied to Maxwell's values. Judd derives the
+% scale factor from the 'Paris inch' units reported by Maxwell.
 juddWave = [
     20 663.2
     24 630.2
@@ -81,8 +78,8 @@ juddWave = [
     80 434.2];
 
 %% CMFs From the 1860 paper
-
-% The primaries were wavelengths 24,44, 68 which is why they are
+%
+% The primaries were wavelengths 24, 44, 68 which is why they are
 % skipped in the rows of the original.  I think.  I put them in as 1s
 % and 0s.
 %
@@ -112,11 +109,9 @@ obsK6 = [
    80.0000   63.7000    0.3000   -1.8000   30.5000];
 
 waveK6 = interp1(juddWave(:,1),juddWave(:,2),obsK6(:,1));
-
 obsK6(:,1) = waveK6(:);
 
 %% Now Obs J in Table IX
-
 obsJ9 = [
    20.0000   44.3000   18.1000   -2.5000    2.3000
    24.0000    1.0000    1.0000         0         0
@@ -139,8 +134,6 @@ waveJ9 = interp1(juddWave(:,1),juddWave(:,2),obsJ9(:,1));
 
 %% The 2nd column is an overall scale factor
 %
-% Explain that here:
-%
 % Columns 3-5 are the intensities of the primaries, without accounting
 % for the equalizing scale factor.
 
@@ -161,8 +154,7 @@ grid on;
 yline(1,'LineWidth',2);
 legend('K','','','J','','','');
 
-%% Individual
-
+%% Individual plots
 ieNewGraphWin([],'wide');
 tiledlayout(1,2);
 nexttile;
@@ -182,7 +174,6 @@ ylabel('Primary intensity');
 grid on;
 
 %% Save the data out for use by other scripts
-
 saveFlag = false;
 if saveFlag
     B = obsJ9(:,3)./obsJ9(:,2);

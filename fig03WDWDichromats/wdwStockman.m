@@ -40,9 +40,12 @@ tiledlayout(2,2);
 nexttile;
 plot(wave(1:2:end),estProtan(1:2:end,:),'ko','Linewidth',1,'MarkerSize',2);
 hold on; plot(wave,cmfProtan,'-','Color',pColor,'Linewidth',2);
-title('Protan');
-xlabel('Wavelength (nm)');
-ylabel('Primary intensity (a.u.)'); grid on;
+set(gca,'xtick',400:100:700,'ytick',0:0.5:1,'xlim',[400 700],'ylim',[-0.2 1.2]);
+grid on;
+
+% title('Protan');
+% xlabel('Wavelength (nm)');
+% ylabel('Primary intensity (a.u.)'); grid on;
 
 nexttile;
 Ldeutan = stockman\cmfDeutan;
@@ -50,11 +53,11 @@ estDeutan = stockman*Ldeutan;
 plot(wave(1:2:end),estDeutan(1:2:end,:),'ko','Linewidth',1,'MarkerSize',2);
 hold on;
 plot(wave,cmfDeutan,'-','Color',pColor,'Linewidth',2)
-title('Deutan (Original)');
-xlabel('Wavelength (nm)');
-ylabel('Primary intensity (a.u.)'); grid on;
+grid on;
+set(gca,'xtick',400:100:700,'ytick',0:0.5:1,'xlim',[400 700],'ylim',[-0.2 1.2]);
 
 % Tritan - the wavelength is different
+% Also, the stored data are not scaled to 1.  We do the scaling here.
 fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfTritan.mat');
 load(fname,'obsAverage');
 % cmfTritan = obsAverage.CMF;
@@ -63,13 +66,14 @@ cmfTritan = interp1(obsAverage.wave,obsAverage.CMF,wave);
 stockman = ieReadSpectra('stockmanEnergy',wave);
 
 nexttile;
-Ltritan = stockman\cmfTritan;
-estTritan = stockman*Ltritan;
+% Not scaled to 1 in the original
+cmfTritan = ieScale(cmfTritan,1);
+Ltritan = stockman\cmfTritan; 
+estTritan = stockman*Ltritan; 
 plot(wave(1:2:end),estTritan(1:2:end,:),'ko', 'LineWidth',1,'MarkerSize',2);
 hold on; plot(wave,cmfTritan,'-','Color',pColor,'Linewidth',2)
-title('Tritan');
-xlabel('Wavelength (nm)');
-ylabel('Primary intensity (a.u.)'); grid on;
+grid on;
+set(gca,'xtick',400:100:700,'ytick',0:0.5:1,'xlim',[400 700],'ylim',[-0.2 1.2]);
 
 % DeutanC - back to original wave
 fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfDeutanC.mat');
@@ -82,10 +86,13 @@ estDeutanC = stockman*LdeutanC;
 plot(wave(1:2:end),estDeutanC(1:2:end,:),'ko','Linewidth',1,'MarkerSize',2);
 hold on;
 plot(wave,cmfDeutanC,'-','Color',pColor,'Linewidth',2)
-title('Deutan (Corrected)');
-xlabel('Wavelength (nm)');
-ylabel('Primary intensity (a.u.)'); grid on;
+grid on;
+set(gca,'xtick',400:100:700,'ytick',0:0.5:1,'xlim',[400 700],'ylim',[-0.2 1.2]);
 
+fontsize(gcf,24,'points');
+
+%%
+%{
 %% Alternative
 
 ieNewGraphWin([],'wide');
@@ -134,5 +141,5 @@ xlabel('Wavelength (nm)');
 ylabel('Primary intensity (a.u.)'); grid on;
 
 % Add the bad Deutan short wavelength CMF
-
+%}
 %% END

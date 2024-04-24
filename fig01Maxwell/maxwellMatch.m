@@ -12,10 +12,12 @@
 %  In maxwellDataCMF we save out the CMFs that Maxwell derived
 %  himself, using multiple simple linear algebraic calculations. Those
 %  are from Table VI and Table IX in the original 1860 paper.
-%
+
+% Initialize
+clear; close all;
 
 %% The Judd wavelength estimates.
-
+%
 % We will adjust these by about 10 nm later.
 juddWave = [
     20 663.2
@@ -90,7 +92,7 @@ table4Matches = [
     80     0     0     0     0     0     0     0     0     0     0     0     0     0     63.7    
 ];
 
-%% Adjustments from 10nm to 15nm fits are fine.  
+%% Adjustments from 10 nm to 15 nm fits are fine.  
 % 
 % 20nm is too much.  5 too little.
 
@@ -98,8 +100,7 @@ table4Matches = [
 % paper on Maxwell.  But I (BW) think it may be off by about 10-15nm
 % based on the quality of the fits.  So here, we adjust the judd
 % wavelengths by a small amount before we do the fits.
-
-juddAdjust = 12;  % Adjustment in nm
+juddAdjust = 10;  % Adjustment in nm
 table4Matches(:,1) = juddWave(:,2)-juddAdjust;   % Set to wavelength
 table4Matches = flipud(table4Matches);
 
@@ -107,7 +108,7 @@ wave    = table4Matches(:,1);
 matches = table4Matches(:,2:end);
 
 %% Find the best fit to all ones
-
+%
 % The Maxwell data are all matches to a common, white light.  To
 % derive the color matching functions, we need to find three
 % independent vectors, CMF_i, that produce a constant value 
@@ -121,11 +122,9 @@ matches = table4Matches(:,2:end);
 % Because there are 16 wavelengths and only 14 matches, we need an
 % extra constraint.  We used a Tikhonov regularizer to provide a
 % relatively smooth solution.
-%
 
 % These are the 1s in the columns
 O = ones(size(matches',1),1);
-
 lambda = logspace(-2,3,6);  % Different size of the regularizer
 
 % The solutions.
@@ -146,7 +145,6 @@ tmp = matches'*y;
 %}
 
 %% Is the solution within a linear transformation of the SS or CIE?
-
 stockman = ieReadSpectra('stockmanenergy',wave);
 
 % The first few are all OK.  
@@ -163,11 +161,10 @@ ylabel('Arbitrary'); title('Stockman and Maxwell');
 grid on; legend('Maxwell','Stockman')
 
 %%  Other solutions exist by adding vectors from the null space of matches
-
+%
 % The idea is to set up an equation to solve for one vector in the null
 % space.  Then we will add that vector to the match matrix and solve again,
 % hopefully to find a new, independent vector in the null space.
-%
 
 % Here is the null space.
 A = matches';
@@ -183,7 +180,7 @@ ylabel('Arbitrary');
 title('Null space vectors');
 
 %% Now let's see how well we do fitting Stockman to these three
-
+%
 % Normalize them to a max of 1
 M = [ieScale(maxwell(:),1), ieScale(N(:,1),1), ieScale(N(:,2),1)];
 
@@ -212,9 +209,7 @@ title('Maxwell mapped to Stockman')
 legend('Maxwell est','','','Stockman','','');
 
 %% Fit from the Maxwell from the Stockman
-
 lTransform = stockman \ M;
-
 estMaxwell = stockman *lTransform;
 
 ieNewGraphWin;
@@ -223,5 +218,4 @@ plot(wave,M,'ko');
 xlabel('Wavelength'); ylabel('Arbitrary');
 legend('M1','M2','M3','Stock est')
 
-%%
 
