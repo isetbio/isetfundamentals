@@ -23,7 +23,7 @@
 % 645.16, 526.32, 444.44 nm. Here we round to nearest integer wavelength.
 %
 % This tutorial was originally developed to generate figures for a book
-% that David Brainard and Andrew Stockman may write someday, and has been
+% that David BraiSnard and Andrew Stockman may write someday, and has been
 % extended and modified here for explanatory purposes.
 %
 % This tutorial is available in the github repository

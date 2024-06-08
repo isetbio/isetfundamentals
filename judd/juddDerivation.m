@@ -5,7 +5,7 @@ thisW = 420:5:650;
 fname = fullfile(iefundamentalsRootPath,'judd','juddWWK.mat');
 load(fname,'wave','WWK');
 
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfTritan.mat');
 load(fname,'obsAverage');
 
 % Judd's estimates of protan and deutan
@@ -34,9 +34,9 @@ coneL = conefundamental(cmfDeutan,cmfTritan);
 coneM = conefundamental(cmfProtan,cmfTritan);
 coneS = conefundamental(cmfProtan,cmfDeutan);
 
-function coneF = conefundamental(cmfProtan,cmfTritan)
-%
-
-%
-
-end
+% function coneF = conefundamental(cmfProtan,cmfTritan)
+% %
+% 
+% %
+% 
+% end

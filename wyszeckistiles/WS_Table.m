@@ -66,7 +66,7 @@ tritan = WSTable(:,(6:7));
 %% Compare with XYZ to confirm
 
 % Perfect fit to XYZ
-XYZ = ieReadSpectra('xyzenergy',wave);
+XYZ = ieReadSpectra('XYZEnergy',wave);
 L = XYZ\protan; protanEst = XYZ*L;
 L = XYZ\deutan; deutanEst = XYZ*L;
 L = XYZ\tritan; tritanEst = XYZ*L;

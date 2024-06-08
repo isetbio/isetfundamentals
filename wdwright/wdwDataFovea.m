@@ -17,7 +17,7 @@
 %   wdwData*
 
 %%
-chdir(fullfile(iefundamentalsRootPath,'wdwright','grabit'));
+chdir(fullfile(iefundamentalsRootPath,'data','grabit'));
 wave = 400:700;
 
 %%

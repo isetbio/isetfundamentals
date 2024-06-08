@@ -34,7 +34,7 @@ ieInit;
 %% Load data typed in from Wright, 1952
 %
 % These were assembled and stored in wdwtritanopes.m
-fname = fullfile(iefundamentalsRootPath,'wdwright','wdwTritanopes.mat');
+fname = fullfile(iefundamentalsRootPath,'data','grabit','wdwTritanopes.mat');
 theWrightData = load(fname,'obs','obsAverage');
 
 % Extract fields

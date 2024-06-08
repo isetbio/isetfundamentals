@@ -4,7 +4,7 @@
 ieInit;
 
 %% Load data typed in from Wright, 1952
-fname = fullfile(iefundamentalsRootPath,'wdwright','wdwTritanopes.mat');
+fname = fullfile(iefundamentalsRootPath,'data','grabit','wdwTritanopes.mat');
 theWrightData = load(fname,'obs','obsAverage');
 
 % Get Stockman-Sharpe and XYZ at the requisite wavelengths
