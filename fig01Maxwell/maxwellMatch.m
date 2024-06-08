@@ -145,7 +145,7 @@ tmp = matches'*y;
 %}
 
 %% Is the solution within a linear transformation of the SS or CIE?
-stockman = ieReadSpectra('stockmanEnergy',wave);
+stockman = ieReadSpectra('stockmanenergy',wave);
 
 % The first few are all OK.  
 n = 1;
