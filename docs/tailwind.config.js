@@ -1,8 +1,12 @@
- // tailwind.config.js
- module.exports = {
-    content: ['./index.html', './info.html', './resources.html'],
-    presets: [
-      require('decanter')
-    ],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  presets: [
+    require('decanter')
+  ],
+  content: ['./index.html', './info.html', './resources.html'],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
 
-  }
