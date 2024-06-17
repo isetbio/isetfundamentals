@@ -1,0 +1,28 @@
+**InfoHTML:**
+
+**Introduce Maxwell's color theory**
+- Based on one color only; thus, no spatial relationship
+- Biological perception of superposition of 3 color primaries to match another sample color
+    - proves trichromacy for human biological perception (we see 3 pieces of information)
++ Add Koh Terai's demos
+
+**Measuring of light (biological and mechanical)**
+- Maxwell observed only physiological perception of physical light
+- Physical and continuous light is a superposition of all its frequencies into a wave
+- Light perception can retrieve the _fundamentals_ (for biology, LMS, and for camera, RGB)
+- Light perception _cannot_ retrieve light-frequencies
+    - fundamental = Conversion X light-frequencies
+    - LMS = [...L(gamma)...] [E400]
+    -       [...M(gamma)...] [...]
+    -       [...S(gamma)...] [E700]
++ Add diagrams/interactives
+
+**Conversion between fundamentals**
+- ISET Fundamentals explores the conversion matrices (defined above) between color spaces
++ Add interactive to calculate and convert between fundamentals
+
+**Spatial information in color encoding**
+- One major factor that Maxwell's research is limited by is the position of colors in regards to biological perception
+- For the human eye, what the fovea sees is also dependent on the color content around the position of the fovea's focus
+- This is the cause of most color illusions
++ Add gallery of color illusions
