@@ -4,9 +4,9 @@ module.exports = {
     require('decanter')
   ],
   content: [
-    './*.html',
-    './templates/*.html',
-    './js/*.js',
+    './docs/*.html',
+    './docs/templates/*.html',
+    './docs/js/*.js'
   ],
   theme: {
     extend: {},
