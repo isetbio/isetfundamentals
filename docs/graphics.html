@@ -57,62 +57,58 @@
         <svg id="mySvg" width="500" height="500" viewBox="0 0 100 100">
           <!-- Bezier curve path -->
           <path id="bezierPath" d="" stroke="blue" fill="none" stroke-width="2"/>
-          <!-- Control points -->
-          <circle id="startPoint" class="control-point" cx="10" cy="80" r="1.5" fill="red"/>
-          <!-- <circle id="controlPoint1" class="control-point" cx="20" cy="10" r="1.5" fill="green"/> -->
-          <!-- <circle id="controlPoint2" class="control-point" cx="80" cy="10" r="1.5" fill="green"/> -->
-          <!-- <circle id="endPoint" class="control-point" cx="90" cy="80" r="1.5" fill="red"/> -->
+          <!-- Control points created by javascript-->
         </svg>
         <script>
           document.addEventListener('DOMContentLoaded', function() {
-            var n = 5;
+            var n = 4;
             var svg = document.getElementById('mySvg');
             var bezierPath = document.getElementById('bezierPath');
-            var controlPoints = [
-                document.getElementById('startPoint'),
-                //document.getElementById('controlPoint1'),
-                //document.getElementById('controlPoint2'),
-                //document.getElementById('endPoint')
-            ];
+            var controlPoints = [];
 
-            
-            controlPoints.push(document.getElementById('startPoint'));
+            // Get startpoint
+            var startPoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            startPoint.setAttribute("id", "startPoint");
+            startPoint.setAttribute("class", "control-point");
+            startPoint.setAttribute("cx", "10");
+            startPoint.setAttribute("cy", "80");
+            startPoint.setAttribute("r", "2");
+            startPoint.setAttribute("fill", "red");
+            svg.appendChild(startPoint);
+            controlPoints.push(startPoint);
+
             for (let i = 1; i <= n; i++) {
-                var newControlPoint = document.createElement("circle");
+                var newControlPoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
                 newControlPoint.setAttribute("id", `controlPoint${i}`);
                 newControlPoint.setAttribute("class", "control-point");
-                newControlPoint.setAttribute("cx", `${i/(n+1) * 80}`);
-                newControlPoint.setAttribute("cy", "80");
+                newControlPoint.setAttribute("cx", `${(i / (n + 1)) * 80 + 10}`);
+                newControlPoint.setAttribute("cy", "40");
                 newControlPoint.setAttribute("r", "1.5");
                 newControlPoint.setAttribute("fill", "green");
-                svg.appendChild(newControlPoint)
+                svg.appendChild(newControlPoint);
                 controlPoints.push(newControlPoint);
             }
 
-            var endPoint = document.createElement("circle");
-            newControlPoint.setAttribute("id", `endPoint`);
-            newControlPoint.setAttribute("class", "control-point");
-            newControlPoint.setAttribute("cx", "90");
-            newControlPoint.setAttribute("cy", "80");
-            newControlPoint.setAttribute("r", "1.5");
-            newControlPoint.setAttribute("fill", "red");
-            
-            
-            for (let i = 0; i < n; i++) {
-                
-            }
-
-            controlPoints.push(document.getElementById('endPoint'));
+            var endPoint = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            endPoint.setAttribute("id", `endPoint`);
+            endPoint.setAttribute("class", "control-point");
+            endPoint.setAttribute("cx", "90");
+            endPoint.setAttribute("cy", "80");
+            endPoint.setAttribute("r", "1.5");
+            endPoint.setAttribute("fill", "red");
+            svg.appendChild(endPoint)
+            controlPoints.push(endPoint);
 
 
             var selectedPoint = null;
             var offset = { x: 0, y: 0 };
 
             function updateBezierPath() {
-                var d = `M${controlPoints[0].getAttribute('cx')},${controlPoints[0].getAttribute('cy')}
-                        C${controlPoints[1].getAttribute('cx')},${controlPoints[1].getAttribute('cy')}
-                        ${controlPoints[2].getAttribute('cx')},${controlPoints[2].getAttribute('cy')}
-                        ${controlPoints[3].getAttribute('cx')},${controlPoints[3].getAttribute('cy')}`;
+                var d = `M${controlPoints[0].getAttribute('cx')},${controlPoints[0].getAttribute('cy')} C`;
+                for (let i = 1; i < controlPoints.length - 1; i++) {
+                    d += ` ${controlPoints[i].getAttribute('cx')},${controlPoints[i].getAttribute('cy')}`;
+                }
+                d += ` ${controlPoints[controlPoints.length - 1].getAttribute('cx')},${controlPoints[controlPoints.length - 1].getAttribute('cy')}`;
                 bezierPath.setAttribute('d', d);
             }
 
@@ -120,8 +116,8 @@
                 controlPoints[point].addEventListener('mousedown', function(event) {
                     selectedPoint = event.target;
                     var rect = svg.getBoundingClientRect();
-                    offset.x = event.offsetX - rect.left - parseFloat(selectedPoint.getAttribute('cx'));
-                    offset.y = event.offsetY - rect.top - parseFloat(selectedPoint.getAttribute('cy'));
+                    offset.x = event.clientX - rect.left - parseFloat(selectedPoint.getAttribute('cx'));
+                    offset.y = event.clientY - rect.top - parseFloat(selectedPoint.getAttribute('cy'));
                     event.preventDefault(); // Prevent text selection or other unwanted actions
                 });
             }
