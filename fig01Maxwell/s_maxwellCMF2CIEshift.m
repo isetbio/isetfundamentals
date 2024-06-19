@@ -131,6 +131,6 @@ ieNewGraphWin;
 plot(shiftValues,err);
 grid on;
 xlabel('Shift in nm');
-ylabel('RMSE in XYZ terms (ugh)')
+ylabel('RMSE (re: XYZ)')
 title('Judd-Maxwell adjustment')
 %% END
