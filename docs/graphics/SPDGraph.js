@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     //////////////////// SPD ////////////////////
 
-    ////////// SPD - GUI //////////
+    ////////// SPD - Create GUI //////////
 
     resetButton.addEventListener('click', function() {
         this.innerText = 'Reset Done';
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(()=>{this.innerText = "Reset";}, 1000);
     });
 
-    ////////// SPD - Graph //////////
+    ////////// SPD - Create Graph //////////
 
     // Math Objects
     const x = d3.scaleLinear().domain([400, 700]).range([0, graphWidth]);
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("r", 5)
         .attr("cx", d => x(d.wavelength))
         .attr("cy", d => y(d.intensity))
-        .attr("fill", "red")
+        .attr("fill", d => SPD2RGB(d.wavelength, css=true))
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -90,10 +90,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 .attr("r", 5); // Reset the circle size
         });
 
+
+    ////////// SPD - Event Handlers //////////
+    
     function dragstarted(event, d) {
         indicator.attr("visibility", "visible");
     }
-
     function dragged(event, d) {
         const newX = x.invert(d3.pointer(event, this)[0]);
         const index = d3.bisectLeft(data.map(d => d.wavelength), newX);
@@ -107,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 .attr("cy", y(data[index].intensity)); // any node at index should change
     
             path.attr("d", line);
-            updateColorSample(data);
+            updateColor(data);
 
             indicator.attr("cx", x(newX));
             indicator.attr("cy", y(intensity));
@@ -116,6 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function dragended(event, d) {
         indicator.attr("visibility", "hidden");
+        localStorage.setItem("RGB", JSON.stringify(updateColor()));
     }
 
     function resetSPD() {
@@ -125,32 +128,29 @@ document.addEventListener("DOMContentLoaded", function() {
         }));
         svgElement.selectAll("circle").attr("cy", y(0));
         path.datum(data).attr("d", line);
-        updateColorSample(data);
+        updateColor(data);
     }
 
-    function updateColorSample() {
-        const color = calculateColorFromSPD(data);
-        colorSample.style.backgroundColor = color;
-    }
-
-    function calculateColorFromSPD() {
-        // Simple placeholder function for calculating color from SPD
-        // In practice, this would involve more sophisticated color science
-        let r = 0, g = 0, b = 0;
+    function updateColor() {
+        // Update ColorSample element
+        let tr = 0, tg = 0, tb = 0;
+        var factor = 1/10;
         data.forEach(d => {
-            if (d.wavelength >= 400 && d.wavelength < 500) {
-                b += d.intensity * (d.wavelength - 400) / 100;
-            } else if (d.wavelength >= 500 && d.wavelength < 600) {
-                g += d.intensity * (d.wavelength - 500) / 100;
-            } else if (d.wavelength >= 600 && d.wavelength <= 700) {
-                r += d.intensity * (d.wavelength - 600) / 100;
-            }
+            let {r, g, b} = SPD2RGB(d.wavelength);
+            tr += r * d.intensity * factor;
+            tg += g * d.intensity * factor;
+            tb += b * d.intensity * factor;
         });
-        r = Math.min(Math.max(r, 0), 1);
-        g = Math.min(Math.max(g, 0), 1);
-        b = Math.min(Math.max(b, 0), 1);
-        return `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
+        tr = Math.round(tr);
+        tg = Math.round(tg);
+        tb = Math.round(tb);
+        const color = `rgb(${tr}, ${tg}, ${tb})`;
+        colorSample.style.backgroundColor = color;
+
+        return {r: tr, g: tg, b: tb};
     }
 
-    updateColorSample(data);
+    // Init
+    localStorage.setItem("RGB", JSON.stringify({r:0, g:0, b:0}));
+    updateColor(data);
 });
