@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SPD Graph with Color Sample</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+        }
+        svg {
+            border: 1px solid #ccc;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .color-sample {
+            width: 150px;
+            height: 50px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+        }
+        #resetButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: red;
+        }
+        #resetButton:hover {
+            background-color: darkred; /* Darken button color on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg id="spdGraph" width="800" height="400"></svg>
+        <div class="color-sample" id="colorSample"></div>
+        <button type="button" id="resetButton">Reset</button>
+    </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
