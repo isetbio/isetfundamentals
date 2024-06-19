@@ -25,10 +25,6 @@ html {
     margin: 0;
   }
 
-  .container {
-    width: 80%;
-    max-width: 800px;
-  }
   svg {
     border: 1px solid #ccc;
   }
@@ -3534,6 +3530,8 @@ html {
   }
   
   .support-section {
+    width: 80%;
+    max-width: 800px;
     padding-top: 65px;
     padding-bottom: 105px;
   }
