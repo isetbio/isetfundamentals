@@ -3528,6 +3528,11 @@ html {
     margin-bottom: 25px;
     font-size: 18px;
   }
+
+  .graph-container {
+    display: grid;
+    place-items: center;
+  }
   
   .support-section {
     width: 80%;
@@ -3541,6 +3546,7 @@ html {
     align-items: center;
     margin-bottom: 40px;
     display: flex;
+    
   }
   
   .support-top-left {

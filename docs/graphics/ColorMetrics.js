@@ -20,29 +20,9 @@ document.addEventListener("DOMContentLoaded", function() {
             if (RGB != null){
                 RGBValue.innerHTML = `(${RGB.r}, ${RGB.g}, ${RGB.b})`;
             }
-        }, 500)
+        }, 10)
     
     
-      
-
-    /**
-     * 
-     * <table id="colorMetrics">
-                <thead>
-                    <tr>
-                        <th>RGB Color</th>
-                        <th>LMS Color</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>...</td>
-                        <td>...</td>
-                    </tr>
-                </tbody>
-            </table>
-     */
-
 
 
     

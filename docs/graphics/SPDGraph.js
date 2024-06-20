@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
+    //
+    console.log("Loaded")
+
     // Elements
     const svg = document.getElementById("spdGraph");
     const colorSample = document.getElementById("colorSample");
@@ -118,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function dragended(event, d) {
         indicator.attr("visibility", "hidden");
-        localStorage.setItem("RGB", JSON.stringify(updateColor()));
     }
 
     function resetSPD() {
@@ -146,8 +148,14 @@ document.addEventListener("DOMContentLoaded", function() {
         tb = Math.round(tb);
         const color = `rgb(${tr}, ${tg}, ${tb})`;
         colorSample.style.backgroundColor = color;
+        console.log("done");
 
-        return {r: tr, g: tg, b: tb};
+        var res = {r: tr, g: tg, b: tb};
+
+        // Update local storage
+        localStorage.setItem("RGB", JSON.stringify(res));
+
+        return res;
     }
 
     // Init
