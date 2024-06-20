@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     //
-    console.log("Loaded")
+    console.log("Loaded1")
 
     // Elements
     const svg = document.getElementById("spdGraph");
