@@ -1,6 +1,13 @@
+// Color settings
+const MAXINTENSITY = 1.0;
+const MININTENSITY = 0.0;
+const MINWV = 400;
+const STEPWV = 5;
+const NUMWV = 61;
+
 document.addEventListener("DOMContentLoaded", function() {
     //
-    console.log("Loaded1")
+    console.log("Loaded: SPD")
 
     // Elements
     const svg = document.getElementById("spdGraph");
@@ -14,10 +21,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const graphWidth = width - margin.left - margin.right;
     const graphHeight = height - margin.top - margin.bottom;
 
-    // Color settings
-    const MAXINTENSITY = 1.0;
-    const MININTENSITY = 0.0;
-
     //////////////////// SPD ////////////////////
 
     ////////// SPD - Create GUI //////////
@@ -28,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(()=>{this.innerText = "Reset";}, 1000);
     });
 
-    ////////// SPD - Create Graph //////////
+    ////////// SPD - Create Static Objects //////////
 
     // Math Objects
     const x = d3.scaleLinear().domain([400, 700]).range([0, graphWidth]);
@@ -51,12 +54,17 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("class", "y axis")
         .call(d3.axisLeft(y));
 
-    let data = Array.from({length: 61}, (v, i) => ({
-        wavelength: 400 + i * 5,
-        intensity: 0
-    }));
+    svgElement.append("text")
+        .attr("x", width / 2 - 40)
+        .attr("y", -margin.top / 2+30)
+        .attr("text-anchor", "middle")
+        .style("font-size", "18px")
+        .text("SPD Selector");
 
+    ////////// SPD - Create Movable Graph Objects //////////
     // On-Site (D3) Dynamic Objects
+    let data = Array.from({length: NUMWV}, (v, i) => ({wavelength: MINWV + i * STEPWV, intensity: 0}));
+
     const indicator = svgElement.append("circle")
         .attr("fill", "blue")
         .attr("r", 5)
@@ -148,17 +156,18 @@ document.addEventListener("DOMContentLoaded", function() {
         tb = Math.round(tb);
         const color = `rgb(${tr}, ${tg}, ${tb})`;
         colorSample.style.backgroundColor = color;
-        console.log("done");
 
         var res = {r: tr, g: tg, b: tb};
 
         // Update local storage
         localStorage.setItem("RGB", JSON.stringify(res));
+        localStorage.setItem("SPD", JSON.stringify(data));
 
         return res;
     }
 
     // Init
     localStorage.setItem("RGB", JSON.stringify({r:0, g:0, b:0}));
+    localStorage.setItem("SPD", JSON.stringify(data));
     updateColor(data);
 });

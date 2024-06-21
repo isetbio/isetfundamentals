@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>ISET Interactives</title>
-    <base href="https://isetbio.github.io/isetfundamentals/">
+    <!--<base href="https://isetbio.github.io/isetfundamentals/">-->
 
     <!--Import FAVICON (with code loading)-->
     <script src="js/HTMLImporter.js"></script>
@@ -13,6 +13,8 @@
     <link href="css/styles.css"
         rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.21/jquery.csv.min.js" integrity="sha512-Y8iWYJDo6HiTo5xtml1g4QqHtl/PO1w+dmUpQfQSOTqKNsMhExfyPN2ncNAe9JuJUSKzwK/b6oaNPop4MXzkwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="js/load_templates.js"></script>
 
     <!--Import FONTS-->
@@ -21,12 +23,16 @@
 
     <!--Interactive Scripts-->
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script src="graphics/SPDGraph.js"></script>
-    <script src="graphics/ColorMetrics.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <script src="utils/SPD2RGB.js"></script>
+    <script src="utils/SPD2LMS.js"></script>
+
+    <script src="graphics/SPDGraph.js"></script>
+    <script src="graphics/LMSGraph.js"></script>
+    <script src="graphics/ColorMetrics.js"></script>
+
 
     
 </head>
@@ -38,8 +44,13 @@
 
     <!--Page Content-->
     <div class="support-section">
-        <div class="graph-container">
-            <svg id="spdGraph" width="800" height="400"></svg>
+        <div style="display:flex;align-items: center;">
+            <div class="graph-container">
+                <svg id="spdGraph" width="800" height="400"></svg>
+            </div>
+            <div class="graph-container">
+                <svg id="lmsGraph" width="800" height="400"></svg>
+            </div>
         </div>
         <div class="flex-container">
             <div class="color-sample" id="colorSample"></div>
@@ -52,6 +63,10 @@
                     <th>RGB Color</th>
                 </thead>
                 <tbody>
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
                     <tr>
                         <td>...</td>
                         <td>...</td>
