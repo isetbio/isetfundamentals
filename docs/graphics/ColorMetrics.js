@@ -18,11 +18,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     
     setInterval(function() {
-            let RGB = JSON.parse(localStorage.getItem("RGB"));
-            if (RGB != null){
-                RGBValue.innerHTML = `(${RGB.r}, ${RGB.g}, ${RGB.b})`;
-            }
-        }, 10)
+        // RGB Update
+        let RGB = JSON.parse(localStorage.getItem("RGB"));
+        if (RGB != null){
+            RGBValue.innerHTML = `(${RGB.r}, ${RGB.g}, ${RGB.b})`;
+        }
+
+        // LMS Update
+        let LMS = JSON.parse(localStorage.getItem("LMS"));
+        if (LMS != null){
+            LMSValue.innerHTML = `(${LMS.l}, ${LMS.m}, ${LMS.s})`;
+        }
+    }, DELAY)
     
     
 

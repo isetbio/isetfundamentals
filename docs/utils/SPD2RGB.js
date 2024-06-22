@@ -1,24 +1,43 @@
 /*
 from
-https://stackoverflow.com/questions/3407942/rgb-values-of-visible-spectrum/22681410#22681410
+http://www.cvrl.org/ -> Stile's data sets -> Stiles & Burch colour matching functions -> Stiles & Burch (1959) 10-deg, RGB CMFs, W
 */
 
-function SPD2RGB(l, css=false) // RGB <0,1> <- lambda l <400,700> [nm]
-    {
-    var t;  r=0.0; g=0.0; b=0.0;
-         if ((l>=400.0)&&(l<410.0)) { t=(l-400.0)/(410.0-400.0); r=    +(0.33*t)-(0.20*t*t); }
-    else if ((l>=410.0)&&(l<475.0)) { t=(l-410.0)/(475.0-410.0); r=0.14         -(0.13*t*t); }
-    else if ((l>=545.0)&&(l<595.0)) { t=(l-545.0)/(595.0-545.0); r=    +(1.98*t)-(     t*t); }
-    else if ((l>=595.0)&&(l<650.0)) { t=(l-595.0)/(650.0-595.0); r=0.98+(0.06*t)-(0.40*t*t); }
-    else if ((l>=650.0)&&(l<700.0)) { t=(l-650.0)/(700.0-650.0); r=0.65-(0.84*t)+(0.20*t*t); }
-         if ((l>=415.0)&&(l<475.0)) { t=(l-415.0)/(475.0-415.0); g=             +(0.80*t*t); }
-    else if ((l>=475.0)&&(l<590.0)) { t=(l-475.0)/(590.0-475.0); g=0.8 +(0.76*t)-(0.80*t*t); }
-    else if ((l>=585.0)&&(l<639.0)) { t=(l-585.0)/(639.0-585.0); g=0.84-(0.84*t)           ; }
-         if ((l>=400.0)&&(l<475.0)) { t=(l-400.0)/(475.0-400.0); b=    +(2.20*t)-(1.50*t*t); }
-    else if ((l>=475.0)&&(l<560.0)) { t=(l-475.0)/(560.0-475.0); b=0.7 -(     t)+(0.30*t*t); }
-    return css ? `rgb(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)})`: {
-        r: Math.round(r*255), 
-        g: Math.round(g*255), 
-        b: Math.round(b*255)
-    };
+var SPD2RGB_data;
+
+function SPD2RGB_load() {
+     try {
+          $.ajax({
+               type: "GET",
+               url: "utils/SPD2RGB.csv",
+               dataType: "text",
+               success: function (response) {
+                    SPD2RGB_data = Object.values($.csv.toObjects(response)); // special line
+               },
+               async: false
+          });
+
+     } catch (error) {
+          console.error("Error loading SPD2RGB data:", error);
+     }
+}
+
+
+
+function SPD2RGB(l, css = false) {
+     if (!SPD2RGB_data) {
+          console.error("SPD2RGB data is not loaded yet.");
+          return null;
+     }
+
+     for (let idx = 0; idx < SPD2RGB_data.length; idx++) {
+          if (parseInt(SPD2RGB_data[idx].wavelength) == l) {
+               if (css) {
+                    return `rgb(${SPD2RGB_data[idx].r*256},${SPD2RGB_data[idx].g*256},${SPD2RGB_data[idx].b*256})`
+               } else {
+                    return SPD2RGB_data[idx];
+               }
+          }
+     }
+     return null;
 }

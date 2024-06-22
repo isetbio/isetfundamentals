@@ -4,10 +4,13 @@ const MININTENSITY = 0.0;
 const MINWV = 400;
 const STEPWV = 5;
 const NUMWV = 61;
+const factorRGB = 100;
+const factorLMS = 10;
+
+// Display Settings
+const DELAY = 50;
 
 document.addEventListener("DOMContentLoaded", function() {
-    //
-    console.log("Loaded: SPD")
 
     // Elements
     const svg = document.getElementById("spdGraph");
@@ -59,10 +62,11 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("y", -margin.top / 2+30)
         .attr("text-anchor", "middle")
         .style("font-size", "18px")
-        .text("SPD Selector");
+        .text("Spectral Power Distribution (Φ)");
 
     ////////// SPD - Create Movable Graph Objects //////////
     // On-Site (D3) Dynamic Objects
+    SPD2RGB_load();
     let data = Array.from({length: NUMWV}, (v, i) => ({wavelength: MINWV + i * STEPWV, intensity: 0}));
 
     const indicator = svgElement.append("circle")
@@ -144,12 +148,11 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateColor() {
         // Update ColorSample element
         let tr = 0, tg = 0, tb = 0;
-        var factor = 1/10;
         data.forEach(d => {
             let {r, g, b} = SPD2RGB(d.wavelength);
-            tr += r * d.intensity * factor;
-            tg += g * d.intensity * factor;
-            tb += b * d.intensity * factor;
+            tr += parseFloat(r) * d.intensity * factorRGB;
+            tg += parseFloat(g) * d.intensity * factorRGB;
+            tb += parseFloat(b) * d.intensity * factorRGB;
         });
         tr = Math.round(tr);
         tg = Math.round(tg);
@@ -157,13 +160,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const color = `rgb(${tr}, ${tg}, ${tb})`;
         colorSample.style.backgroundColor = color;
 
-        var res = {r: tr, g: tg, b: tb};
+        var rgb = {r: tr, g: tg, b: tb};
 
         // Update local storage
-        localStorage.setItem("RGB", JSON.stringify(res));
+        localStorage.setItem("RGB", JSON.stringify(rgb));
         localStorage.setItem("SPD", JSON.stringify(data));
 
-        return res;
+        return rgb;
     }
 
     // Init

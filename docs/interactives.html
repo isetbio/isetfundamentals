@@ -24,7 +24,13 @@
     <!--Interactive Scripts-->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+            jax: ["input/TeX", "output/SVG"],
+        })
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
 
     <script src="utils/SPD2RGB.js"></script>
     <script src="utils/SPD2LMS.js"></script>
@@ -64,8 +70,24 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>...</td>
-                        <td>...</td>
+                        <td>
+                            $$
+                            \overrightarrow{\mathbf{LMS}} = \begin{pmatrix}
+                            \int_{400}^{700} \Phi(\lambda) k_l (\lambda) d\lambda \,  \\
+                            \int_{400}^{700} \Phi(\lambda) k_m (\lambda) d\lambda \, \\
+                            \int_{400}^{700} \Phi(\lambda) k_s (\lambda) d\lambda \,
+                            \end{pmatrix} 
+                            $$
+                        </td>
+                        <td>
+                            $$
+                            \overrightarrow{\mathbf{RGB}} = \begin{pmatrix}
+                            \int_{400}^{700} \Phi(\lambda) k_r (\lambda) d\lambda \,  \\
+                            \int_{400}^{700} \Phi(\lambda) k_g (\lambda) d\lambda \, \\
+                            \int_{400}^{700} \Phi(\lambda) k_b (\lambda) d\lambda \,
+                            \end{pmatrix}  
+                            $$
+                        </td>
                     </tr>
                     <tr>
                         <td>...</td>
