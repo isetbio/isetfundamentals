@@ -32,6 +32,7 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
 
+    <script src="graphics/settings.js"></script>
     <script src="utils/SPD2RGB.js"></script>
     <script src="utils/SPD2LMS.js"></script>
 
@@ -49,20 +50,43 @@
     <div class="hero-section"></div>
 
     <!--Page Content-->
-    <div class="support-section">
-        <div style="display:flex;align-items: center;">
-            <div class="graph-container">
-                <svg id="spdGraph" width="800" height="400"></svg>
-            </div>
-            <div class="graph-container">
-                <svg id="lmsGraph" width="800" height="400"></svg>
-            </div>
+    <div style="
+        display:grid; 
+        gap: 10px;
+        grid-template-areas:
+        'spd lms'
+        'sample options'
+        'metrics last';">
+
+        <div class="graph-container" style="grid-area: spd;">
+            <svg id="spdGraph" width="800" height="400"></svg>
         </div>
-        <div class="flex-container">
+
+        <div class="graph-container" style="grid-area: lms;">
+            <svg id="lmsGraph" width="800" height="400"></svg>
+        </div>
+        
+        <div class="flex-container" style="grid-area: sample">
             <div class="color-sample" id="colorSample"></div>
             <button type="button" class="resetButton" id="resetButton">Reset</button>
         </div>
-        <div class="flex-container">
+
+        <div class="flex-container" style="grid-area: options">
+            <div class="center-container">
+                Show LMS Checkpoints
+                <label class="switch">
+                    <input type="checkbox" id="LMSCheckpointSwitch" checked>
+                    <span class="slider round"></span>
+                </label>
+                Show LMS Sums
+                <label class="switch">
+                    <input type="checkbox" id="LMSSumSwitch" checked>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex-container" style="grid-area: metrics">
             <table id="colorMetrics">
                 <thead>
                     <th>LMS Color</th>

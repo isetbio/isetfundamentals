@@ -1,19 +1,37 @@
 document.addEventListener("DOMContentLoaded", function() {
 
     // Elements
-    const svg = document.getElementById("lmsGraph");
-
-    // Size settings
-    const width = svg.clientWidth;
-    const height = svg.clientHeight;
-    const margin = {top: 20, right: 30, bottom: 30, left: 40};
-    const graphWidth = width - margin.left - margin.right;
-    const graphHeight = height - margin.top - margin.bottom;
+    const checkpointSwitch = document.getElementById('LMSCheckpointSwitch');
+    const sumSwitch = document.getElementById('LMSSumSwitch');
 
     // Display settings
     const opacityForMax = 0.3;
+    const opacityForNorm = 0.3;
+    const opacityForSum = 1.0;
+    const rectWidth = 30; // in graph X units
+
+    // Calculation
+    var lms = {l:0, m:0, s:0};
+    var lmsNormalized = {l:0, m:0, s:0};
 
     //////////////////// LMS ////////////////////
+
+    ////////// LMS - Create GUI //////////
+
+    checkpointSwitch.addEventListener('change', (event) => {
+        if (event.target.checked) {
+            normDisplay(opacityForNorm);
+        } else {
+            normDisplay(0);
+        }
+    });
+    sumSwitch.addEventListener('change', (event) => {
+        if (event.target.checked) {
+            sumDisplay(opacityForSum);
+        } else {
+            sumDisplay(0);
+        }
+    });
 
     ////////// LMS - Create Static Objects //////////
 
@@ -25,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .y(d => y(d.sensitivity))
 
     // On-Site (D3) Static Objects
-    const svgElement = d3.select(svg)
+    const svgElement = d3.select(svgLMS)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -39,6 +57,30 @@ document.addEventListener("DOMContentLoaded", function() {
         .call(d3.axisLeft(y));
 
     ////////// LMS - Create Graph Data //////////
+
+    // Sum Bar Data
+    const lSumBar = svgElement.append("rect")
+        .attr('x', x(565))
+        .attr('y', 0)
+        .attr('width', x(rectWidth)-x(0))
+        .attr('height', 0)
+        .attr('fill', 'red')
+    
+    const mSumBar = svgElement.append("rect")
+        .attr('x', x(525))
+        .attr('y', 0)
+        .attr('width', x(rectWidth)-x(0))
+        .attr('height', 0)
+        .attr('fill', 'green')
+    
+    const sSumBar = svgElement.append("rect")
+        .attr('x', x(430))
+        .attr('y', 0)
+        .attr('width', x(rectWidth)-x(0))
+        .attr('height', 0)
+        .attr('fill', 'blue')
+
+    lSumBar.append('text').text("awefha")
 
     // Fill in
     var lMaxData, mMaxData, sMaxData, lData, mData, sData;
@@ -56,21 +98,18 @@ document.addEventListener("DOMContentLoaded", function() {
         .datum(lMaxData)
         .attr("class", "maxPath")
         .attr("stroke", "red")
-        .attr("fill", "red")
         .attr("d", line)
     
     const mMaxPath = svgElement.append("path")
         .datum(mMaxData)
         .attr("class", "maxPath")
         .attr("stroke", "green")
-        .attr("fill", "green")
         .attr("d", line)
 
     const sMaxPath = svgElement.append("path")
         .datum(sMaxData)
         .attr("class", "maxPath")
         .attr("stroke", "blue")
-        .attr("fill", "blue")
         .attr("d", line)
     
     // Norm Path Individual data
@@ -119,12 +158,11 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("fill-opacity", 0)
     
     svgElement.selectAll(".normPath")
-        .attr("stroke-opacity", 1)
+        .attr("stroke-opacity", opacityForNorm)
         .attr("fill-opacity", 0)
 
     svgElement.selectAll(".normPt")
-        .attr("stroke-opacity", 1)
-        .attr("fill-opacity", 1)
+        .attr("fill-opacity", opacityForNorm)
         .attr("r", 5)
         .attr("cx", d => x(d.wavelength))
         .attr("cy", d => y(d.sensitivity))
@@ -140,7 +178,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 .duration(100)
                 .attr("r", 5); // Reset the circle size
         });
-    
+
+    // Title
     svgElement.append("text")
         .attr("x", width / 2 - 40)
         .attr("y", -margin.top / 2+30)
@@ -151,8 +190,24 @@ document.addEventListener("DOMContentLoaded", function() {
 
     ////////// LMS - Event Handlers //////////
 
+    // Turn on or off the norm path and circles
+    function normDisplay(opacity) {
+        svgElement.selectAll(".normPath")
+            .attr("stroke-opacity", opacity)
+        svgElement.selectAll(".normPt")
+            .attr("fill-opacity", opacity)
+    }
+
+    // Turn on or off the sum bars
+    function sumDisplay(opacity) {
+        lSumBar.attr("fill-opacity", opacity)
+        mSumBar.attr("fill-opacity", opacity)
+        sSumBar.attr("fill-opacity", opacity)
+    }
+
     // Update LMS sensitivity based on SPD graph
     setInterval(function() {
+        console.log(JSON.stringify(lmsNormalized));
         let SPDData = JSON.parse(localStorage.getItem("SPD"));
         if (SPDData == null){
             console.error("SPD Data could not be loaded")
@@ -163,7 +218,21 @@ document.addEventListener("DOMContentLoaded", function() {
             mData[idx].sensitivity = mMaxData[idx].sensitivity * value.intensity;
             sData[idx].sensitivity = sMaxData[idx].sensitivity * value.intensity;
 
-            // Display Data
+            // Calculate Sum and Save Data
+            let sum = (total, add)=>total+add.sensitivity;
+            lms = {
+                l: Math.round(lData.reduce(sum, 0)*factorLMS), 
+                m: Math.round(mData.reduce(sum, 0)*factorLMS), 
+                s: Math.round(sData.reduce(sum, 0)*factorLMS)
+            };
+            lmsNormalized = {
+                l: lData.reduce(sum, 0)*factorLMS/normL,
+                m: mData.reduce(sum, 0)*factorLMS/normM,
+                s: sData.reduce(sum, 0)*factorLMS/normS
+            }
+            localStorage.setItem("LMS", JSON.stringify(lms));
+
+            // Display Checkpoint Node Data
             svgElement.selectAll(".lNorm")
                 .filter((_, i) => idx === i)
                 .attr("cy", y(lData[idx].sensitivity));
@@ -180,14 +249,11 @@ document.addEventListener("DOMContentLoaded", function() {
             mPath.attr("d", line);
             sPath.attr("d", line);
 
-            // Calculate Sum and Save Data
-            let sum = (total, add)=>total+add.sensitivity;
-            var lms = {
-                l: Math.round(lData.reduce(sum, 0)*factorLMS), 
-                m: Math.round(mData.reduce(sum, 0)*factorLMS), 
-                s: Math.round(sData.reduce(sum, 0)*factorLMS)
-            };
-            localStorage.setItem("LMS", JSON.stringify(lms));
+            // Display Sum Bar Data
+            lSumBar.attr("height", y(0)-y(lmsNormalized.l)).attr("y", y(lmsNormalized.l))
+            mSumBar.attr("height", y(0)-y(lmsNormalized.m)).attr("y", y(lmsNormalized.m))
+            sSumBar.attr("height", y(0)-y(lmsNormalized.s)).attr("y", y(lmsNormalized.s))
+
         })
     }, DELAY)
 

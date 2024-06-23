@@ -1,28 +1,8 @@
-// Color settings
-const MAXINTENSITY = 1.0;
-const MININTENSITY = 0.0;
-const MINWV = 400;
-const STEPWV = 5;
-const NUMWV = 61;
-const factorRGB = 100;
-const factorLMS = 10;
-
-// Display Settings
-const DELAY = 50;
-
 document.addEventListener("DOMContentLoaded", function() {
 
     // Elements
-    const svg = document.getElementById("spdGraph");
     const colorSample = document.getElementById("colorSample");
     const resetButton = document.getElementById('resetButton');
-
-    // Size settings
-    const width = svg.clientWidth;
-    const height = svg.clientHeight;
-    const margin = {top: 20, right: 30, bottom: 30, left: 40};
-    const graphWidth = width - margin.left - margin.right;
-    const graphHeight = height - margin.top - margin.bottom;
 
     //////////////////// SPD ////////////////////
 
@@ -44,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .y(d => y(d.intensity))
 
     // On-Site (D3) Static Objects
-    const svgElement = d3.select(svg)
+    const svgElement = d3.select(svgSPD)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
