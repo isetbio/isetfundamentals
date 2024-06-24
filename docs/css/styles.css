@@ -1331,6 +1331,10 @@ table thead + tbody{
   margin-bottom: 1rem;
 }
 
+.mb-2{
+  margin-bottom: 0.2rem;
+}
+
 .mb-9{
   margin-bottom: 0.9rem;
 }

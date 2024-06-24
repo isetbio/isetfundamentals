@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // On-Site (D3) Static Objects
     const svgElement = d3.select(svgSPD)
         .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+        .attr("transform", `translate(${margin.left},${margin.top})`)
 
     svgElement.append("g")
         .attr("class", "x axis")
@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
         indicator.attr("visibility", "visible");
     }
     function dragged(event, d) {
+        console.log(Date.now())
         const newX = x.invert(d3.pointer(event, this)[0]);
         const index = d3.bisectLeft(data.map(d => d.wavelength), newX);
     

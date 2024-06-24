@@ -80,8 +80,6 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr('height', 0)
         .attr('fill', 'blue')
 
-    lSumBar.append('text').text("awefha")
-
     // Fill in
     var lMaxData, mMaxData, sMaxData, lData, mData, sData;
 
@@ -207,7 +205,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Update LMS sensitivity based on SPD graph
     setInterval(function() {
-        console.log(JSON.stringify(lmsNormalized));
         let SPDData = JSON.parse(localStorage.getItem("SPD"));
         if (SPDData == null){
             console.error("SPD Data could not be loaded")
@@ -221,16 +218,17 @@ document.addEventListener("DOMContentLoaded", function() {
             // Calculate Sum and Save Data
             let sum = (total, add)=>total+add.sensitivity;
             lms = {
-                l: Math.round(lData.reduce(sum, 0)*factorLMS), 
-                m: Math.round(mData.reduce(sum, 0)*factorLMS), 
+                l: Math.round(lData.reduce(sum, 0)*factorLMS),
+                m: Math.round(mData.reduce(sum, 0)*factorLMS),
                 s: Math.round(sData.reduce(sum, 0)*factorLMS)
-            };
+            }
             lmsNormalized = {
-                l: lData.reduce(sum, 0)*factorLMS/normL,
-                m: mData.reduce(sum, 0)*factorLMS/normM,
-                s: sData.reduce(sum, 0)*factorLMS/normS
+                l: Math.round(1000*lData.reduce(sum, 0)*factorLMS/normL)/1000,
+                m: Math.round(1000*mData.reduce(sum, 0)*factorLMS/normM)/1000,
+                s: Math.round(1000*sData.reduce(sum, 0)*factorLMS/normS)/1000
             }
             localStorage.setItem("LMS", JSON.stringify(lms));
+            localStorage.setItem("LMSNorm", JSON.stringify(lmsNormalized));
 
             // Display Checkpoint Node Data
             svgElement.selectAll(".lNorm")
