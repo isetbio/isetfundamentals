@@ -39,9 +39,11 @@
     <script src="graphics/settings.js"></script>
     <script src="utils/SPD2RGB.js"></script>
     <script src="utils/SPD2LMS.js"></script>
+    <script src="utils/SPD2XYZ.js"></script>
 
     <script src="graphics/SPDGraph.js"></script>
     <script src="graphics/LMSGraph.js"></script>
+    <script src="graphics/XYZGraph.js"></script>
     <script src="graphics/ColorMetrics.js"></script>
     
 </head>
@@ -53,11 +55,11 @@
 
     <!--Page Content-->
     <!--SPD and LMS-->
-    <div class="row mb-5">
+    <div class="row my-5">
         <div class="col-6" >
             <div class="row">
-                <div class="col offset-1">
-                    <svg id="spdGraph" width="800" height="400"></svg>
+                <div class="col offset-2">
+                    <svg id="spdGraph" width="740" height="400"></svg>
                 </div>
             </div>
         </div>
@@ -65,7 +67,7 @@
         <div class="col-6" >
             <div class="row">
                 <div class="col">
-                    <svg id="lmsGraph" width="800" height="400"></svg>
+                    <svg id="lmsGraph" width="740" height="400"></svg>
                 </div>
             </div>
         </div>
@@ -73,7 +75,7 @@
 
     <!--UI-->
     <div class="row mb-5">
-        <div class="col-10 offset-1 px-5 py-5" style="border: 1px solid rgb(90, 90, 90);">
+        <div class="col-10 offset-1 px-5 py-5" style="border: 1px solid rgb(179, 179, 179);">
             <div class="row">
                 <div class="col-6 d-flex justify-content-center">
                     <div class="color-sample" id="colorSample"></div>
@@ -81,12 +83,12 @@
                 </div>
 
                 <div class="col-6 d-flex justify-content-center center-container">
-                    <label for="LMSCheckpointSwitch" class="mb-2">Show LMS Checkpoints</label>
+                    <label for="LMSCheckpointSwitch" class="mb-2">Show Checkpoints</label>
                     <label class="switch">
                         <input type="checkbox" id="LMSCheckpointSwitch" checked>
                         <span class="slider round"></span>
                     </label>
-                    <label for="LMSSumSwitch" class="mb-2">Show LMS Sums</label>
+                    <label for="LMSSumSwitch" class="mb-2">Show Sums</label>
                     <label class="switch">
                         <input type="checkbox" id="LMSSumSwitch" checked>
                         <span class="slider round"></span>
@@ -105,34 +107,23 @@
                     <thead>
                         <th>LMS Color</th>
                         <th>RGB Color</th>
+                        <th>XYZ Color</th>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
-                                $$
-                                \overrightarrow{\mathbf{LMS}} = \begin{pmatrix}
-                                \int_{400}^{700} \Phi(\lambda) k_l (\lambda) d\lambda \,  \\
-                                \int_{400}^{700} \Phi(\lambda) k_m (\lambda) d\lambda \, \\
-                                \int_{400}^{700} \Phi(\lambda) k_s (\lambda) d\lambda \,
-                                \end{pmatrix} 
-                                $$
-                            </td>
-                            <td>
-                                $$
-                                \overrightarrow{\mathbf{RGB}} = \begin{pmatrix}
-                                \int_{400}^{700} \Phi(\lambda) k_r (\lambda) d\lambda \,  \\
-                                \int_{400}^{700} \Phi(\lambda) k_g (\lambda) d\lambda \, \\
-                                \int_{400}^{700} \Phi(\lambda) k_b (\lambda) d\lambda \,
-                                \end{pmatrix}  
-                                $$
-                            </td>
-                        </tr>
-                        <tr>
+                            <td>...</td>
                             <td>...</td>
                             <td>...</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div class="col-6" >
+            <div class="row">
+                <div class="col">
+                    <svg id="xyzGraph" width="740" height="400"></svg>
+                </div>
             </div>
         </div>
     </div>

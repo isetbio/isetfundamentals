@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", function() {
         indicator.attr("visibility", "visible");
     }
     function dragged(event, d) {
-        console.log(Date.now())
         const newX = x.invert(d3.pointer(event, this)[0]);
         const index = d3.bisectLeft(data.map(d => d.wavelength), newX);
     

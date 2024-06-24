@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", function() {
     ///
 
     // Calculation
-    var xyzNormalized = {l:0, m:0, s:0};
+    var xyz = {x:0, x:0, z:0};
+    var xyY = {x:0, y:0, Y:0};
 
     //////////////////// XYZ ////////////////////
 
@@ -44,7 +45,28 @@ document.addEventListener("DOMContentLoaded", function() {
     ///
 
     // Fill in
-    ///
+    SPD2XYZ_load()
+    xyzMaxData = Array.from(
+        {length: NUMWV}, (v, i) => ({
+            wavelength: MINWV + i * STEPWV, 
+            sensitivity: {
+                x: parseFloat(SPD2XYZ(MINWV + i * STEPWV).X),
+                y: parseFloat(SPD2XYZ(MINWV + i * STEPWV).Y),
+                z: parseFloat(SPD2XYZ(MINWV + i * STEPWV).Z),
+            }
+        })
+    );
+    console.log(JSON.stringify(xyzMaxData))
+    xyzData = Array.from(
+        {length: NUMWV}, (v, i) => ({
+            wavelength: MINWV + i * STEPWV, 
+            sensitivity: {
+                x: 0,
+                y: 0,
+                z: 0,
+            }
+        })
+    );
 
     // Title
     svgElement.append("text")
@@ -55,31 +77,41 @@ document.addEventListener("DOMContentLoaded", function() {
         .text("XYZ (k)");
 
 
-    ////////// LMS - Event Handlers //////////
+    ////////// XYZ - Event Handlers //////////
 
-    // Turn on or off the norm path and circles
-    function normDisplay(opacity) {
-        svgElement.selectAll(".normPath")
-            .attr("stroke-opacity", opacity)
-        svgElement.selectAll(".normPt")
-            .attr("fill-opacity", opacity)
-    }
 
-    // Turn on or off the sum bars
-    function sumDisplay(opacity) {
-        lSumBar.attr("fill-opacity", opacity)
-        mSumBar.attr("fill-opacity", opacity)
-        sSumBar.attr("fill-opacity", opacity)
-    }
-
-    // Update LMS sensitivity based on SPD graph
+    // Update XYZ based on SPD graph
     setInterval(function() {
         let SPDData = JSON.parse(localStorage.getItem("SPD"));
         if (SPDData == null){
             console.error("SPD Data could not be loaded")
         }
         SPDData.forEach((value, idx)=>{
-            /// 
+            // Modify Data
+            xyzData[idx].sensitivity = {
+                x: xyzMaxData[idx].sensitivity.x * value.intensity,
+                y: xyzMaxData[idx].sensitivity.y * value.intensity,
+                z: xyzMaxData[idx].sensitivity.z * value.intensity,
+            };
+            //console.log(JSON.stringify(xyzData[idx].sensitivity));
+
+            // Calculate Sum and Save Data
+            let sumX = (total, add)=>total+add.sensitivity.x;
+            let sumY = (total, add)=>total+add.sensitivity.y;
+            let sumZ = (total, add)=>total+add.sensitivity.z;
+            xyz = {
+                x: Math.round(xyzData.reduce(sumX, 0)*factorXYZ),
+                y: Math.round(xyzData.reduce(sumY, 0)*factorXYZ),
+                z: Math.round(xyzData.reduce(sumZ, 0)*factorXYZ)
+            }
+            let A = xyz.x+xyz.y+xyz.z;
+            xyY = {
+                x: xyz.x/A,
+                y: xyz.y/A,
+                Y: xyz.y
+            }
+            localStorage.setItem("XYZ", JSON.stringify(xyz));
+            localStorage.setItem("xyY", JSON.stringify(xyY));
 
         })
     }, DELAY)

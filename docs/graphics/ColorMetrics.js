@@ -9,10 +9,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
     ////////// CMTable - Create Table //////////
 
-    const cmBody = colorMetrics.getElementsByTagName("tbody")[0].rows[1];
+    const cmBody = colorMetrics.getElementsByTagName("tbody")[0].rows[0];
 
     const LMSValue = cmBody.cells[0];
     const RGBValue = cmBody.cells[1];
+    const XYZValue = cmBody.cells[2];
 
     ////////// CMTable - Set Update Interval //////////
 
@@ -29,6 +30,13 @@ document.addEventListener("DOMContentLoaded", function() {
         if (LMS != null){
             LMSValue.innerHTML = `(${LMS.l}, ${LMS.m}, ${LMS.s})`;
         }
+
+        // XYZ Update
+        let XYZ = JSON.parse(localStorage.getItem("XYZ"));
+        if (XYZ != null){
+            XYZValue.innerHTML = `(${XYZ.x}, ${XYZ.y}, ${XYZ.z})`;
+        }
+
     }, DELAY)
     
     
