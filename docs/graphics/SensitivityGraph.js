@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Calculation
     var color = [0, 0, 0]
     var colorNormalized = [0, 0, 0]
-    var space = 2;
+    var space = 1;
 
     //////////////////// Main ////////////////////
 
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Math Objects
     const x = d3.scaleLinear().domain([400, 700]).range([0, graphWidth]);
-    const y = d3.scaleLinear().domain([-0.3, 2]).range([graphHeight, 0]);
+    const y = d3.scaleLinear().domain([-0.5, 3]).range([graphHeight, 0]);
     const line = [
         d3.line()
             .x(d => x(d.wavelength))
@@ -77,12 +77,11 @@ document.addEventListener("DOMContentLoaded", function() {
     ////////// Create Graph Data //////////
 
     // Initialize current v max sensitivity data
-    var maxData, data;
-    maxData = Array.from({length: NUMWV}, (v, i) => ({
+    const maxData = Array.from({length: NUMWV}, (v, i) => ({
         wavelength: MINWV + i * STEPWV, 
         sensitivity: SPD2(MINWV + i * STEPWV, space)
     }));
-    data = Array.from({length: NUMWV}, (v, i) => ({
+    var data = Array.from({length: NUMWV}, (v, i) => ({
         wavelength: MINWV + i * STEPWV, 
         sensitivity: {a:0, b:0, c:0}
     }));
@@ -247,6 +246,8 @@ document.addEventListener("DOMContentLoaded", function() {
             localStorage.setItem(COLORSPACES[space], JSON.stringify(color));
             localStorage.setItem(COLORSPACES[space]+"Norm", JSON.stringify(colorNormalized));
 
+            console.log(JSON.stringify(color))
+
             // Display New Data
             for (let bar = 0; bar < 3; bar++){
                 let T = 'abc'[bar];
@@ -257,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 // CP Path
                 path[bar].attr("d", line[bar]);
                 // Sum Bar
-                sumBar[bar].attr("height", y(0)-y(colorNormalized[T])).attr("y", y(colorNormalized[T]))
+                sumBar[bar].attr("height", Math.max(0, y(0)-y(colorNormalized[T]))).attr("y", y(colorNormalized[T]))
             }
 
         })

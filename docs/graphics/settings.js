@@ -6,7 +6,7 @@ const STEPWV = 5;
 const NUMWV = 61;
 const COLORSPACEINFO = {
     LMS: {factor: 1, norm: [23, 19, 12], rectLoc: [565, 525, 430], symbolicColors: ['red', 'green', 'blue']}, 
-    RGB: {factor: 0.5, norm: [11,5,3], rectLoc: [565, 525, 430], symbolicColors: ['red', 'green', 'blue']},
+    RGB: {factor: 1, norm: [45,19,11], rectLoc: [565, 525, 430], symbolicColors: ['red', 'green', 'blue']},
     XYZ: {factor: 1, norm: [24,24,24], rectLoc: [565, 525, 430], symbolicColors: ['red', 'green', 'blue']}
 }
 const COLORSPACES = Object.keys(COLORSPACEINFO);

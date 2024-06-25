@@ -127,25 +127,22 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateColor() {
         // Update ColorSample element
         let tr = 0, tg = 0, tb = 0;
+        let norm = COLORSPACEINFO.RGB.norm;
         data.forEach(d => {
             let {a, b, c} = SPD2(d.wavelength, 1);
-            tr += parseFloat(a) * d.intensity;
-            tg += parseFloat(b) * d.intensity;
-            tb += parseFloat(c) * d.intensity;
+            tr += parseFloat(a) * d.intensity * 256/norm[0];
+            tg += parseFloat(b) * d.intensity * 256/norm[1];
+            tb += parseFloat(c) * d.intensity * 256/norm[2];
         });
         tr = Math.round(tr);
         tg = Math.round(tg);
         tb = Math.round(tb);
         const color = `rgb(${tr}, ${tg}, ${tb})`;
         colorSample.style.backgroundColor = color;
-
-        var rgb = {r: tr, g: tg, b: tb};
+        console.log(JSON.stringify(color))
 
         // Update local storage
-        localStorage.setItem("RGB", JSON.stringify(rgb));
         localStorage.setItem("SPD", JSON.stringify(data));
-
-        return rgb;
     }
 
     // Init
