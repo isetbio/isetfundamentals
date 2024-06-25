@@ -4,27 +4,24 @@ const MININTENSITY = 0.0;
 const MINWV = 400;
 const STEPWV = 5;
 const NUMWV = 61;
-const factorRGB = 100;
-const factorLMS = 100;
-const factorXYZ = 100;
-const normL = 232;
-const normM = 190;
-const normS = 116;
-
-// Display Settings
+const COLORSPACEINFO = {
+    LMS: {factor: 1, norm: [23, 19, 12], rectLoc: [565, 525, 430], symbolicColors: ['red', 'green', 'blue']}, 
+    RGB: {factor: 0.5, norm: [1,1,1], rectLoc: [565, 525, 430], symbolicColors: ['red', 'green', 'blue']},
+    XYZ: {factor: 1, norm: [1,1,1], rectLoc: [565, 525, 430], symbolicColors: ['red', 'green', 'blue']}
+}
+const COLORSPACES = Object.keys(COLORSPACEINFO);
+const ROUNDING = 1000;
 const DELAY = 50;
 
 // Size settings
 var svgSPD;
-var svgLMS;
-var svgXYZ;
+var svgSensitivity;
 var width, height, margin;
 var graphWidth, graphHeight;
 
 document.addEventListener("DOMContentLoaded", function() {
     svgSPD = document.getElementById("spdGraph");
-    svgLMS = document.getElementById("lmsGraph");
-    svgXYZ = document.getElementById("xyzGraph");
+    svgSensitivity = document.getElementById("sensitivityGraph");
     width = svgSPD.clientWidth;
     height = svgSPD.clientHeight;
     margin = {top: 20, right: 30, bottom: 30, left: 40};

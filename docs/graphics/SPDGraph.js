@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     ////////// SPD - Create Movable Graph Objects //////////
     // On-Site (D3) Dynamic Objects
-    SPD2RGB_load();
     let data = Array.from({length: NUMWV}, (v, i) => ({wavelength: MINWV + i * STEPWV, intensity: 0}));
 
     const indicator = svgElement.append("circle")
@@ -68,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("r", 5)
         .attr("cx", d => x(d.wavelength))
         .attr("cy", d => y(d.intensity))
-        .attr("fill", d => SPD2RGB(d.wavelength, css=true))
+        .attr("fill", d => SPD2(d.wavelength, 1, rgb_css=true))
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -129,10 +128,10 @@ document.addEventListener("DOMContentLoaded", function() {
         // Update ColorSample element
         let tr = 0, tg = 0, tb = 0;
         data.forEach(d => {
-            let {r, g, b} = SPD2RGB(d.wavelength);
-            tr += parseFloat(r) * d.intensity * factorRGB;
-            tg += parseFloat(g) * d.intensity * factorRGB;
-            tb += parseFloat(b) * d.intensity * factorRGB;
+            let {a, b, c} = SPD2(d.wavelength, 1);
+            tr += parseFloat(a) * d.intensity;
+            tg += parseFloat(b) * d.intensity;
+            tb += parseFloat(c) * d.intensity;
         });
         tr = Math.round(tr);
         tg = Math.round(tg);
