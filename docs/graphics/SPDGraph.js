@@ -89,11 +89,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // On-Site (D3) Dynamic Objects
     let data = Array.from({length: NUMWV}, (v, i) => ({wavelength: MINWV + i * STEPWV, intensity: 0}));
 
-    const indicator = svgElement.append("circle")
-        .attr("fill", "blue")
-        .attr("r", 5)
-        .attr("visibility", "hidden")
-
     const path = svgElement.append("path")
         .datum(data)
         .attr("class", "line")
@@ -108,7 +103,12 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("r", 5)
         .attr("cx", d => x(d.wavelength))
         .attr("cy", d => y(d.intensity))
-        .attr("fill", d => SPD2(d.wavelength, 1, rgb_css=true))
+        .attr("fill", d => SPD2(d.wavelength, 1, rgb_css=true)) 
+        //  data-toggle="tooltip" data-placement="left" title="Display all sensitivity points"
+        .attr("data-toggle", "tooltip")
+        .attr("data-placement", "left")
+        .attr("data-bs-html", "true")
+        .attr("title", d => `Wavelength: ${d.wavelength}nm <br/> Intensity: ${d.intensity}`)
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -129,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function() {
     ////////// SPD - Event Handlers //////////
     
     function dragstarted(event, d) {
-        indicator.attr("visibility", "visible");
     }
     function dragged(event, d) {
         const newX = x.invert(d3.pointer(event, this)[0]);
@@ -146,13 +145,10 @@ document.addEventListener("DOMContentLoaded", function() {
             path.attr("d", line);
             updateColor(data);
 
-            indicator.attr("cx", x(newX));
-            indicator.attr("cy", y(intensity));
         }
     }
 
     function dragended(event, d) {
-        indicator.attr("visibility", "hidden");
     }
 
     function resetSPD(arr) {

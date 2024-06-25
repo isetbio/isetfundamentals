@@ -45,28 +45,6 @@ document.addEventListener("DOMContentLoaded", function() {
     ///
 
     // Fill in
-    SPD2XYZ_load()
-    xyzMaxData = Array.from(
-        {length: NUMWV}, (v, i) => ({
-            wavelength: MINWV + i * STEPWV, 
-            sensitivity: {
-                x: parseFloat(SPD2XYZ(MINWV + i * STEPWV).X),
-                y: parseFloat(SPD2XYZ(MINWV + i * STEPWV).Y),
-                z: parseFloat(SPD2XYZ(MINWV + i * STEPWV).Z),
-            }
-        })
-    );
-    console.log(JSON.stringify(xyzMaxData))
-    xyzData = Array.from(
-        {length: NUMWV}, (v, i) => ({
-            wavelength: MINWV + i * STEPWV, 
-            sensitivity: {
-                x: 0,
-                y: 0,
-                z: 0,
-            }
-        })
-    );
 
     // Title
     svgElement.append("text")
