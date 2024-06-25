@@ -43,20 +43,26 @@ svg {
   stroke: #000;
   shape-rendering: crispEdges;
 }
-.color-sample {
+.axis-grid line {
+  stroke: #def;
+  stroke-opacity: 0.5;
+}
+.colorSample {
   width: 150px;
-  height: 50px;
+  height: 125px;
   border: 1px solid #ccc;
 }
-.resetButton {
+
+.colorButton{
   font-size: 16px;
   cursor: pointer;
   height: 50px;
-  background-color: red;
+  width: 50px;
+  border: 1px solid black !important;
 }
-.resetButton:hover {
-  background-color: darkred; /* Darken button color on hover */
-}
+
+////////// TABLE ////////// 
+
 table, th, td {
   border: 1px solid #ccc;
 }
@@ -77,6 +83,8 @@ tr:nth-child(even) {
   align-items: center;
   justify-content: center;
 }
+
+////////// SWITCH ////////// 
 
 .switch {
   position: relative;
@@ -141,6 +149,42 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+////////// TOOL TIP ////////// 
+/* 
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: default;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  padding: 0.25em 0.5em;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 0.25em;
+  white-space: nowrap;
+  
+  
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 100%;
+  transition-property: visibility;
+  transition-delay: 0s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  transition-delay: 0.3s;
+} */
+
+/////////////////////////////////////////// RANDOM
+
+
+
 
 article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
   display: block;
@@ -255,7 +299,6 @@ button[disabled], html input[disabled] {
 }
 
 button::-moz-focus-inner, input::-moz-focus-inner {
-  border: 0;
   padding: 0;
 }
 
@@ -619,7 +662,6 @@ fieldset {
 button, [type="button"], [type="reset"] {
   cursor: pointer;
   -webkit-appearance: button;
-  border: 0;
 }
 
 .w-form {
@@ -1482,7 +1524,7 @@ textarea.w-input, textarea.w-select {
 }
 
 .w-slider-force-show {
-  display: block !important;
+  display: block;
 }
 
 .w-dropdown {

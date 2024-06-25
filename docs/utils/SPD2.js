@@ -32,7 +32,7 @@ function loadAll() {
   
 }
 
-function SPD2(l, space, rgb_css=false) { // space in numbers
+function SPD2(l, space, rgb_css=false, use_factor=true) { // space in numbers
   let data = SPD2_data[space]
   if (!data) {
     console.error(`SPD2${COLORSPACES[space]} data is not loaded.`);
@@ -40,7 +40,7 @@ function SPD2(l, space, rgb_css=false) { // space in numbers
   }
   for (let idx = 0; idx < data.length; idx++) {
     if (parseInt(data[idx].wavelength) == l) {
-      let factor = COLORSPACEINFO[COLORSPACES[space]].factor;
+      let factor = use_factor?COLORSPACEINFO[COLORSPACES[space]].factor:1;
       if (rgb_css) {
         return `rgb(${data[idx].a*256},${data[idx].b*256},${data[idx].c*256})`
       }

@@ -2,23 +2,46 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Elements
     const colorSample = document.getElementById("colorSample");
-    const resetButton = document.getElementById('resetButton');
+    const clampSwitch = document.getElementById('ClampSwitch');
+    const blackButton = document.getElementById('blackButton');
+    const whiteButton = document.getElementById('whiteButton');
+    const redButton = document.getElementById('redButton');
+
+    // Display Settings
+    var minIntensityAllowed = 0.0;
+    var maxIntensityAllowed = 1.0;
 
     //////////////////// SPD ////////////////////
 
     ////////// SPD - Create GUI //////////
 
-    resetButton.addEventListener('click', function() {
-        this.innerText = 'Reset Done';
-        resetSPD();
-        setTimeout(()=>{this.innerText = "Reset";}, 1000);
+    clampSwitch.addEventListener('change', (event) => {
+        if (event.target.checked) {
+            minIntensityAllowed = 0.0;
+            maxIntensityAllowed = 1.0;
+        } else {
+            minIntensityAllowed = MININTENSITY;
+            maxIntensityAllowed = MAXINTENSITY;
+        }
+    });
+
+    blackButton.addEventListener('click', function() {
+        resetSPD(Array.from({length: NUMWV}, (v,i)=>0));
+    });
+    whiteButton.addEventListener('click', function() {
+        resetSPD(Array.from({length: NUMWV}, (v,i)=>1));
+    });
+    redButton.addEventListener('click', function() {
+        resetSPD(Array.from({length: NUMWV}, 
+            (v,i)=>(i<16)?0.0:((i<32)?-0.5:1.0045)
+        ));
     });
 
     ////////// SPD - Create Static Objects //////////
 
     // Math Objects
     const x = d3.scaleLinear().domain([400, 700]).range([0, graphWidth]);
-    const y = d3.scaleLinear().domain([0, 1]).range([graphHeight, 0]);
+    const y = d3.scaleLinear().domain([MININTENSITY, MAXINTENSITY]).range([graphHeight, 0]);
     const line = d3.line()
         .x(d => x(d.wavelength))
         .y(d => y(d.intensity))
@@ -36,6 +59,24 @@ document.addEventListener("DOMContentLoaded", function() {
     svgElement.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(y));
+    
+    svgElement.append("rect")
+        .attr("class", "badRangeUp")
+        .attr("x", x(400))
+        .attr("y", y(MAXINTENSITY))
+        .attr("width", x(700)-x(400))
+        .attr("height", y(1)-y(MAXINTENSITY))
+        .attr("fill", "black")
+        .attr("fill-opacity", 0.4)
+    
+    svgElement.append("rect")
+        .attr("class", "badRangeDown")
+        .attr("x", x(400))
+        .attr("y", y(0))
+        .attr("width", x(700)-x(400))
+        .attr("height", y(MININTENSITY)-y(0))
+        .attr("fill", "black")
+        .attr("fill-opacity", 0.4)
 
     svgElement.append("text")
         .attr("x", width / 2 - 40)
@@ -97,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (index > 0 && index < data.length) {
             const intensity = y.invert(event.y); // map mouse position to [0, 1]
     
-            data[index].intensity = Math.max(MININTENSITY, Math.min(MAXINTENSITY, intensity)); // clamp between [0, 1]
+            data[index].intensity = Math.max(minIntensityAllowed, Math.min(maxIntensityAllowed, intensity)); // clamp between [0, 1]
             svgElement.selectAll("circle")
                 .filter((_, idx) => idx === index)
                 .attr("cy", y(data[index].intensity)); // any node at index should change
@@ -114,12 +155,15 @@ document.addEventListener("DOMContentLoaded", function() {
         indicator.attr("visibility", "hidden");
     }
 
-    function resetSPD() {
-        data = Array.from({length: 61}, (v, i) => ({
-            wavelength: 400 + i * 5,
-            intensity: 0
+    function resetSPD(arr) {
+        data = Array.from({length: NUMWV}, (v, i) => ({
+            wavelength: MINWV + i * STEPWV,
+            intensity: arr[i]
         }));
-        svgElement.selectAll("circle").attr("cy", y(0));
+        console.log(JSON.stringify(data))
+        svgElement.selectAll("circle")
+            .data(data)
+            .attr("cy", d=>y(d.intensity));
         path.datum(data).attr("d", line);
         updateColor(data);
     }
@@ -127,19 +171,20 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateColor() {
         // Update ColorSample element
         let tr = 0, tg = 0, tb = 0;
+        let factor = COLORSPACEINFO.RGB.factor;
         let norm = COLORSPACEINFO.RGB.norm;
+        let standard = COLORSPACEINFO.RGB.standard;
         data.forEach(d => {
             let {a, b, c} = SPD2(d.wavelength, 1);
-            tr += parseFloat(a) * d.intensity * 256/norm[0];
-            tg += parseFloat(b) * d.intensity * 256/norm[1];
-            tb += parseFloat(c) * d.intensity * 256/norm[2];
+            tr += parseFloat(a) * d.intensity * factor * standard[0]/norm[0];
+            tg += parseFloat(b) * d.intensity * factor * standard[1]/norm[1];
+            tb += parseFloat(c) * d.intensity * factor * standard[2]/norm[2];
         });
         tr = Math.round(tr);
         tg = Math.round(tg);
         tb = Math.round(tb);
         const color = `rgb(${tr}, ${tg}, ${tb})`;
         colorSample.style.backgroundColor = color;
-        console.log(JSON.stringify(color))
 
         // Update local storage
         localStorage.setItem("SPD", JSON.stringify(data));

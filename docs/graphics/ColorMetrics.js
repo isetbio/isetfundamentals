@@ -20,19 +20,19 @@ document.addEventListener("DOMContentLoaded", function() {
     
     setInterval(function() {
         // RGB Update
-        let RGB = JSON.parse(localStorage.getItem("RGB"));
+        let RGB = JSON.parse(localStorage.getItem("RGBStandard"));
         if (RGB != null){
             RGBValue.innerHTML = `(${RGB.a}, ${RGB.b}, ${RGB.c})`;
         }
 
         // LMS Update
-        let LMS = JSON.parse(localStorage.getItem("LMS"));
+        let LMS = JSON.parse(localStorage.getItem("LMSStandard"));
         if (LMS != null){
             LMSValue.innerHTML = `(${LMS.a}, ${LMS.b}, ${LMS.c})`;
         }
 
         // XYZ Update
-        let XYZ = JSON.parse(localStorage.getItem("XYZ"));
+        let XYZ = JSON.parse(localStorage.getItem("XYZStandard"));
         if (XYZ != null){
             XYZValue.innerHTML = `(${XYZ.a}, ${XYZ.b}, ${XYZ.c})`;
         }

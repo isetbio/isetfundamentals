@@ -38,10 +38,12 @@
 
     <script src="graphics/settings.js"></script>
     <script src="utils/SPD2.js"></script>
+    <script src="utils/copyButton.js"></script>
 
     <script src="graphics/SPDGraph.js"></script>
     <script src="graphics/SensitivityGraph.js"></script>
     <script src="graphics/ColorMetrics.js"></script>
+    <!-- <script src="graphics/XYZGraph.js"></script> -->
     
 </head>
 <body>
@@ -74,26 +76,67 @@
     <div class="row mb-5">
         <div class="col-10 offset-1 px-5 py-5" style="border: 1px solid rgb(179, 179, 179);">
             <div class="row">
-                <div class="col-6 d-flex justify-content-center">
-                    <div class="color-sample" id="colorSample"></div>
-                    <button type="button" class="resetButton" id="resetButton">Reset</button>
+
+                <!--Color Sample-->
+                <div class="col-2">
+                    <label for="colorSample" class="mb-2">Color Sample</label>
+                    <div class="colorSample" id="colorSample"></div>
                 </div>
 
-                <div class="col-6 d-flex justify-content-center center-container">
-                    <label for="CheckpointSwitch" class="mb-2">Show Checkpoints</label>
-                    <label class="switch">
-                        <input type="checkbox" id="CheckpointSwitch" checked>
-                        <span class="slider round"></span>
-                    </label>
-                    <label for="SumSwitch" class="mb-2">Show Sums</label>
-                    <label class="switch">
-                        <input type="checkbox" id="SumSwitch" checked>
-                        <span class="slider round"></span>
-                    </label>
+                <!-- Color Buttons -->
+                <div class="col-2">
+                    <label for="colorButton" class="mb-2">Color Buttons</label>
+                    <button type="button" class="colorButton" id="blackButton" style="background-color:black"></button>
+                    <button type="button" class="colorButton" id="whiteButton" style="background-color:white"></button>
+                    <button type="button" class="colorButton" id="redButton" style="background-color:red"></button>
+                    <br>note: there are infinite metamers per perceived color!
                 </div>
+                <!-- Checkpoint/Sum Switch and Color Space Radio -->
+                <div class="col-5 offset-1">
+                    <div class="row">
+                        <div class="col-5">
+                            <!-- Clamp Switch -->
+                            <label for="ClampSwitch" class="mb-2">Clamp SPD</label>
+                            <label class="switch">
+                                <input type="checkbox" id="ClampSwitch" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <!-- Checkpoint Switch -->
+                            <label for="CheckpointSwitch" class="mb-2">Show Checkpoints</label>
+                            <label class="switch">
+                                <input type="checkbox" id="CheckpointSwitch" checked>
+                                <span class="slider round"></span>
+                            </label>
+                            <!-- Sum Switch -->
+                            <label for="SumSwitch" class="mb-2">Show Sums</label>
+                            <label class="switch">
+                                <input type="checkbox" id="SumSwitch" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+
+                        <!-- Color Space Radio Buttons -->
+                        <div class="col-6" id="csRadio">
+                            <label for="csRadio" class="mb-2">Color Space</label>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="radio1" name="csRadio" value="0" checked>LMS
+                                <label class="form-check-label" for="radio1"></label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="radio2" name="csRadio" value="1">RGB
+                                <label class="form-check-label" for="radio2"></label>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" class="form-check-input" id="radio3" name="csRadio" value="2">XYZ
+                                <label class="form-check-label" for="radio2"></label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
-
     </div>
 
     <!--Metrics-->
