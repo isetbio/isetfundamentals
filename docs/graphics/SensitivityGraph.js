@@ -69,9 +69,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const svgElement = d3.select(svgSensitivity)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`)
-        .call(d3.zoom().on("zoom", function () {
-            svg.attr("transform", d3.event.transform)
-        }))
 
     svgElement.append("g")
         .attr("class", "x axis")
