@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Calculation
     var color = [0, 0, 0]
     var colorNormalized = [0, 0, 0]
-    var space = 1;
+    var space = 2;
 
     //////////////////// Main ////////////////////
 
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Math Objects
     const x = d3.scaleLinear().domain([400, 700]).range([0, graphWidth]);
-    const y = d3.scaleLinear().domain([0, 1]).range([graphHeight, 0]);
+    const y = d3.scaleLinear().domain([-0.3, 2]).range([graphHeight, 0]);
     const line = [
         d3.line()
             .x(d => x(d.wavelength))
@@ -63,7 +63,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     svgElement.append("g")
         .attr("class", "y axis")
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y))
+
+    svgElement.append("line")
+        .attr("id", "stability-line")
+        .attr("x1", x(400))
+        .attr("y1", y(0))
+        .attr("x2", x(700))
+        .attr("y2", y(0))
+        .attr("fill", "black")
+        
 
     ////////// Create Graph Data //////////
 
