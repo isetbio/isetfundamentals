@@ -32,7 +32,7 @@ obsK = load('maxwellCMF_obsK');
 % spectrum.
 
 cnt = 1;
-shiftValues = 0:2:20;
+shiftValues = 0:5:20;
 
 err = zeros(numel(shiftValues),3);
 for juddAdjust = shiftValues
@@ -86,7 +86,7 @@ for juddAdjust = shiftValues
     XYZK_SSest = SSK*L;
 
     %% Finally, create a form of the same plot a monochrome paper figure
-    %{
+    % {
     ieNewGraphWin([],'big'); clf; hold on;
     marker = [ 0.95 0.8 0.5];   % Gray levels of the subject marker data
 
