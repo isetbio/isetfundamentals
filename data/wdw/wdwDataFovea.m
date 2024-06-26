@@ -17,7 +17,7 @@
 %   wdwData*
 
 %%
-chdir(fullfile(iefundamentalsRootPath,'wdwright','grabit'));
+chdir(fullfile(iefundamentalsRootPath,'data','grabit'));
 wave = 400:700;
 
 %%
@@ -37,7 +37,7 @@ grid on;
 %}
 
 %%
-fname = fullfile(iefundamentalsRootPath,'wdwright','cmfFovea.mat');
+fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfFovea.mat');
 save(fname,'wave','cmfFovea');
 
 %% End

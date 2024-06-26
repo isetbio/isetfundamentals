@@ -483,8 +483,8 @@ grid on;
 %
 % wave is stored as part of all the obs structs.
 %
-saveFlag = false;
-if saveFlag
-    fname = fullfile(iefundamentalsRootPath,'wdwright','cmfTritan.mat');
-    save(fname,'obs','obsAverage')
-end
+disp('Uncomment the line here to save the data.  Be aware of over-writing!')
+%{
+  fname = fullfile(iefundamentalsRootPath,'data','wdw','cmfTritan.mat');
+  save(fname,'obs','obsAverage')
+%}
