@@ -8,7 +8,7 @@
 %
 % The output files are cmfProtan, cmfDeutan, cmfDeutanC, and vlambda
 % 
-% The files contain the cmf and the chromaticities and the vlambda for
+% The files contain the CMF and the chromaticities and the vlambda for
 % each of the dichromat types.  We save the vlambda file too because,
 % well, why not.  It has the same vlambda data as the others.
 %
@@ -35,6 +35,7 @@ chdir(fullfile(iefundamentalsRootPath,'data','grabit'));
 wave = 400:700;
 
 %% Color Matching Functions: Matches Figure 200
+
 load('ProtanCMFBluex5.mat');
 protanBlue = interp1(ProtanCMFBluex5(:,1),ProtanCMFBluex5(:,2),wave,'pchip','extrap');
 load('ProtanCMFRed.mat');
@@ -66,12 +67,12 @@ cmfDeutan = [deutanRed(:), deutanBlue(:)];
 
 %% BW is very suspicious of the blue primary in the Deutan data
 
-% The curve does not fit with the Stockman fundamentals (see
+% The deutan curve does not fit the Stockman fundamentals (see
 % wdwStockman) but the protan does.  Also it is very different from
-% the protan.  This should not happen because both have the same S-cones
-% according to Reduction Dichromacy.  So we create this fake cmfDeutan in
-% which we copy the cmfProtan(:,2) into it. This has consequences for any
-% of the cone fundamental calculations.
+% the protan. This should not happen because both have the same
+% S-cones according to Reduction Dichromacy.  So we create this fake
+% cmfDeutan in which we copy the cmfProtan(:,2) into it. This has
+% consequences for any of the cone fundamental calculations.
 cmfDeutanC = cmfDeutan;
 cmfDeutanC(:,2) = cmfProtan(:,2);
 
@@ -131,7 +132,7 @@ grid on; xlabel('Wavelength (nm)'); ylabel('Chromaticity');
 
 %% Save the CMFs
 
-disp('Uncomment below here to save. But at your own peril!')
+disp('Uncomment below here to save. But be careful about over-writing!')
 %{
 fname = fullfile(iefundamentalsRootPath,'wdwright','cmfProtan.mat');
 save(fname,'wave','cmfProtan','chromaticityProtan','vlambdaProtan');
