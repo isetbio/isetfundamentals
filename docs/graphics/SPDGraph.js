@@ -78,12 +78,29 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("fill", "black")
         .attr("fill-opacity", 0.4)
 
+    // Title
     svgElement.append("text")
-        .attr("x", width / 2 - 40)
-        .attr("y", -margin.top / 2+30)
+        .attr("x", titleX)
+        .attr("y", titleY)
         .attr("text-anchor", "middle")
-        .style("font-size", "18px")
+        .style("font-size", "22px")
         .text("Spectral Power Distribution (Φ)");
+    
+    // Axis Labels
+    svgElement.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "middle")
+        .attr("x", XLabelX)
+        .attr("y", XLabelY)
+        .text("Light Wavelength Distribution (nm)");
+    
+    svgElement.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "middle")
+        .attr("y", YLabelY)
+        .attr("x", YLabelX)
+        .text("Intensity at Wavelength")
+        .attr("transform", "rotate(-90)")
 
     ////////// SPD - Create Movable Graph Objects //////////
     // On-Site (D3) Dynamic Objects

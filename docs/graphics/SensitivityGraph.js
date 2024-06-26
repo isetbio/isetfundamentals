@@ -114,11 +114,27 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Title
     svgElement.append("text")
-        .attr("x", width / 2 - 40)
-        .attr("y", -margin.top / 2+30)
+        .attr("x", titleX)
+        .attr("y", titleY)
         .attr("text-anchor", "middle")
-        .style("font-size", "18px")
+        .style("font-size", "22px")
         .text("Spectral Sensitivity (k)");
+    
+    // Axis Labels
+    svgElement.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "middle")
+        .attr("x", XLabelX)
+        .attr("y", XLabelY)
+        .text("Light Wavelength (nm)");
+    
+    svgElement.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "middle")
+        .attr("y", YLabelY)
+        .attr("x", YLabelX)
+        .text("Perceptual Sensitivity")
+        .attr("transform", "rotate(-90)")
 
 
     ////////// Event Handlers //////////

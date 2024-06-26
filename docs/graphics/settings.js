@@ -41,15 +41,26 @@ var svgChromaticity;
 var svgSensitivity;
 var width, height, margin;
 var graphWidth, graphHeight;
+var titleFontSize = "22px";
+var titleX, titleY;
+var XLabelX, XLabelY;
+var YLabelX, YLabelY;
 
 document.addEventListener("DOMContentLoaded", function() {
     svgSPD = document.getElementById("spdGraph");
     svgSensitivity = document.getElementById("sensitivityGraph");
     svgChromaticity = document.getElementById("chromaticityGraph");
-    console.log(JSON.stringify(svgChromaticity))
+
     width = svgSPD.clientWidth;
     height = svgSPD.clientHeight;
-    margin = {top: 20, right: 30, bottom: 30, left: 40};
+    margin = {top: 40, right: 30, bottom: 45, left: 55};
+
     graphWidth = width - margin.left - margin.right;
     graphHeight = height - margin.top - margin.bottom;
+
+    titleX = width / 2 - 40;
+    titleY = -15;
+
+    XLabelX = graphWidth/2; XLabelY = graphHeight+margin.bottom*3/4;
+    YLabelX = -graphHeight/2; YLabelY = -margin.left*7/12;
 })

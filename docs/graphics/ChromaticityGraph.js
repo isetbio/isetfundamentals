@@ -56,14 +56,41 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("class", "colorPoint")
         .attr("r", 5)
         .attr("fill", "blue")
+    
+    // Color Point
+    const D65Point = svgElement.append("circle")
+        .attr("class", "specialPoint")
+        .attr("id", "D65Point")
+        .attr("r", 5)
+        .attr("fill", "white")
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("cx", x(0.33328))
+        .attr("cy", x(0.33359))
 
     // Title
     svgElement.append("text")
-        .attr("x", width / 2 - 40)
-        .attr("y", -margin.top / 2+30)
+        .attr("x", titleX)
+        .attr("y", titleY)
         .attr("text-anchor", "middle")
-        .style("font-size", "18px")
+        .style("font-size", "22px")
         .text("XYZ (k)");
+
+    // Axis Labels
+    svgElement.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "middle")
+        .attr("x", XLabelX)
+        .attr("y", XLabelY)
+        .text("x");
+    
+    svgElement.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "middle")
+        .attr("y", YLabelY)
+        .attr("x", YLabelX)
+        .text("y")
+        .attr("transform", "rotate(-90)")
 
 
     ////////// XYZ - Event Handlers //////////
@@ -72,7 +99,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Update XYZ based on SPD graph
     setInterval(function() {
         let {a, b, c} = JSON.parse(localStorage.getItem("XYZNorm"));
-        console.log(coords.x+" "+coords.y)
         coords.x = a/(a+b+c)
         coords.y = b/(a+b+c)
         colorPoint.attr("cx",x(coords.x)).attr("cy",y(coords.y))
