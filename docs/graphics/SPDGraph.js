@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("data-toggle", "tooltip")
         .attr("data-placement", "left")
         .attr("data-bs-html", "true")
-        .attr("title", d => `Wavelength: ${d.wavelength}nm <br/> Intensity: ${d.intensity}`)
+        .attr("title", d => `${d.wavelength}nm`)
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -134,13 +134,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const newX = x.invert(d3.pointer(event, this)[0]);
         const index = d3.bisectLeft(data.map(d => d.wavelength), newX);
     
-        if (index > 0 && index < data.length) {
+        if (index >= 0 && index < data.length) {
             const intensity = y.invert(event.y); // map mouse position to [0, 1]
     
             data[index].intensity = Math.max(minIntensityAllowed, Math.min(maxIntensityAllowed, intensity)); // clamp between [0, 1]
             svgElement.selectAll("circle")
                 .filter((_, idx) => idx === index)
-                .attr("cy", y(data[index].intensity)); // any node at index should change
+                .attr("cy", y(data[index].intensity)) // any node at index should change
     
             path.attr("d", line);
             updateColor(data);

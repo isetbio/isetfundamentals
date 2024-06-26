@@ -272,19 +272,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
 
                 if (temp == space) {    // Display New Data
-                    //data[idx].sensitivity = tempData[idx].sensitivity
+                    data[idx].sensitivity = tempData[idx].sensitivity
                     for (let bar = 0; bar < 3; bar++){
                         let T = 'abc'[bar];
                         // CP Nodes
                         svgElement.selectAll(".cp"+bar)
                             .filter((_, i) => idx === i)
-                            .attr("cy", y(tempData[idx].sensitivity[T]));
-                        // CP Path
-                        path[bar].attr("d", line[bar]);
-                        // Sum Bar
-                        sumBar[bar]
-                            .attr("height", Math.abs(y(0)-y(colorNormalized[T])))
-                            .attr("y", Math.min(y(0), y(colorNormalized[T])))
+                            .attr("cy", y(data[idx].sensitivity[T]));
                     }
                 }
             })
@@ -302,13 +296,23 @@ document.addEventListener("DOMContentLoaded", function() {
                 c: Math.round(ROUNDING*tempData.reduce(sumC, 0)*factor*standard[2]/norm[2])/ROUNDING
             }
             colorNormalized = { // from [0, 1]
-                a: Math.round(ROUNDING*tempData.reduce(sumA, 0)*factor/norm[0])/ROUNDING,
-                b: Math.round(ROUNDING*tempData.reduce(sumB, 0)*factor/norm[1])/ROUNDING,
-                c: Math.round(ROUNDING*tempData.reduce(sumC, 0)*factor/norm[2])/ROUNDING
+                a: Math.round(NORMROUNDING*tempData.reduce(sumA, 0)*factor/norm[0])/NORMROUNDING,
+                b: Math.round(NORMROUNDING*tempData.reduce(sumB, 0)*factor/norm[1])/NORMROUNDING,
+                c: Math.round(NORMROUNDING*tempData.reduce(sumC, 0)*factor/norm[2])/NORMROUNDING
             }
             localStorage.setItem(COLORSPACES[temp]+"Standard", JSON.stringify(colorStandard));
             localStorage.setItem(COLORSPACES[temp]+"Norm", JSON.stringify(colorNormalized));
-
+            
+            //
+            for (let bar = 0; bar < 3; bar++){
+                let T = 'abc'[bar];
+                // CP Path
+                path[bar].attr("d", line[bar]);
+                // Sum Bar
+                sumBar[bar]
+                    .attr("height", Math.abs(y(0)-y(colorNormalized[T])))
+                    .attr("y", Math.min(y(0), y(colorNormalized[T])))
+            }
         }
     }, DELAY)
 
