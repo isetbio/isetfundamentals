@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     var images = [
-        { src: "http://brainden.com/images/static1-big.jpg", caption: "Engage your eyes on the image. Everything starts spinning." },
+        { src: "https://brainden.com/images/static1-big.jpg", caption: "Engage your eyes on the image. Everything starts spinning." },
         { src: "http://brainden.com/images/static3.gif", caption: "The motion is just an illusion." },
         { src: "http://brainden.com/images/bicycle.gif", caption: "Riding a bicycle." },
         { src: "http://brainden.com/images/moving-waves-illusion.png", caption: "Imagine if this was your carpet." },
