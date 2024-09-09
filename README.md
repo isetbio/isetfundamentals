@@ -1,9 +1,11 @@
 # isetfundamentals
 
-[Deriving the cone fundamentals: a subspace intersection method](https://www.biorxiv.org/content/10.1101/2024.02.04.577470v1)
+Deriving the cone fundamentals: a subspace intersection method (2024).
+Wandell BA, Goossens T, Brainard DH. 2024.
+Proc. R. Soc. B 291: 20240347.
+https://doi.org/10.1098/rspb.2024.0347
 
-BRIAN A. WANDELL, THOMAS GOOSSENS, AND DAVID H. BRAINARD
-biorxiv
+[Deriving the cone fundamentals: a subspace intersection method](https://www.biorxiv.org/content/10.1101/2024.02.04.577470v1)
 
 Abstract -
 Two ideas, proposed by Thomas Young and James Clerk Maxwell, form the foundations of color science: (1) Three types of retinal receptors encode light under daytime conditions, and (2) color matching experiments establish the critical spectral properties of this encoding. Experimental quantification of these ideas are used in international color standards. But, for many years the field did not reach consensus on the spectral properties of the biological substrate of color matching: the sensitivity of the in situ cones (cone fundamentals). By combining auxiliary data (thresholds, inert pigment analyses), complex calculations, and color matching from genetically analyzed dichromats, the human cone fundamentals have now been standardized.
