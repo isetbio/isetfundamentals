@@ -1,6 +1,6 @@
 # isetfundamentals
 
-[Deriving the cone fundamentals: a subspace intersection method](https://doi.org/10.1098/rspb.2024.0347).
+[Deriving the cone fundamentals: a subspace intersection method](https://doi.org/10.1098/rspb.2024.0347). <br>
 Wandell BA, Goossens T, Brainard DH. 2024.
 Proc. R. Soc. B 291: 20240347.
 
