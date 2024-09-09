@@ -17,3 +17,6 @@ The scripts in this repository implement the calculations used for the paper fig
 
 A site containing the data files is on the [Stanford Digital Repository](https://purl.stanford.edu/jz111ct9401)
 
+To learn more about Maxwell's experiments, please visit [Maxwell experiments by Koh Terai](https://maxwell-color-experiment.vercel.app/)
+
+
