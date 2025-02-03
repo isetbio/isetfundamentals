@@ -62,6 +62,7 @@ const DELAY = 50;
 var svgSPD;
 var svgChromaticity;
 var svgSensitivity;
+var svgSensitivityCVD;
 var width, height, margin;
 var graphWidth, graphHeight;
 var titleFontSize = "22px";
