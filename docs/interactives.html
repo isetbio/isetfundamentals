@@ -43,8 +43,9 @@
     <script src="js/copyButton.js"></script>
     <script src="js/tooltip.js"></script>
 
-    <script src="graphics/SPDGraph.js"></script>
+    <script src="graphics/SPDGraph.js" type="module"></script>
     <script src="graphics/SensitivityGraph.js"></script>
+    <script src="graphics/SensitivityGraph2.js" type="module"></script>
     <script src="graphics/ColorMetrics.js"></script>
     <script src="graphics/ChromaticityGraph.js"></script>
     
@@ -56,89 +57,119 @@
     <div class="hero-section"></div>
 
     <!--Page Content-->
-    <!--SPD and Sensitivity-->
+
+    <!--SPD and Control Panel-->
     <div class="row my-5">
-        <div class="col-6" >
+        <!-- SPD Graph Section -->
+        <div class="col-6">
             <div class="row">
-                <div class="col offset-2">
+                <div class="col offset-1">
                     <svg id="spdGraph" width="740" height="400"></svg>
                 </div>
             </div>
         </div>
-
-        <div class="col-6" >
+    
+        <!-- Control Panel -->
+        <div class="col-6">
             <div class="row">
-                <div class="col">
+                <div class="col-11" style="border: 1px solid rgb(179, 179, 179);">
+                        <div class="row py-4">
+                        <div class="col-3 offset-1">
+                            <!-- Color Sample -->
+                            <h3>Color Samples</h3>
+                            <label for="colorSample" class="mb-2">Normal</label>
+                            <div class="colorSample" id="colorSample"></div>
+                            <label for="colorSample2" class="mb-2">Color Deficient</label>
+                            <div class="colorSample" id="colorSample2"></div>
+                        </div>
+                        <div class="col-3">
+                            <!-- Color Buttons -->
+                            <label for="colorButton" class="mb-2"><h3>Color Buttons</h3></label>
+                            <button type="button" class="colorButton" id="blackButton" style="background-color:black"></button>
+                            <button type="button" class="colorButton" id="whiteButton" style="background-color:white"></button>
+                            <button type="button" class="colorButton" id="redButton" style="background-color:red"></button>
+                            <br>Note: The spectral distributions for the color samples above are only arbitrary. There are infinite metamers per perceived color!
+                        </div>
+                        <div class="col-5">
+                            <div class="row">
+                                <div class="col">   
+                                    <h3>Display</h3>
+                                    <!-- Clamp Switch -->
+                                    <label for="ClampSwitch" class="mb-2">Clamp SPD</label>
+                                    <div class="switch">
+                                        <input type="checkbox" id="ClampSwitch" class="toggle-input" checked>
+                                        <label for="ClampSwitch" class="toggle-label" data-toggle="tooltip" data-placement="left" title="Clamp SPD drawing to [0, 1]"></label>
+                                    </div>
+                                    <!-- Checkpoint Switch -->
+                                    <label for="CheckpointSwitch" class="mb-2">Checkpoints</label>
+                                    <div class="switch">
+                                        <input type="checkbox" id="CheckpointSwitch" class="toggle-input" checked>
+                                        <label for="CheckpointSwitch" class="toggle-label" data-toggle="tooltip" data-placement="left" title="Display all sensitivity points"></label>
+                                    </div>
+                                    <!-- Sum Switch -->
+                                    <label for="SumSwitch" class="mb-2">Sums</label>
+                                    <div class="switch">
+                                        <input type="checkbox" id="SumSwitch" class="toggle-input" checked>
+                                        <label for="SumSwitch" class="toggle-label" data-toggle="tooltip" data-placement="left" title="Show accumulated color sensitivity sums"></label>
+                                    </div>
+                                </div>
+                
+                                <!-- Color Space Radio Buttons -->
+                                <div class="col">
+                                    <h3>Simulation</h3>
+                                    <div class="row" id="csRadio">
+                                        <label for="csRadio" class="mb-2">Color Space</label>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="radio1" name="csRadio" value="0" checked>LMS
+                                            <label class="form-check-label" for="radio1"></label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="radio2" name="csRadio" value="1">RGB
+                                            <label class="form-check-label" for="radio2"></label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="radio3" name="csRadio" value="2">XYZ
+                                            <label class="form-check-label" for="radio2"></label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div id="valueL">L Cone Shift: 0</div>
+                                        <div id="sliderL"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div id="valueM">M Cone Shift: 0</div>
+                                        <div id="sliderM"></div>     
+                                    </div>
+                                    <div class="row">
+                                        <div id="valueS">S Cone Shift: 0</div>
+                                        <div id="sliderS"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!--Sensitivity Graphs-->
+
+    <div class="row my-5">
+        <div class="col-6">
+            <div class="row">
+                <div class="col offset-1">
                     <svg id="sensitivityGraph" width="740" height="400"></svg>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!--UI-->
-    <div class="row mb-5">
-    <div class="col-10 offset-1" style="border: 1px solid rgb(179, 179, 179);">
-    <div class="row">
-        <div class="col-4 py-5" >
-            <div class="row">
-                <!--Color Sample-->
-                <div class="col">
-                    <label for="colorSample" class="mb-2">Color Sample</label>
-                    <div class="colorSample" id="colorSample"></div>
-                </div>
-                <!-- Color Buttons -->
-                <div class="col">
-                    <label for="colorButton" class="mb-2">Color Buttons</label>
-                    <button type="button" class="colorButton" id="blackButton" style="background-color:black"></button>
-                    <button type="button" class="colorButton" id="whiteButton" style="background-color:white"></button>
-                    <button type="button" class="colorButton" id="redButton" style="background-color:red"></button>
-                    <br>Note: The spectral distributions for the color samples above are only arbitrary. There are infinite metamers per perceived color!
-                </div>
-            </div>
-        </div>
-
-        <div class="col-2 offset-1 py-5">
-            <div>
-                <!-- Clamp Switch -->
-                <label for="ClampSwitch" class="mb-2">Clamp SPD</label>
-                <div class="switch">
-                    <input type="checkbox" id="ClampSwitch" class="toggle-input" checked>
-                    <label for="ClampSwitch" class="toggle-label" data-toggle="tooltip" data-placement="left" title="Clamp SPD drawing to [0, 1]"></label>
-                </div>
-                <!-- Checkpoint Switch -->
-                <label for="CheckpointSwitch" class="mb-2">Show Checkpoints</label>
-                <div class="switch">
-                    <input type="checkbox" id="CheckpointSwitch" class="toggle-input" checked>
-                    <label for="CheckpointSwitch" class="toggle-label" data-toggle="tooltip" data-placement="left" title="Display all sensitivity points"></label>
-                </div>
-                <!-- Sum Switch -->
-                <label for="SumSwitch" class="mb-2">Show Sums</label>
-                <div class="switch">
-                    <input type="checkbox" id="SumSwitch" class="toggle-input" checked>
-                    <label for="SumSwitch" class="toggle-label" data-toggle="tooltip" data-placement="left" title="Show accumulated color sensitivity sums"></label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Color Space Radio Buttons -->
-        <div class="col-2 py-5" id="csRadio">
-            <label for="csRadio" class="mb-2">Color Space</label>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio1" name="csRadio" value="0" checked>LMS
-                <label class="form-check-label" for="radio1"></label>
-            </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio2" name="csRadio" value="1">RGB
-                <label class="form-check-label" for="radio2"></label>
-            </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" id="radio3" name="csRadio" value="2">XYZ
-                <label class="form-check-label" for="radio2"></label>
-            </div>
+        <div class="col-6">
+            <svg id="sensitivityGraph2" width="740" height="400"></svg>
         </div>
     </div>
-    </div>
-    </div>
+    
 
     <!--Metrics-->
     <div class="row mb-5">
@@ -147,11 +178,15 @@
                 <table id="colorMetrics">
                     <thead>
                         <th>LMS Color</th>
+                        <th>LMS Color (CVD)</th>
                         <th>RGB Color</th>
+                        <th>RGB Color (CVD)</th>
                         <th>XYZ Color</th>
                     </thead>
                     <tbody>
                         <tr>
+                            <td>...</td>
+                            <td>...</td>
                             <td>...</td>
                             <td>...</td>
                             <td>...</td>
@@ -169,6 +204,17 @@
         </div>
     </div>
 
+    <!--Citations-->
+    <div class="row mb-5">
+        <div class="col-10 offset-1">
+            <div class="flex-container" style="flex-direction: column">
+                <h1>Citations</h1>
+                <p>
+                    Machado, G. M., Oliveira, M. M., & Fernandes, L. A. (2009). A physiologically-based model for simulation of color vision deficiency. <em>IEEE transactions on visualization and computer graphics, 15</em>(6), 1291-1298.
+                </p>
+            </div>
+        </div>
+    </div>
 
     <!--Footer Content-->
     <div id="idfooter-placeholder"></div>

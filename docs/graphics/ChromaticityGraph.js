@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("y", titleY)
         .attr("text-anchor", "middle")
         .style("font-size", "22px")
-        .text("XYZ (k)");
+        .text("XYZ (normalized)");
 
     // Axis Labels
     svgElement.append("text")
@@ -98,9 +98,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Update XYZ based on SPD graph
     setInterval(function() {
-        let {a, b, c} = JSON.parse(localStorage.getItem("XYZNorm"));
-        coords.x = a/(a+b+c)
-        coords.y = b/(a+b+c)
+        let XYZStandard = JSON.parse(localStorage.getItem("XYZStandard"));
+        let sum = XYZStandard[0]+XYZStandard[1]+XYZStandard[2];
+        coords.x = XYZStandard[0]/sum
+        coords.y = XYZStandard[1]/sum
         colorPoint.attr("cx",x(coords.x)).attr("cy",y(coords.y))
     }, DELAY)
 

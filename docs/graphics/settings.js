@@ -1,3 +1,4 @@
+
 // Color settings
 const MAXINTENSITY = 1.5;
 const MININTENSITY = -0.5;
@@ -30,6 +31,28 @@ const COLORSPACEINFO = {
         symbolicColors: ['red', 'green', 'blue']
     }
 }
+const LMSSHIFTINFO = {
+    L: {
+        peak: 570,
+        maxShift: -28
+    },
+    M: {
+        peak: 542,
+        maxShift: 28
+    },
+    S: {
+        peak: 443,
+        maxShift: 50
+    }
+}
+const LMS2RGB = [
+    [4.4679, -3.5873, 0.1193],
+        [-1.2186, 2.3809, -0.1624],
+        [0.0497, -0.2439, 1.2045]
+]
+const LMS2XYZ = [[1.9102,  0.3710,  0.0241],
+[0.5330,  1.1960,  0.0755],
+[0.2880,  0.6310,  2.0415]]
 const COLORSPACES = Object.keys(COLORSPACEINFO);
 const ROUNDING = 1;
 const NORMROUNDING = 100;
@@ -49,6 +72,7 @@ var YLabelX, YLabelY;
 document.addEventListener("DOMContentLoaded", function() {
     svgSPD = document.getElementById("spdGraph");
     svgSensitivity = document.getElementById("sensitivityGraph");
+    svgSensitivityCVD = document.getElementById("sensitivityGraph2");
     svgChromaticity = document.getElementById("chromaticityGraph");
 
     width = svgSPD.clientWidth;

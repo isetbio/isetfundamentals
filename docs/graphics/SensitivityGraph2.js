@@ -1,9 +1,9 @@
+import { multiply } from 'https://cdn.jsdelivr.net/npm/mathjs@11.5.1/+esm';
 document.addEventListener("DOMContentLoaded", function() {
 
     // Elements
     const checkpointSwitch = document.getElementById('CheckpointSwitch');
     const sumSwitch = document.getElementById('SumSwitch');
-    const csRadio = document.getElementById('csRadio');
 
     // Display settings
     const opacityForMax = 0.5;
@@ -15,10 +15,11 @@ document.addEventListener("DOMContentLoaded", function() {
     var colorStandard = [0, 0, 0]
     var colorNormalized = [0, 0, 0]
     var space = 0;
+    var shifts = [0, 0, 0];
 
     //////////////////// Main ////////////////////
 
-    ////////// Create GUI //////////
+    ////////// Create Switch elements //////////
 
     checkpointSwitch.addEventListener('change', (event) => {
         if (event.target.checked) {
@@ -35,50 +36,112 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    csRadio.addEventListener('click', function() {
-        // Get all radio buttons
-        const radios = document.querySelectorAll('input[name="csRadio"]');
-        // Find the checked radio button
-        for (const radio of radios) {
-          if (radio.checked) {
-            space = radio.value;
-            resetDisplay();
-            break;
-          }
+    ////////// Create Severity Slider elements //////////
+
+    var sliderwidth = '125px';
+
+    // Set the dimensions of the slider
+    var sliderL = d3.select('#sliderL')
+        .append('input')
+        .attr('type', 'range')
+        .attr('min', 0)
+        .attr('max', 1)
+        .attr('value', 0) // Initial value
+        .attr('step', 0.01)
+        .style('width', sliderwidth)
+        .on('input', function() {
+            shifts[0] = this.value * LMSSHIFTINFO.L.maxShift;
+            d3.select('#valueL').text('L Cone Shift: ' + this.value);
+            updateShifts();
+        });
+    var sliderM = d3.select('#sliderM')
+        .append('input')
+        .attr('type', 'range')
+        .attr('min', 0)
+        .attr('max', 1)
+        .attr('value', 0) // Initial value
+        .attr('step', 0.01)
+        .style('width', sliderwidth)
+        .on('input', function() {
+            shifts[1] = this.value * LMSSHIFTINFO.M.maxShift;
+            d3.select('#valueM').text('M Cone Shift: ' + this.value);
+            updateShifts();
+        });
+    var sliderS = d3.select('#sliderS')
+        .append('input')
+        .attr('type', 'range')
+        .attr('min', 0)
+        .attr('max', 1)
+        .attr('value', 0) // Initial value
+        .attr('step', 0.01)
+        .style('width', sliderwidth)
+        .on('input', function() {
+            shifts[2] = this.value * LMSSHIFTINFO.S.maxShift;
+            d3.select('#valueS').text('S Cone Shift: ' + this.value);
+            updateShifts();
+        });
+
+    function updateShifts () {
+        console.log("updated", shifts)
+        for (let bar = 0; bar < 3; bar++){
+            let T = 'abc'[bar];
+            // Max Path
+            maxPath[bar].attr("d", lineWithShift[bar]);
+            // CP Path
+            path[bar].attr("d", lineWithShift[bar]);
+            // Sum Bar
+            sumBar[bar]
+                .attr("height", Math.abs(y(0)-y(colorNormalized[T])))
+                .attr("y", Math.min(y(0), y(colorNormalized[T])))
         }
-        allMaxData = [];
-        for (var temp = 0; temp < COLORSPACES.length; temp++) {
-            allMaxData.push(Array.from({length: NUMWV}, (v, i) => ({
+        maxData = Array.from({length: NUMWV}, (v, i) => ({
                 wavelength: MINWV + i * STEPWV, 
-                sensitivity: SPD2(MINWV + i * STEPWV, temp, [0,0,0], use_factor=false)
-            })))
-        }
-        maxData = allMaxData[space];
+                sensitivity: SPD2(MINWV + i * STEPWV, 0, shifts, use_factor=false)
+            }))
+        
         data = Array.from({length: NUMWV}, (v, i) => ({
             wavelength: MINWV + i * STEPWV, 
             sensitivity: {a:0, b:0, c:0}
         }));
-      });
+        svgElement.selectAll("circle")
+            .data(data)
+            .attr("cy", d=>y(d.intensity));
+        updateColor();
+        setTimeout(()=>{
+            updateColor();
+        }, 100)
+    }
 
     ////////// Create Static Objects //////////
 
     // Math Objects
     const x = d3.scaleLinear().domain([400, 700]).range([0, graphWidth]);
     const y = d3.scaleLinear().domain([-0.5, 3]).range([graphHeight, 0]);
-    const line = [
+    const lineWithShift = [
         d3.line()
-            .x(d => x(d.wavelength))
+            .x(d => x(d.wavelength+shifts[0]))
             .y(d => y(d.sensitivity.a)),
         d3.line()
-            .x(d => x(d.wavelength))
+            .x(d => x(d.wavelength+shifts[1]))
             .y(d => y(d.sensitivity.b)),
         d3.line()
-            .x(d => x(d.wavelength))
+            .x(d => x(d.wavelength+shifts[2]))
             .y(d => y(d.sensitivity.c))
     ]
+    // const lineWithShift = [
+    //     d3.line()
+    //         .x(d => x(d.wavelength))
+    //         .y(d => y(d.sensitivity.a)),
+    //     d3.line()
+    //         .x(d => x(d.wavelength))
+    //         .y(d => y(d.sensitivity.b)),
+    //     d3.line()
+    //         .x(d => x(d.wavelength))
+    //         .y(d => y(d.sensitivity.c))
+    // ]
 
     // On-Site (D3) Static Objects
-    const svgElement = d3.select(svgSensitivity)
+    const svgElement = d3.select(svgSensitivityCVD)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`)
 
@@ -113,7 +176,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Initialize current v max sensitivity data
     var maxData;
-    var allMaxData;
     var data;
 
     // Display arrays
@@ -130,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .attr("y", titleY)
         .attr("text-anchor", "middle")
         .style("font-size", "22px")
-        .text("Spectral Sensitivity (Normal Vision)");
+        .text("Spectral Sensitivity (CVD, LMS only)");
     
     // Axis Labels
     svgElement.append("text")
@@ -168,14 +230,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Initialize
     function setUpDisplay() {
-        allMaxData = [];
-        for (var temp = 0; temp < COLORSPACES.length; temp++) {
-            allMaxData.push(Array.from({length: NUMWV}, (v, i) => ({
-                wavelength: MINWV + i * STEPWV, 
-                sensitivity: SPD2(MINWV + i * STEPWV, temp, [0,0,0], use_factor=false)
-            })))
-        }
-        maxData = allMaxData[space];
+        maxData=Array.from({length: NUMWV}, (v, i) => ({
+            wavelength: MINWV + i * STEPWV, 
+            sensitivity: SPD2(MINWV + i * STEPWV, 0, shifts, use_factor=false)
+        }))
         data = Array.from({length: NUMWV}, (v, i) => ({
             wavelength: MINWV + i * STEPWV, 
             sensitivity: {a:0, b:0, c:0}
@@ -191,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     .datum(maxData)
                     .attr("class", "maxPath")
                     .attr("stroke", COLORSPACEINFO[COLORSPACES[space]].symbolicColors[bar])
-                    .attr("d", line[bar]))
+                    .attr("d", lineWithShift[bar]))
             
             // Assign right path
             path.push(
@@ -199,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     .datum(data)
                     .attr("class", "path")
                     .attr("stroke", COLORSPACEINFO[COLORSPACES[space]].symbolicColors[bar])
-                    .attr("d", line[bar]))
+                    .attr("d", lineWithShift[bar]))
 
             // Assign checkpoints
             svgElement.selectAll(".cp"+bar)
@@ -207,7 +265,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 .enter().append("circle")
                 .attr("class", "cp cp"+bar)
                 .attr("cx", d => x(d.wavelength))
-                .attr("cy", d => y(d.sensitivity[T]))
                 .attr('fill', COLORSPACEINFO[COLORSPACES[space]].symbolicColors[bar])
 
             // Assign sum bars
@@ -247,37 +304,47 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
-    // Reinitialize when changing color space
-    function resetDisplay() {
-        maxData = allMaxData[space];
-
-        for (let bar = 0; bar < 3; bar++) {
-            let T = 'abc'[bar];
-
-            // Assign right max path
-            maxPath[bar]
-                .datum(maxData)
-                .attr("stroke", COLORSPACEINFO[COLORSPACES[space]].symbolicColors[bar])
-                .attr("d", line[bar])
-            
-            // Assign right path
-            path[bar]
-                .datum(data)
-                .attr("stroke", COLORSPACEINFO[COLORSPACES[space]].symbolicColors[bar])
-                .attr("d", line[bar])
-
-            // Assign checkpoints
-            svgElement.selectAll(".cp"+bar)
-                .data(data)
-                .attr("cy", d => y(d.sensitivity[T]))
-                .attr('fill', COLORSPACEINFO[COLORSPACES[space]].symbolicColors[bar])
-            
-            // Assign sum bars
-            sumBar[bar]
-                .attr('x', x(COLORSPACEINFO[COLORSPACES[space]].rectLoc[bar]))
-                .attr('fill', COLORSPACEINFO[COLORSPACES[space]].symbolicColors[bar])
-        }
+    function updateColor() {
+        // Old version
+        // let tr = 0, tg = 0, tb = 0;
+        // let factor = COLORSPACEINFO.RGB.factor;
+        // let norm = COLORSPACEINFO.RGB.norm;
+        // let standard = COLORSPACEINFO.RGB.standard;
+        // data.forEach(d => {
+        //     let {a, b, c} = SPD2(d.wavelength, 1);
+        //     tr += parseFloat(a) * d.intensity * factor * standard[0]/norm[0];
+        //     tg += parseFloat(b) * d.intensity * factor * standard[1]/norm[1];
+        //     tb += parseFloat(c) * d.intensity * factor * standard[2]/norm[2];
+        // });
+        // tr = Math.round(tr);
+        // tg = Math.round(tg);
+        // tb = Math.round(tb);
+        
+        // colorSample.style.backgroundColor = `rgb(${tr}, ${tg}, ${tb})`;
+    
+        // Update LMS color 
+        var colorLMS = JSON.parse(localStorage.getItem("LMSNorm"));
+        colorLMS = [colorLMS.a,colorLMS.b,colorLMS.c]
+        var colorLMSCVD = JSON.parse(localStorage.getItem("LMSCVDNorm"));
+        colorLMSCVD = [colorLMSCVD.a,colorLMSCVD.b,colorLMSCVD.c]
+    
+        // Update RGB color
+        var colorRGB = multiply(LMS2RGB, colorLMS);
+        colorRGB = colorRGB.map(chan => Math.round(25500*chan)/100)
+        colorSample.style.backgroundColor = `rgb(${colorRGB[0]}, ${colorRGB[1]}, ${colorRGB[2]})`;
+        localStorage.setItem("RGBStandard", JSON.stringify(colorRGB));
+        // For CVD
+        var colorRGBCVD = multiply(LMS2RGB, colorLMSCVD);
+        colorRGBCVD = colorRGBCVD.map(chan => Math.round(25500*chan)/100)
+        colorSample2.style.backgroundColor = `rgb(${colorRGBCVD[0]}, ${colorRGBCVD[1]}, ${colorRGBCVD[2]})`;
+        localStorage.setItem("RGBCVDStandard", JSON.stringify(colorRGBCVD));
+    
+        // Update XYZ color
+        var colorXYZ = multiply(LMS2XYZ, colorLMS);
+        colorXYZ = colorXYZ.map(chan => Math.round(100*chan)/100)
+        localStorage.setItem("XYZStandard", JSON.stringify(colorXYZ));
     }
+
 
     // Update sensitivity based on SPD graph
     setInterval(function() {
@@ -293,20 +360,18 @@ document.addEventListener("DOMContentLoaded", function() {
         SPDData.forEach((value, idx)=>{
             // Modify Data
             tempData[idx].sensitivity = {
-                a: allMaxData[0][idx].sensitivity.a * value.intensity,
-                b: allMaxData[0][idx].sensitivity.b * value.intensity,
-                c: allMaxData[0][idx].sensitivity.c * value.intensity,
+                a: maxData[idx].sensitivity.a * value.intensity,
+                b: maxData[idx].sensitivity.b * value.intensity,
+                c: maxData[idx].sensitivity.c * value.intensity,
             }
 
-            if (0 == space) {    // Display New Data
-                data[idx].sensitivity = tempData[idx].sensitivity
-                for (let bar = 0; bar < 3; bar++){
-                    let T = 'abc'[bar];
-                    // CP Nodes
-                    svgElement.selectAll(".cp"+bar)
-                        .filter((_, i) => idx === i)
-                        .attr("cy", y(data[idx].sensitivity[T]));
-                }
+            data[idx].sensitivity = tempData[idx].sensitivity
+            for (let bar = 0; bar < 3; bar++){
+                let T = 'abc'[bar];
+                // CP Nodes
+                svgElement.selectAll(".cp"+bar)
+                    .filter((_, i) => idx === i)
+                    .attr("cy", y(tempData[idx].sensitivity[T]));
             }
         })
 
@@ -327,19 +392,20 @@ document.addEventListener("DOMContentLoaded", function() {
             b: Math.round(NORMROUNDING*tempData.reduce(sumB, 0)*factor/norm[1])/NORMROUNDING,
             c: Math.round(NORMROUNDING*tempData.reduce(sumC, 0)*factor/norm[2])/NORMROUNDING
         }
-        localStorage.setItem(COLORSPACES[0]+"Standard", JSON.stringify(colorStandard));
-        localStorage.setItem(COLORSPACES[0]+"Norm", JSON.stringify(colorNormalized));
+        localStorage.setItem(COLORSPACES[0]+"CVDStandard", JSON.stringify(colorStandard));
+        localStorage.setItem(COLORSPACES[0]+"CVDNorm", JSON.stringify(colorNormalized));
         
         //
         for (let bar = 0; bar < 3; bar++){
             let T = 'abc'[bar];
             // CP Path
-            path[bar].attr("d", line[bar]);
+            path[bar].attr("d", lineWithShift[bar]);
             // Sum Bar
             sumBar[bar]
                 .attr("height", Math.abs(y(0)-y(colorNormalized[T])))
                 .attr("y", Math.min(y(0), y(colorNormalized[T])))
         }
+        
     }, DELAY)
 
 });

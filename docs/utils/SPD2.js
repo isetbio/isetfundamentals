@@ -32,7 +32,14 @@ function loadAll() {
   
 }
 
-function SPD2(l, space, rgb_css=false, use_factor=true) { // space in numbers
+function clamp(num, min, max) {
+  // exclusive integer clamp; min is included, max is not
+  if (num < min) return min;
+  if (num >= max) return max-1;
+  return Math.floor(num);
+}
+
+function SPD2(l, space, shifts=[0,0,0], rgb_css=false, use_factor=true) { // space in numbers
   let data = SPD2_data[space]
   if (!data) {
     console.error(`SPD2${COLORSPACES[space]} data is not loaded.`);
@@ -46,12 +53,12 @@ function SPD2(l, space, rgb_css=false, use_factor=true) { // space in numbers
       }
       return {
         wavelength: l,
-        a: data[idx].a*factor,
-        b: data[idx].b*factor,
-        c: data[idx].c*factor,
+        a: data[clamp(idx-Math.floor(shifts[0]/5), 0, data.length)].a*factor,
+        b: data[clamp(idx-Math.floor(shifts[1]/5), 0, data.length)].b*factor,
+        c: data[clamp(idx-Math.floor(shifts[2]/5), 0, data.length)].c*factor,
       };
     }
   }
-  return null; 
+  return 0; 
 }
   
